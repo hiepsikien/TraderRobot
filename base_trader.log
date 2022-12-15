@@ -1,0 +1,608 @@
+2022-12-15 13:21:17,625 : DEBUG : base_trader.py:  stop_trading : 27 : stop_trading: IN
+
+2022-12-15 13:21:17,628 : DEBUG : base_trader.py:  stop_trading : 29 : stop_trading: OUT
+
+2022-12-15 13:21:28,370 : DEBUG : base_trader.py:  start_trading : 13 : start_trading: IN
+
+2022-12-15 13:21:28,925 : DEBUG : base_trader.py:  get_most_recent : 33 : get_most_recent: IN
+
+2022-12-15 13:21:29,645 : DEBUG : base_trader.py:  get_most_recent : 51 : get_most_recent: OUT
+
+2022-12-15 13:21:29,646 : DEBUG : base_trader.py:  start_trading : 24 : start_trading: OUT
+
+2022-12-15 13:21:32,523 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:32,528 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:33,272 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:33,276 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:42,195 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:42,199 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:44,153 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:44,158 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:46,700 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:46,706 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:48,427 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:48,430 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:21:51,907 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:21:51,911 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:00,342 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:00,346 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:22:00,359 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:22:00,359 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:22:00,470 : DEBUG : base_trader.py:  report_trade : 79 : report_trade: IN
+
+2022-12-15 13:22:00,758 : DEBUG : base_trader.py:  report_trade : 106 : report_trade: OUT
+
+2022-12-15 13:22:00,758 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:22:00,759 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:06,496 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:06,505 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:13,035 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:13,040 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:13,576 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:13,579 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:24,080 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:24,088 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:27,725 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:27,731 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:28,507 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:28,510 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:32,804 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:32,809 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:34,016 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:34,021 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:36,477 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:36,481 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:38,443 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:38,448 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:39,278 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:39,282 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:40,447 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:40,451 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:42,179 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:42,183 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:44,451 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:44,455 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:22:50,033 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:22:50,037 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:02,121 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:02,124 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:23:02,136 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:23:02,136 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:23:02,137 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:23:02,137 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:02,465 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:02,473 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:04,179 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:04,184 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:06,397 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:06,401 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:12,033 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:12,037 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:12,404 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:12,409 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:16,481 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:16,486 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:18,170 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:18,175 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:21,919 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:21,922 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:36,651 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:36,655 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:40,061 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:40,066 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:45,465 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:45,469 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:48,110 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:48,116 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:51,167 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:51,172 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:52,499 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:52,503 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:54,512 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:54,516 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:23:55,566 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:23:55,571 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:02,136 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:02,141 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:24:02,153 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:24:02,154 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:24:02,154 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:24:02,154 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:12,351 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:12,358 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:14,050 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:14,053 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:18,666 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:18,670 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:22,401 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:22,406 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:40,396 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:40,401 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:46,544 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:46,548 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:48,301 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:48,306 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:51,631 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:51,635 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:24:53,143 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:24:53,148 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:00,372 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:00,374 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:25:00,384 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:25:00,384 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:25:00,384 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:25:00,384 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:03,921 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:03,933 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:14,602 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:14,607 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:20,353 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:20,358 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:31,907 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:31,914 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:41,525 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:41,538 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:50,474 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:50,477 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:54,514 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:54,518 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:25:57,296 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:25:57,302 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:00,166 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:00,170 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:26:00,186 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:26:00,186 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:26:00,371 : DEBUG : base_trader.py:  report_trade : 79 : report_trade: IN
+
+2022-12-15 13:26:00,888 : DEBUG : base_trader.py:  report_trade : 106 : report_trade: OUT
+
+2022-12-15 13:26:00,889 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:26:00,889 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:02,353 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:02,362 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:06,315 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:06,319 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:14,142 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:14,146 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:16,059 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:16,062 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:20,103 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:20,107 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:25,678 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:25,683 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:29,833 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:29,838 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:30,297 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:30,302 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:32,844 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:32,849 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:36,260 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:36,263 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:38,297 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:38,302 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:42,044 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:42,049 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:48,330 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:48,335 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:50,523 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:50,530 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:52,235 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:52,240 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:54,464 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:54,469 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:54,727 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:54,732 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:26:59,671 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:26:59,675 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:02,140 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:02,145 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:27:02,157 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:27:02,158 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:27:02,158 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:27:02,159 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:03,416 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:03,425 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:05,060 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:05,066 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:14,227 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:14,231 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:26,073 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:26,078 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:32,303 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:32,309 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:33,082 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:33,086 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:34,566 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:34,570 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:36,290 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:36,296 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:44,039 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:44,044 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:50,194 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:50,200 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:52,578 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:52,584 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:27:55,168 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:27:55,173 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:02,124 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:02,130 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:28:02,143 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:28:02,143 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:28:02,143 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:28:02,144 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:08,948 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:08,960 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:09,257 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:09,262 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:12,754 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:12,759 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:13,205 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:13,210 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:16,043 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:16,048 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:18,290 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:18,295 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:27,479 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:27,484 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:30,180 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:30,184 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:34,085 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:34,090 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:38,384 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:38,388 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:41,001 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:41,006 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:28:42,002 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:28:42,006 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:00,404 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:00,409 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:29:00,421 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:29:00,421 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:29:00,577 : DEBUG : base_trader.py:  report_trade : 79 : report_trade: IN
+
+2022-12-15 13:29:01,024 : DEBUG : base_trader.py:  report_trade : 106 : report_trade: OUT
+
+2022-12-15 13:29:01,024 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:29:01,024 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:01,025 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:01,029 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:06,257 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:06,261 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:15,058 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:15,064 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:22,183 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:22,189 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:25,882 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:25,886 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:31,052 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:31,056 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:32,237 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:32,242 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:34,462 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:34,467 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:38,421 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:38,425 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:44,075 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:44,078 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:44,792 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:44,795 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:48,105 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:48,109 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:51,061 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:51,067 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:56,344 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:56,349 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:57,001 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:57,004 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:29:57,925 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:29:57,929 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:02,221 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:02,226 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 34 : define_strategy: IN
+
+2022-12-15 13:30:02,237 : DEBUG : triple_sma_cross_trader.py:  define_strategy : 55 : define_strategy: OUT
+
+2022-12-15 13:30:02,237 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 58 : execute_trades: IN
+
+2022-12-15 13:30:02,238 : DEBUG : triple_sma_cross_trader.py:  execute_trades : 83 : execute_trades: OUT
+
+2022-12-15 13:30:02,238 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:05,146 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:05,155 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:06,079 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:06,083 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:12,342 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:12,345 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:21,097 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:21,101 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:21,444 : DEBUG : base_trader.py:  stream_candles : 54 : stream_candles: IN
+
+2022-12-15 13:30:21,447 : DEBUG : base_trader.py:  stream_candles : 75 : stream_candles: OUT
+
+2022-12-15 13:30:26,443 : DEBUG : base_trader.py:  stop_trading : 27 : stop_trading: IN
+
+2022-12-15 13:30:26,444 : DEBUG : base_trader.py:  stop_trading : 29 : stop_trading: OUT
+

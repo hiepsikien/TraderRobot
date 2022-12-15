@@ -5,12 +5,15 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import time
+from my_logging import logger
 
 class FuturesTrader(BaseTrader):  # Triple SMA Crossover
     
-    def __init__(self,client, symbol, bar_length, sma_s, sma_m, sma_l, units, position = 0, leverage = 5):
+    def __init__(self,client, twm, symbol, bar_length, sma_s, sma_m, sma_l, units, position = 0, leverage = 5):
         
+        # self.name = symbol+bar_length
         self.client = client
+        self.twm = twm
         self.symbol = symbol
         self.bar_length = bar_length
         self.available_intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
@@ -28,7 +31,7 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
         #************************************************************************
     
     def define_strategy(self):
-        # print("define_strategy: IN\n") 
+        # logger.debug(self.name + ": define_strategy: IN") 
         data = self.data.copy()
         
         #******************** define your strategy here ************************
@@ -49,10 +52,10 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
         #***********************************************************************
     
         self.prepared_data = data.copy()
-        #print("define_strategy: OUT\n") 
+        # logger.debug(self.name + ": define_strategy: OUT") 
     
     def execute_trades(self): # Adj! 
-        #print("execute_trades: IN\n") 
+        logger.debug(self.name + ": execute_trades: IN") 
         if self.prepared_data["position"].iloc[-1] == 1: # if position is long -> go/stay long
             if self.position == 0:
                 order = self.client.futures_create_order(symbol = self.symbol, side = "BUY", type = "MARKET", quantity = self.units)
@@ -69,7 +72,7 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
                 order = self.client.futures_create_order(symbol = self.symbol, side = "BUY", type = "MARKET", quantity = self.units)
                 self.report_trade(order, "GOING NEUTRAL")
             self.position = 0
-        if self.prepared_data["position"].iloc[-1] == -1: # if position is short -> go/stay short
+        elif self.prepared_data["position"].iloc[-1] == -1: # if position is short -> go/stay short
             if self.position == 0:
                 order = self.client.futures_create_order(symbol = self.symbol, side = "SELL", type = "MARKET", quantity = self.units)
                 self.report_trade(order, "GOING SHORT") 
@@ -77,7 +80,7 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
                 order = self.client.futures_create_order(symbol = self.symbol, side = "SELL", type = "MARKET", quantity = 2 * self.units)
                 self.report_trade(order, "GOING SHORT")
             self.position = -1
-        #print("execute_trades: OUT\n") 
+        logger.debug(self.name + ": execute_trades: OUT") 
 
     def do_when_candle_closed(self):
         self.define_strategy()
