@@ -1,9 +1,26 @@
 from datetime import datetime, timedelta
-from xml.dom.xmlbuilder import _DOMInputSourceCharacterStreamType
+from binance import ThreadedWebsocketManager
 import pandas as pd
 import time
 
 class BaseTrader():
+
+    def start_trading(self, historical_days):
+        
+        self.client.futures_change_leverage(symbol = self.symbol, leverage = self.leverage) # NEW
+        
+        self.twm = ThreadedWebsocketManager(testnet = True) # testnet
+        self.twm.start()
+        
+        if self.bar_length in self.available_intervals:
+            self.get_most_recent(symbol = self.symbol, interval = self.bar_length,
+                                 days = historical_days)
+            self.twm.start_kline_futures_socket(callback = self.stream_candles,
+                                        symbol = self.symbol, interval = self.bar_length) # Adj: start_kline_futures_socket
+        # "else" to be added later in the course 
+
+    def stop_trading(self):
+        self.twm.stop()
 
     def get_most_recent(self, symbol, interval, days):
         now = datetime.utcnow()
