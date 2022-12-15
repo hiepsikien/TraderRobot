@@ -1,6 +1,6 @@
 from binance.client import Client
 from binance import ThreadedWebsocketManager
-from trade_supporter import BaseTrader
+from base_trader import BaseTrader
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -28,7 +28,7 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
         #************************************************************************
     
     def define_strategy(self):
-        
+        # print("define_strategy: IN\n") 
         data = self.data.copy()
         
         #******************** define your strategy here ************************
@@ -49,8 +49,10 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
         #***********************************************************************
     
         self.prepared_data = data.copy()
+        #print("define_strategy: OUT\n") 
     
     def execute_trades(self): # Adj! 
+        #print("execute_trades: IN\n") 
         if self.prepared_data["position"].iloc[-1] == 1: # if position is long -> go/stay long
             if self.position == 0:
                 order = self.client.futures_create_order(symbol = self.symbol, side = "BUY", type = "MARKET", quantity = self.units)
@@ -75,10 +77,9 @@ class FuturesTrader(BaseTrader):  # Triple SMA Crossover
                 order = self.client.futures_create_order(symbol = self.symbol, side = "SELL", type = "MARKET", quantity = 2 * self.units)
                 self.report_trade(order, "GOING SHORT")
             self.position = -1
+        #print("execute_trades: OUT\n") 
 
     def do_when_candle_closed(self):
-        self.define_strategy
-        self.execute_trades
-        print("Execute implemented action when candle closed")
-
+        self.define_strategy()
+        self.execute_trades()
         
