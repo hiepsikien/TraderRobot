@@ -1,4 +1,6 @@
 Backtesting the Tripple SMA
+Optimize Tripple SMA
+    Optimized
 Implement MACD strategy 
 Backtesting MACD
 Assigning and managing future position by traders 
