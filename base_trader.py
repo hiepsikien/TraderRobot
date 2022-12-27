@@ -6,6 +6,17 @@ from my_logging import logger
 
 class BaseTrader():
 
+    available_intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
+
+    def __init__(self,client,twm,symbol,bar_length,leverage) -> None:
+        self.client = client
+        self.twm = twm
+        self.symbol = symbol
+        self.bar_length = bar_length
+        self.leverage = leverage
+        self.cum_profits = 0
+
+
     def start_trading(self, historical_days):
         logger.debug(self.name + ": start_trading: IN")        
         self.client.futures_change_leverage(symbol = self.symbol, leverage = self.leverage) # NEW
@@ -36,9 +47,11 @@ class BaseTrader():
                                             start_str = past, end_str = None, limit = 1000) # Adj: futures_historical_klines
         df = pd.DataFrame(bars)
         df["Date"] = pd.to_datetime(df.iloc[:,0], unit = "ms")
+        
         df.columns = ["Open Time", "Open", "High", "Low", "Close", "Volume",
                       "Clos Time", "Quote Asset Volume", "Number of Trades",
                       "Taker Buy Base Asset Volume", "Taker Buy Quote Asset Volume", "Ignore", "Date"]
+        
         df = df[["Date", "Open", "High", "Low", "Close", "Volume"]].copy()
         df.set_index("Date", inplace = True)
         for column in df.columns:

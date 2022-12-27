@@ -1,26 +1,22 @@
-from binance.client import Client
-from binance import ThreadedWebsocketManager
+
+# from binance.client import Client
+# from binance import ThreadedWebsocketManager
 from base_trader import BaseTrader
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import time
+# import pandas as pd
+# import numpy as np
+# from datetime import datetime, timedelta
+# import time
 from my_logging import logger
 
-class FuturesTrader(BaseTrader):  # Triple SMA Crossover
+class TrippleSMATrader(BaseTrader):  # Triple SMA Crossover
     
     def __init__(self,client, twm, symbol, bar_length, sma_s, sma_m, sma_l, units, position = 0, leverage = 5):
         
         # self.name = symbol+bar_length
-        self.client = client
-        self.twm = twm
-        self.symbol = symbol
-        self.bar_length = bar_length
-        self.available_intervals = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
+        BaseTrader.__init__(self,client,twm,symbol,bar_length,leverage)
         self.units = units
         self.position = position
-        self.leverage = leverage # NEW
-        self.cum_profits = 0 # NEW
+
         #self.trades = 0 
         #self.trade_values = []
         
