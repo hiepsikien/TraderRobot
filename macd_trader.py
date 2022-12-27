@@ -10,7 +10,7 @@ from base_trader import BaseTrader
 import talib as ta
 from my_logging import logger
 
-class MACDTrader(BaseTrader):  # Triple SMA Crossover
+class MACDTrader(BaseTrader):  # MACD Crossover
     
     def __init__(self,client, twm, symbol, bar_length, ma_slow, ma_fast, ma_signal, units, position = 0, leverage = 5):
         
@@ -30,9 +30,11 @@ class MACDTrader(BaseTrader):  # Triple SMA Crossover
     
     def define_strategy(self):
         # logger.debug(self.name + ": define_strategy: IN") 
-        data = self.data.copy()
+        
         
         #******************** define your strategy here ************************
+
+        data = self.data.copy()
         close = data[["Close"]].copy().to_numpy().flatten()
 
         macd, macd_signal, macd_hist = ta.MACD(close,fastperiod=self.MA_FAST,slowperiod=self.MA_SLOW,signalperiod=self.MA_SIGNAL)
