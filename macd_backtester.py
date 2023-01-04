@@ -42,12 +42,13 @@ class MACDBacktester(BaseBacktester):
         data = self.results.copy(deep=True)
         data["creturns"] = data["returns"].cumsum().apply(np.exp)
         data["cstrategy"] = data["strategy"].cumsum().apply(np.exp)
+
         self.results = data
 
         #Call the showing of performance
         self.print_performance()
         logger.debug("OUT")
-    
+
     # Prepare the data for back test
     def prepare_data(self, macd):
     
@@ -95,23 +96,28 @@ class MACDBacktester(BaseBacktester):
 
         multiples = []
         sharpes = []
+        trades = []
 
         for comb in combinations:
             (ma_slow,ma_fast,ma_signal) = comb
             multiple_ratio = -1
             sharpe_ratio = -1
+            trade_num = 0
             if ((ma_slow <ma_fast) & (ma_signal < ma_slow)):
                 self.prepare_data(macd = comb)
                 self.run_backtest()
                 multiple_ratio = self.calculate_multiple(self.results.strategy)
                 sharpe_ratio = self.calculate_sharpe(self.results.strategy)
+                trade_num = self.count_trades(self.results.trades)
             
             multiples.append(multiple_ratio)
             sharpes.append(sharpe_ratio)
+            trades.append(trade_num)
 
             logger.debug("Combination ({},{},{}) | Multiple =  {} | Sharpe = {}".format(ma_slow,ma_fast,ma_signal,round(multiple_ratio,5), round(sharpe_ratio,5)))
 
         self.results_overview = pd.DataFrame(data = np.array(combinations), columns = ["MA_SLOW","MA_FAST","MA_SIGNAL"])
+        self.results_overview["Trades"] = trades
         self.results_overview["Multiple"] = multiples
         self.results_overview["Sharpe"] = sharpes
         self.find_best_strategy(metric)

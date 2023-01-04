@@ -99,23 +99,32 @@ class BaseBacktester():
         ann_mean = round(self.calculate_annualized_mean(data.strategy),6)
         ann_std = round(self.calculate_annualized_std(data.strategy),6)
         sharpe = round(self.calculate_sharpe(data.strategy),6)
+        trade_num = self.count_trades(data.trades)
+        trade_fee_percentage = round((- trade_num * self.tc)/(-trade_num * self.tc +strategy_multiple)*100,2)
 
         print(100 * "=")
         print("PERFORMANCE MEASURES:")
         print("\n")
-        print("Multiple (Strategy):         {}".format(strategy_multiple))
-        print("Multiple (Buy-and-Hold):     {}".format(bh_multiple))
+        print("Multiple (Strategy w/o trading fee {}".format(strategy_multiple - trade_num * self.tc))
+        print("Multiple (Strategy):               {}".format(strategy_multiple))
+        print("Multiple (Buy-and-Hold):           {}".format(bh_multiple))
         print(38 * "-")
-        print("Out-/Underperformance:       {}".format(out_perform))
+        print("Out-/Underperformance:             {}".format(out_perform))
         print("\n")
-        print("CAGR:                        {}".format(cagr))
-        print("Annualized Mean:             {}".format(ann_mean))
-        print("Annualized Std:              {}".format(ann_std))
-        print("Sharpe Ratio:                {}".format(sharpe))
+        print("Number of Trades:                  {}".format(trade_num))
+        print("Trading-fee Percentage:            {}%".format(trade_fee_percentage))
+        print("\n")
+        print("CAGR:                              {}".format(cagr))
+        print("Annualized Mean:                   {}".format(ann_mean))
+        print("Annualized Std:                    {}".format(ann_std))
+        print("Sharpe Ratio:                      {}".format(sharpe))
         
         print(100 * "=")
 
         # logger.debug("OUT")
+
+    def get_trade_number(self):
+        pass
 
     def calculate_multiple(self, series):
         return np.exp(series.sum())
@@ -134,6 +143,9 @@ class BaseBacktester():
             return np.nan
         else:
             return self.calculate_cagr(series) / self.calculate_annualized_std(series)
+
+    def count_trades(self,series):
+        return series.sum()
     
     #Plot the cumulative performance of the trading strategy compared to buy and hold
     def plot_results(self):

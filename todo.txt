@@ -1,8 +1,9 @@
-Backtesting the Tripple SMA
-Optimize Tripple SMA
-    Optimized
-Implement MACD strategy 
-Backtesting MACD
+Backtesting the Tripple SMA => DONE. Its result is heavily influenced by market up and down.
+Optimize Tripple SMA => DONE. Heavily influenced by market up and down
+Implement MACD strategy => DONE.
+Backtesting MACD => DONE
+Optimize MACD => The max multiple is only 0.8. A bit disappointed. 
+Reduce trade number to achieve higher result with MACD
 Assigning and managing future position by traders 
 Performance report of each traders
 Publish it to AWS
