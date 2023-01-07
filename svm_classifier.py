@@ -11,18 +11,21 @@ from itertools import product
 
 class SVMClassifier():
 
-    def __init__(self) -> None:
+    def __init__(self, scaler = 0, test_ratio = 0.3, test_laps =5) -> None:
         self.merged_data = None
+        self.test_ratio =test_ratio
+        self.test_laps = test_laps
+        self.scaler = scaler
 
-    def prepare_data(self,symbol,sub_symbol, interval, lags, sub_lags, vol_lags, scaler):
+    def prepare_data(self,symbol,sub_symbol, interval, lags, sub_lags, vol_lags):
  
-        if scaler == 0:
+        if self.scaler == 0:
             my_scaler = None
-        elif scaler == 1:
+        elif self.scaler == 1:
             my_scaler = MaxAbsScaler()
-        elif scaler == 2:
+        elif self.scaler == 2:
             my_scaler = MinMaxScaler()
-        elif scaler == 3:
+        elif self.scaler == 3:
             my_scaler = StandardScaler()
         else:
             my_scaler = None
@@ -91,12 +94,12 @@ class SVMClassifier():
         else:
             return self.merged_data, cols
 
-    def test_svm(self,data, cols, lap_number):
+    def test(self,data, cols):
         accuracy_scores =[]
         clf = svm.SVC()
-        for i in range(0,lap_number):
+        for i in range(0,self.test_laps):
             print("Lap {}: ".format(i+1))
-            x_train, x_test, y_train, y_test = train_test_split(data[cols],data["Direction"],test_size=0.3)
+            x_train, x_test, y_train, y_test = train_test_split(data[cols],data["Direction"],test_size=self.test_ratio)
             clf.fit(X = x_train, y = y_train)
             print("Trained. Testing...")
             y_pred = clf.predict(X = x_test)
@@ -109,18 +112,17 @@ class SVMClassifier():
         print("Average: {}, Std: {}".format(mean,std))
         return mean, std
 
-    def prepare_and_run_svm(self,symbol,sub_symbol=None,interval="1h",lags=8,sub_lags=0,vol_lags=0,scaler=0,lap_number=5):
-        print("Symbol={}, Sub_Symbol={}, Interval={}, Lags={}, Sub_lags={}, Vol_lags={}, Scaler={}".format(symbol, sub_symbol, interval,lags,sub_lags,vol_lags,scaler))
-        (data, cols) = self.prepare_data(symbol=symbol, sub_symbol=sub_symbol,interval=interval,lags=lags,sub_lags=sub_lags,vol_lags=vol_lags,scaler=scaler)
-        (mean, std) = self.test_svm(data=data,cols=cols,lap_number=lap_number)
+    def prepare_and_run(self,symbol,sub_symbol=None,interval="1h",lags=8,sub_lags=0,vol_lags=0):
+        print("Symbol={}, Sub_Symbol={}, Interval={}, Lags={}, Sub_lags={}, Vol_lags={}".format(symbol, sub_symbol, interval,lags,sub_lags,vol_lags))
+        (data, cols) = self.prepare_data(symbol=symbol, sub_symbol=sub_symbol,interval=interval,lags=lags,sub_lags=sub_lags,vol_lags=vol_lags)
+        (mean, std) = self.test(data=data,cols=cols)
         return(mean,std)
 
-    def optimize_svm(self,symbol,sub_symbol,interval,lags,sub_lags,vol_lags,scaler,lap_number):
+    def optimize(self,symbol,sub_symbol,interval,lags,sub_lags,vol_lags,scaler):
         lag_range = range(1,lags+1)
         sub_lag_range = range(0,sub_lags+1)
         vol_lag_range = range(0,vol_lags+1)
         scaler_range = range(0,scaler+1)
-        lap_number = lap_number
 
         combs = list(product(lag_range,sub_lag_range,vol_lag_range,scaler_range))
 
@@ -128,8 +130,8 @@ class SVMClassifier():
         
         for comb in combs:
             (lags, sub_lags, vol_lags, scaler) = comb
-            (mean, std) = self.prepare_and_run_svm(symbol=symbol,sub_symbol=sub_symbol,interval=interval,lags=lags, sub_lags=sub_lags, vol_lags=vol_lags,scaler=scaler,lap_number=lap_number)
-            result = (lags,sub_lags,vol_lags,scaler,lap_number,mean,std)
+            (mean, std) = self.prepare_and_run(symbol=symbol,sub_symbol=sub_symbol,interval=interval,lags=lags, sub_lags=sub_lags, vol_lags=vol_lags)
+            result = (lags,sub_lags,vol_lags,scaler,mean,std)
             results.append(result)
             
         return results

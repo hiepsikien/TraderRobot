@@ -4,7 +4,9 @@ Implement MACD strategy => DONE.
 Backtesting MACD => DONE
 Optimize MACD => The max multiple is only 0.8. A bit disappointed. The culprit is the trading cost. The robot made a lot of trades.
 Add machine learning => Added SVM with parameters as history recent price, history recent price of correlated asset, trade volumn change. Highest accuracy is 54%. Can I make it 70%???
-Normalization data before feeding to SVM =>
+Normalization data before feeding to SVM => DONE. Doesnt make much difference
+Optimize SVM Classifier with parameter combination => DONE. Take a lot of time. Will run again after Cloud Computing
+Add 1d historical data => Added for BTCUSDT and ETHUSDT
 Reduce trade number to achieve higher result with MACD
 Assigning and managing future position by traders 
 Performance report of each traders
