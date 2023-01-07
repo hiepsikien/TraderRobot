@@ -1,4 +1,3 @@
-from mimetypes import init
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -12,11 +11,21 @@ from itertools import product
 class SVMClassifier():
 
     def __init__(self, scaler = 0, test_ratio = 0.3, test_laps =5) -> None:
-        self.merged_data = None
+        self.prepared_data = None
         self.test_ratio =test_ratio
         self.test_laps = test_laps
         self.scaler = scaler
+        self.svc = svm.SVC()
 
+    def set_scaler(self,scaler):
+        self.scaler = scaler
+
+    def set_test_lap(self,test_laps):
+        self.test_laps = test_laps
+
+    def set_test_ratio(self,test_ratio):
+        self.test_ratio = test_ratio
+    
     def prepare_data(self,symbol,sub_symbol, interval, lags, sub_lags, vol_lags):
  
         if self.scaler == 0:
@@ -33,8 +42,7 @@ class SVMClassifier():
         #Import target currency
         data = pd.read_csv("{}-{}.csv".format(symbol,interval), index_col="Open Time")
         data = data[["Close","Volumn"]]
-        data["Return"] = data["Close"].div(data["Close"].shift(1))
-        data["Log_Return"] = np.log(data["Return"])
+        data["Log_Return"] = np.log(data["Close"].div(data["Close"].shift(1)))
         data["Direction"] = np.sign(data["Log_Return"])
 
 
@@ -60,22 +68,21 @@ class SVMClassifier():
             sub_data = pd.read_csv("{}-{}.csv".format(sub_symbol,interval), index_col="Open Time")
             sub_data = sub_data[["Close"]]
             sub_data.columns = ["Sub_Close"]
-            sub_data["Sub_Return"] = sub_data["Sub_Close"].div(sub_data["Sub_Close"].shift(1))
-            sub_data["Sub_Log_Return"] = np.log(sub_data["Sub_Return"])
-
+            sub_data["Log_Sub_Return"] = np.log(sub_data["Sub_Close"].div(sub_data["Sub_Close"].shift(1)))
+            
             for lag in range(1,sub_lags+1):
                 col = "Sub_Lag_{}".format(lag)
-                data[col] = sub_data["Sub_Log_Return"].shift(lag)
+                data[col] = sub_data["Log_Sub_Return"].shift(lag)
                 cols.append(col)
 
             #Merge target and correlated currencies info to a big dataframe
-            self.merged_data = pd.concat([data, sub_data], join="inner", axis = 1)
-            self.merged_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            self.merged_data.to_csv("merged.csv")
+            self.prepared_data = pd.concat([data, sub_data], join="inner", axis = 1)
+            self.prepared_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            # self.prepared_data.to_csv("merged.csv")
         else:
-            self.merged_data = data
+            self.prepared_data = data
 
-        self.merged_data.dropna(inplace=True)
+        self.prepared_data.dropna(inplace=True)
 
         #Nomarlize data
         if (my_scaler!=None):
@@ -83,26 +90,25 @@ class SVMClassifier():
             for col in cols:
                 # print("Nomalizing col: {}".format(col))
                 normalized_col = "Nom_" + col
-                array = self.merged_data[col].to_frame()
+                array = self.prepared_data[col].to_frame()
                 try:
                     my_scaler.fit(array)
-                    self.merged_data[normalized_col] = my_scaler.transform(array)
+                    self.prepared_data[normalized_col] = my_scaler.transform(array)
                     normalized_cols.append(normalized_col)
                 except:
                     print("An exception occured")
-            return self.merged_data, normalized_cols
+            return self.prepared_data, normalized_cols
         else:
-            return self.merged_data, cols
+            return self.prepared_data, cols
 
-    def test(self,data, cols):
+    def run(self,data, cols):
         accuracy_scores =[]
-        clf = svm.SVC()
         for i in range(0,self.test_laps):
             print("Lap {}: ".format(i+1))
             x_train, x_test, y_train, y_test = train_test_split(data[cols],data["Direction"],test_size=self.test_ratio)
-            clf.fit(X = x_train, y = y_train)
+            self.svc.fit(X = x_train, y = y_train)
             print("Trained. Testing...")
-            y_pred = clf.predict(X = x_test)
+            y_pred = self.svc.predict(X = x_test)
             accuracy = accuracy_score(y_test, y_pred)
             accuracy_scores.append(accuracy)
             print("Accuracy Score: {}".format(accuracy))
@@ -113,9 +119,9 @@ class SVMClassifier():
         return mean, std
 
     def prepare_and_run(self,symbol,sub_symbol=None,interval="1h",lags=8,sub_lags=0,vol_lags=0):
-        print("Symbol={}, Sub_Symbol={}, Interval={}, Lags={}, Sub_lags={}, Vol_lags={}".format(symbol, sub_symbol, interval,lags,sub_lags,vol_lags))
+        print("Symbol={}, Sub_Symbol={}, Interval={}, Lags={}, Sub_Lags={}, Vol_Lags={}".format(symbol, sub_symbol, interval,lags,sub_lags,vol_lags))
         (data, cols) = self.prepare_data(symbol=symbol, sub_symbol=sub_symbol,interval=interval,lags=lags,sub_lags=sub_lags,vol_lags=vol_lags)
-        (mean, std) = self.test(data=data,cols=cols)
+        (mean, std) = self.run(data=data,cols=cols)
         return(mean,std)
 
     def optimize(self,symbol,sub_symbol,interval,lags,sub_lags,vol_lags,scaler):
