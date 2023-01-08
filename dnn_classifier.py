@@ -45,7 +45,7 @@ class DNNModel(Sequential):
         self.seeds = seed
         random.seed(seed)
         np.random.seed(seed)
-        tf.random.set_seed(seed)1
+        tf.random.set_seed(seed)
 
     def set_optimizer(self,optimizer):
         self.optimizer = optimizer

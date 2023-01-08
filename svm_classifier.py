@@ -101,7 +101,7 @@ class SVMClassifier():
         else:
             return self.prepared_data, cols
 
-    def run(self,data, cols):
+    def run(self,data,cols):
         accuracy_scores =[]
         for i in range(0,self.test_laps):
             print("Lap {}: ".format(i+1))

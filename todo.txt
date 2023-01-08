@@ -7,7 +7,10 @@ Add machine learning => Added SVM with parameters as history recent price, histo
 Normalization data before feeding to SVM => DONE. Doesnt make much difference
 Optimize SVM Classifier with parameter combination => DONE. Take a lot of time. Will run again after Cloud Computing
 Add 1d historical data => Added for BTCUSDT and ETHUSDT
-Reduce trade number to achieve higher result with MACD
+Reduce trade number to achieve higher result => Tried with DNN and it improved slightly. Improve 4% accuracy, reduce trade number to 20%
+Build a deep learning price direction prediction => DONE. It achieved 57% accuracy, reduced trade number to 20%
+Expand the model to pick the trade with stoploss, takeprofit set, has maximum windows time.
+Build a solid feature engineering with more indicators
 Assigning and managing future position by traders 
 Performance report of each traders
 Publish it to AWS

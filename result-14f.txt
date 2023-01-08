@@ -1,0 +1,111 @@
+
+======= Lap 1 =======
+Train = 32779, Val = 7024, Test = 7025, All = 46828
+Epoch 1/50
+
+Epoch 1: val_loss improved from inf to 0.68974, saving model to model_checkpoint.h5
+1025/1025 - 13s - loss: 0.7048 - accuracy: 0.5143 - val_loss: 0.6897 - val_accuracy: 0.5387 - 13s/epoch - 13ms/step
+Epoch 2/50
+
+Epoch 2: val_loss improved from 0.68974 to 0.68837, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6958 - accuracy: 0.5193 - val_loss: 0.6884 - val_accuracy: 0.5485 - 6s/epoch - 6ms/step
+Epoch 3/50
+
+Epoch 3: val_loss improved from 0.68837 to 0.68803, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6942 - accuracy: 0.5240 - val_loss: 0.6880 - val_accuracy: 0.5532 - 6s/epoch - 5ms/step
+Epoch 4/50
+
+Epoch 4: val_loss improved from 0.68803 to 0.68764, saving model to model_checkpoint.h5
+1025/1025 - 7s - loss: 0.6912 - accuracy: 0.5328 - val_loss: 0.6876 - val_accuracy: 0.5550 - 7s/epoch - 6ms/step
+Epoch 5/50
+
+Epoch 5: val_loss improved from 0.68764 to 0.68691, saving model to model_checkpoint.h5
+1025/1025 - 9s - loss: 0.6902 - accuracy: 0.5366 - val_loss: 0.6869 - val_accuracy: 0.5565 - 9s/epoch - 9ms/step
+Epoch 6/50
+
+Epoch 6: val_loss improved from 0.68691 to 0.68645, saving model to model_checkpoint.h5
+1025/1025 - 7s - loss: 0.6898 - accuracy: 0.5363 - val_loss: 0.6865 - val_accuracy: 0.5554 - 7s/epoch - 7ms/step
+Epoch 7/50
+
+Epoch 7: val_loss improved from 0.68645 to 0.68586, saving model to model_checkpoint.h5
+1025/1025 - 7s - loss: 0.6884 - accuracy: 0.5421 - val_loss: 0.6859 - val_accuracy: 0.5575 - 7s/epoch - 7ms/step
+Epoch 8/50
+
+Epoch 8: val_loss improved from 0.68586 to 0.68546, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6878 - accuracy: 0.5464 - val_loss: 0.6855 - val_accuracy: 0.5572 - 6s/epoch - 6ms/step
+Epoch 9/50
+
+Epoch 9: val_loss improved from 0.68546 to 0.68537, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6876 - accuracy: 0.5461 - val_loss: 0.6854 - val_accuracy: 0.5597 - 6s/epoch - 6ms/step
+Epoch 10/50
+
+Epoch 10: val_loss did not improve from 0.68537
+1025/1025 - 7s - loss: 0.6877 - accuracy: 0.5474 - val_loss: 0.6856 - val_accuracy: 0.5577 - 7s/epoch - 6ms/step
+Epoch 11/50
+
+Epoch 11: val_loss improved from 0.68537 to 0.68535, saving model to model_checkpoint.h5
+1025/1025 - 7s - loss: 0.6869 - accuracy: 0.5467 - val_loss: 0.6854 - val_accuracy: 0.5594 - 7s/epoch - 7ms/step
+Epoch 12/50
+
+Epoch 12: val_loss improved from 0.68535 to 0.68524, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6875 - accuracy: 0.5471 - val_loss: 0.6852 - val_accuracy: 0.5608 - 6s/epoch - 6ms/step
+Epoch 13/50
+
+Epoch 13: val_loss did not improve from 0.68524
+1025/1025 - 5s - loss: 0.6864 - accuracy: 0.5486 - val_loss: 0.6854 - val_accuracy: 0.5578 - 5s/epoch - 5ms/step
+Epoch 14/50
+
+Epoch 14: val_loss improved from 0.68524 to 0.68519, saving model to model_checkpoint.h5
+1025/1025 - 5s - loss: 0.6866 - accuracy: 0.5493 - val_loss: 0.6852 - val_accuracy: 0.5577 - 5s/epoch - 5ms/step
+Epoch 15/50
+
+Epoch 15: val_loss improved from 0.68519 to 0.68516, saving model to model_checkpoint.h5
+1025/1025 - 5s - loss: 0.6855 - accuracy: 0.5528 - val_loss: 0.6852 - val_accuracy: 0.5569 - 5s/epoch - 5ms/step
+Epoch 16/50
+
+Epoch 16: val_loss did not improve from 0.68516
+1025/1025 - 6s - loss: 0.6856 - accuracy: 0.5528 - val_loss: 0.6852 - val_accuracy: 0.5542 - 6s/epoch - 5ms/step
+Epoch 17/50
+
+Epoch 17: val_loss improved from 0.68516 to 0.68465, saving model to model_checkpoint.h5
+1025/1025 - 5s - loss: 0.6850 - accuracy: 0.5530 - val_loss: 0.6846 - val_accuracy: 0.5540 - 5s/epoch - 5ms/step
+Epoch 18/50
+
+Epoch 18: val_loss did not improve from 0.68465
+1025/1025 - 6s - loss: 0.6851 - accuracy: 0.5534 - val_loss: 0.6849 - val_accuracy: 0.5530 - 6s/epoch - 6ms/step
+Epoch 19/50
+
+Epoch 19: val_loss improved from 0.68465 to 0.68452, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6838 - accuracy: 0.5556 - val_loss: 0.6845 - val_accuracy: 0.5572 - 6s/epoch - 5ms/step
+Epoch 20/50
+
+Epoch 20: val_loss did not improve from 0.68452
+1025/1025 - 6s - loss: 0.6843 - accuracy: 0.5534 - val_loss: 0.6846 - val_accuracy: 0.5571 - 6s/epoch - 6ms/step
+Epoch 21/50
+
+Epoch 21: val_loss improved from 0.68452 to 0.68440, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6843 - accuracy: 0.5594 - val_loss: 0.6844 - val_accuracy: 0.5554 - 6s/epoch - 6ms/step
+Epoch 22/50
+
+Epoch 22: val_loss did not improve from 0.68440
+1025/1025 - 6s - loss: 0.6845 - accuracy: 0.5534 - val_loss: 0.6845 - val_accuracy: 0.5587 - 6s/epoch - 6ms/step
+Epoch 23/50
+
+Epoch 23: val_loss improved from 0.68440 to 0.68423, saving model to model_checkpoint.h5
+1025/1025 - 6s - loss: 0.6839 - accuracy: 0.5563 - val_loss: 0.6842 - val_accuracy: 0.5578 - 6s/epoch - 6ms/step
+Epoch 24/50
+
+Epoch 24: val_loss did not improve from 0.68423
+1025/1025 - 6s - loss: 0.6845 - accuracy: 0.5573 - val_loss: 0.6849 - val_accuracy: 0.5547 - 6s/epoch - 5ms/step
+Epoch 25/50
+
+Epoch 25: val_loss did not improve from 0.68423
+1025/1025 - 5s - loss: 0.6832 - accuracy: 0.5594 - val_loss: 0.6844 - val_accuracy: 0.5571 - 5s/epoch - 5ms/step
+Epoch 26/50
+
+Epoch 26: val_loss did not improve from 0.68423
+1025/1025 - 6s - loss: 0.6843 - accuracy: 0.5579 - val_loss: 0.6846 - val_accuracy: 0.5547 - 6s/epoch - 6ms/step
+Epoch 26: early stopping
+220/220 [==============================] - 1s 5ms/step
+Correct = 994, Predict = 1681, All = 7025 
+Accuracy Score: 0.591, Coverage Score: 0.239
