@@ -14,7 +14,7 @@ from keras.optimizers import Adam
 
 class DNNModel(Sequential):
 
-    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.6, val_size =0.2, epochs=20, optimizer = Adam(learning_rate=0.0001)) -> None:
+    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15, epochs=20, optimizer = Adam(learning_rate=0.0001)) -> None:
         super().__init__()
         self.set_seeds(seed)
         self.set_optimizer(optimizer)
@@ -23,7 +23,7 @@ class DNNModel(Sequential):
         self.set_val_size(val_size)
         self.set_epochs(epochs)
         self.set_dropout_rate(dropout_rate)
-        self.history = None
+        self.saved_history = None
 
     def set_dropout_rate(self,dropout_rate):
         self.dropout_rate = dropout_rate
@@ -45,7 +45,7 @@ class DNNModel(Sequential):
         self.seeds = seed
         random.seed(seed)
         np.random.seed(seed)
-        tf.random.set_seed(seed)
+        tf.random.set_seed(seed)1
 
     def set_optimizer(self,optimizer):
         self.optimizer = optimizer
@@ -75,9 +75,11 @@ class DNNModel(Sequential):
         self.compile(loss="binary_crossentropy",optimizer=self.optimizer,metrics=["accuracy"])
 
     def visualize_loss(self):
-        if self.history is not None:
-            loss = self.history.history["loss"]
-            val_loss = self.history.history["val_loss"]
+        if self.saved_history is not None:
+            loss = self.saved_history["loss"]
+            val_loss = self.saved_history["val_loss"]
+            accuracy = self.saved_history["accuracy"]
+            val_accuracy = self.saved_history["val_accuracy"]
             epochs = range(len(loss))
             plt.figure()
             plt.plot(epochs, loss, "b", label="Training loss")
@@ -85,6 +87,22 @@ class DNNModel(Sequential):
             plt.title("Training and Validation Loss")
             plt.xlabel("Epochs")
             plt.ylabel("Loss")
+            plt.legend()
+            plt.show()
+        else:
+            print("No learning history")
+
+    def visualize_accuracy(self):
+        if self.saved_history is not None:
+            accuracy = self.saved_history["accuracy"]
+            val_accuracy = self.saved_history["val_accuracy"]
+            epochs = range(len(accuracy))
+            plt.figure()
+            plt.plot(epochs, accuracy, "b", label="Training accuracy")
+            plt.plot(epochs, val_accuracy, "r", label="Validation accuracy")
+            plt.title("Training and Validation Accuracy")
+            plt.xlabel("Epochs")
+            plt.ylabel("Accuracy")
             plt.legend()
             plt.show()
         else:
@@ -139,12 +157,12 @@ class DNNModel(Sequential):
             callbacks=[es_callback,modelckpt_callback],
             class_weight=self.cw(self.y_train))
 
-        print("History params: {}".format(self.history.params))
+        self.saved_history = dict(self.history.history)
         
         pred_prob = self.predict(x=self.x_test)
         
-        temp = np.where(pred_prob <self.nt,0,pred_prob)
-        y_pred = np.where(temp >self.pt,1,temp)
+        temp = np.where(pred_prob < self.nt,0,pred_prob)
+        y_pred = np.where(temp > self.pt,1,temp)
 
         dfs = pd.DataFrame({"y_test":self.y_test,"y_pred":y_pred.flatten().tolist()})
         dfs["correct"] = dfs["y_test"] == dfs["y_pred"]
