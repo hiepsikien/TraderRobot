@@ -42,4 +42,19 @@ class FeatureManager():
             scaler.fit(self.df[col].to_frame())
             self.df[col] = scaler.transform(self.df[col].to_frame())
 
-        
+    def show_heatmap(self):
+
+        if self.df is not None:
+            data = self.df[self.cols]
+            plt.figure(figsize=(10,10))
+            plt.matshow(data.corr(),fignum=1)
+            plt.xticks(range(data.shape[1]), data.columns, fontsize=14, rotation=90)
+            plt.gca().xaxis.tick_bottom()
+            plt.yticks(range(data.shape[1]), data.columns, fontsize=14)
+
+            cb = plt.colorbar()
+            cb.ax.tick_params(labelsize=12)
+            plt.title("Feature Correlation Heatmap", fontsize=14)
+            plt.show()
+        else:
+            print("No data to show")

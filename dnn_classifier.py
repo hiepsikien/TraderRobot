@@ -1,5 +1,6 @@
-from itertools import count
-from pickletools import optimize
+
+from tracemalloc import start
+import matplotlib.pyplot as plt
 import random
 import numpy as np
 import pandas as pd
@@ -7,21 +8,22 @@ import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from keras.regularizers import l1, l2
-from sklearn.metrics import accuracy_score
+from keras import callbacks as kc
 from sklearn.model_selection import train_test_split
 from keras.optimizers import Adam
 
 class DNNModel(Sequential):
 
-    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, test_size = 0.3, validation_split = 0.2, epochs=50, optimizer = Adam(learning_rate=0.0001)) -> None:
+    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.6, val_size =0.2, epochs=20, optimizer = Adam(learning_rate=0.0001)) -> None:
         super().__init__()
         self.set_seeds(seed)
         self.set_optimizer(optimizer)
         self.set_cutoff(neg_cutoff = neg_cutoff, pos_cutoff =pos_cutoff)
-        self.set_test_size(test_size=test_size)
-        self.set_validation_split(validation_split)
+        self.set_train_size(train_size)
+        self.set_val_size(val_size)
         self.set_epochs(epochs)
         self.set_dropout_rate(dropout_rate)
+        self.history = None
 
     def set_dropout_rate(self,dropout_rate):
         self.dropout_rate = dropout_rate
@@ -29,11 +31,11 @@ class DNNModel(Sequential):
     def set_epochs(self,epochs):
         self.epochs = epochs
 
-    def set_test_size(self, test_size):
-        self.test_size = test_size
+    def set_val_size(self, val_size):
+        self.val_size = val_size
 
-    def set_validation_split(self, valiation_split):
-        self.validation_split = valiation_split
+    def set_train_size(self, train_size):
+        self.train_size = train_size
 
     def set_cutoff(self,neg_cutoff, pos_cutoff):
         self.nt = neg_cutoff
@@ -72,18 +74,79 @@ class DNNModel(Sequential):
         self.add(Dense(1,activation="sigmoid"))
         self.compile(loss="binary_crossentropy",optimizer=self.optimizer,metrics=["accuracy"])
 
-    def run(self,data,cols):
+    def visualize_loss(self):
+        if self.history is not None:
+            loss = self.history.history["loss"]
+            val_loss = self.history.history["val_loss"]
+            epochs = range(len(loss))
+            plt.figure()
+            plt.plot(epochs, loss, "b", label="Training loss")
+            plt.plot(epochs, val_loss, "r", label="Validation loss")
+            plt.title("Training and Validation Loss")
+            plt.xlabel("Epochs")
+            plt.ylabel("Loss")
+            plt.legend()
+            plt.show()
+        else:
+            print("No learning history")
+
+    def prepare_data(self,data, cols):
+
+        # Shuffle data
+        shuffled = data.sample(frac=1)
+
+        #Calculate length
+        data_len = len(data["dir"])
+        train_len = int(data_len*self.train_size)
+        val_len = int(data_len*self.val_size)
+        test_len = data_len - train_len - val_len
+
+        print("Train = {}, Val = {}, Test = {}, All = {}".format(train_len,val_len,test_len,data_len))
+
+        #Split data to train + validation + test
+        input = shuffled[cols]
+        target = shuffled["dir"]
+
+        self.x_train = input.head(train_len).values.tolist()
+        self.y_train = target.head(train_len).tolist()
+
+        self.x_val = input.iloc[train_len:train_len+val_len].values.tolist()
+        self.y_val = target.iloc[train_len:train_len+val_len].tolist()
+
+        self.x_test = input.tail(test_len).values.tolist()
+        self.y_test = target.tail(test_len).tolist()
+
+
+    def run(self):
        
-        x_train, x_test, y_train, y_test = train_test_split(data[cols],data["dir"],test_size=self.test_size)
+        path_checkpoint = "model_checkpoint.h5"
+        es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=3)
+
+        modelckpt_callback = kc.ModelCheckpoint(
+            monitor="val_loss",
+            filepath=path_checkpoint,
+            verbose=1,
+            save_weights_only=True,
+            save_best_only=True)
+
+        self.history = self.fit(
+            x=self.x_train,
+            y=self.y_train,
+            epochs=self.epochs,
+            verbose=2,
+            validation_data=(self.x_val,self.y_val), 
+            shuffle=True, 
+            callbacks=[es_callback,modelckpt_callback],
+            class_weight=self.cw(self.y_train))
+
+        print("History params: {}".format(self.history.params))
         
-        self.fit(x=x_train,y=y_train,epochs=self.epochs,verbose=False,validation_split=self.validation_split, shuffle=False, class_weight=self.cw(y_train))
-        
-        pred_prob = self.predict(x=x_test)
+        pred_prob = self.predict(x=self.x_test)
         
         temp = np.where(pred_prob <self.nt,0,pred_prob)
         y_pred = np.where(temp >self.pt,1,temp)
 
-        dfs = pd.DataFrame({"y_test":y_test,"y_pred":y_pred.flatten().tolist()})
+        dfs = pd.DataFrame({"y_test":self.y_test,"y_pred":y_pred.flatten().tolist()})
         dfs["correct"] = dfs["y_test"] == dfs["y_pred"]
 
         correct_num = dfs["correct"].loc[dfs["correct"]==True].size
@@ -96,5 +159,5 @@ class DNNModel(Sequential):
         coverage = pred_num / all_num
 
         print("Accuracy Score: {}, Coverage Score: {}".format(round(accuracy,3), round(coverage,3)))
-            
-  
+
+        return accuracy, coverage
