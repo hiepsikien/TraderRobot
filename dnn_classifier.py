@@ -9,12 +9,12 @@ from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from keras.regularizers import l1, l2
 from keras import callbacks as kc
-from sklearn.model_selection import train_test_split
 from keras.optimizers import Adam
 
 class DNNModel(Sequential):
 
     def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15, epochs=20, optimizer = Adam(learning_rate=0.0001)) -> None:
+        kc.backend.clear_session()
         super().__init__()
         self.set_seeds(seed)
         self.set_optimizer(optimizer)
@@ -78,10 +78,8 @@ class DNNModel(Sequential):
         if self.saved_history is not None:
             loss = self.saved_history["loss"]
             val_loss = self.saved_history["val_loss"]
-            accuracy = self.saved_history["accuracy"]
-            val_accuracy = self.saved_history["val_accuracy"]
             epochs = range(len(loss))
-            plt.figure()
+            plt.figure(figsize=(8,6))
             plt.plot(epochs, loss, "b", label="Training loss")
             plt.plot(epochs, val_loss, "r", label="Validation loss")
             plt.title("Training and Validation Loss")
@@ -97,7 +95,7 @@ class DNNModel(Sequential):
             accuracy = self.saved_history["accuracy"]
             val_accuracy = self.saved_history["val_accuracy"]
             epochs = range(len(accuracy))
-            plt.figure()
+            plt.figure(figsize=(8,6))
             plt.plot(epochs, accuracy, "b", label="Training accuracy")
             plt.plot(epochs, val_accuracy, "r", label="Validation accuracy")
             plt.title("Training and Validation Accuracy")
@@ -108,10 +106,10 @@ class DNNModel(Sequential):
         else:
             print("No learning history")
 
-    def prepare_data(self,data, cols):
+    def prepare_data(self,data, cols,random_state = 1):
 
         # Shuffle data
-        shuffled = data.sample(frac=1)
+        shuffled = data.sample(frac=1,random_state=random_state)
 
         #Calculate length
         data_len = len(data["dir"])
@@ -154,7 +152,7 @@ class DNNModel(Sequential):
             verbose=2,
             validation_data=(self.x_val,self.y_val), 
             shuffle=True, 
-            callbacks=[es_callback,modelckpt_callback],
+            callbacks=[es_callback],
             class_weight=self.cw(self.y_train))
 
         self.saved_history = dict(self.history.history)
