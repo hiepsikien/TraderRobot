@@ -10,6 +10,7 @@ from keras.models import Sequential
 from keras.regularizers import l1, l2
 from keras import callbacks as kc
 from keras.optimizers import Adam
+from visualization import visualize_efficiency_by_cutoff
 
 class DNNModel(Sequential):
 
@@ -38,8 +39,8 @@ class DNNModel(Sequential):
         self.train_size = train_size
 
     def set_cutoff(self,neg_cutoff, pos_cutoff):
-        self.nt = neg_cutoff
-        self.pt = pos_cutoff
+        self.neg_cutoff = neg_cutoff
+        self.pos_cutoff = pos_cutoff
 
     def set_seeds(self,seed):
         self.seeds = seed
@@ -90,6 +91,9 @@ class DNNModel(Sequential):
         else:
             print("No learning history")
 
+    def visualize_efficiency_by_cutoff(self, min_delta = 0, max_delta = 0.5):
+        visualize_efficiency_by_cutoff(data = self.efficiency,min_delta=min_delta,max_delta=max_delta)
+
     def visualize_accuracy(self):
         if self.saved_history is not None:
             accuracy = self.saved_history["accuracy"]
@@ -132,6 +136,67 @@ class DNNModel(Sequential):
         self.x_test = input.tail(test_len).values.tolist()
         self.y_test = target.tail(test_len).tolist()
 
+    def predict_with_cutoff(self,neg_cutoff,pos_cutoff):
+        
+        temp = np.where(self.pred_prob < neg_cutoff,0,self.pred_prob)
+        y_pred = np.where(temp > pos_cutoff,1,temp)
+
+        dfs = pd.DataFrame({"y_test":self.y_test,"y_pred":y_pred.flatten().tolist()})
+        dfs["correct"] = dfs["y_test"] == dfs["y_pred"]
+
+        correct_num = dfs["correct"].loc[dfs["correct"]==True].size
+        pred_num = dfs["y_pred"].loc[(dfs["y_pred"] == 0) | (dfs["y_pred"] == 1) ].size
+        all_num = dfs["correct"].size
+
+        print("Correct = {}, Predict = {}, All = {} ".format(correct_num,pred_num,all_num))
+
+        accuracy = 0
+        if pred_num != 0:
+            accuracy = correct_num / pred_num
+        
+        coverage = pred_num / all_num
+
+        print("Accuracy Score: {}, Coverage Score: {}".format(round(accuracy,3), round(coverage,3)))
+        
+        return accuracy, coverage
+
+    def analyze_predict_by_cutoff(self):
+
+        step = 0.001
+        
+        neg_cutoff = None
+        pos_cutoff = None
+
+        acc_list= []
+        cov_list = []
+        del_list = []
+        
+        for i in range(500):
+            delta = i * step
+            neg_cutoff = 0.5 - delta
+            pos_cutoff = 0.5 + delta
+            acc, cov = self.predict_with_cutoff(neg_cutoff=neg_cutoff,pos_cutoff=pos_cutoff)
+            acc_list.append(acc)
+            cov_list.append(cov)
+            del_list.append(delta)
+
+        self.efficiency = pd.DataFrame({"delta":del_list,"accuracy":acc_list,"coverage":cov_list})
+
+
+    def visualize_efficiency(self):
+        
+        del_list = self.efficiency["delta"].tolist()
+        acc_list = self.efficiency["accuracy"].tolist()
+        cov_list = self.efficiency["coverage"].tolist()
+
+        plt.figure()
+        plt.plot(del_list, acc_list, "b", label="Accuracy")
+        plt.plot(del_list, cov_list, "r", label="Coverage")
+        plt.title("Accuracy and Coverage by Cutoff Delta")
+        plt.xlabel("Delta")
+        plt.ylabel("Score")
+        plt.legend()
+        plt.show()
 
     def run(self):
        
@@ -157,23 +222,8 @@ class DNNModel(Sequential):
 
         self.saved_history = dict(self.history.history)
         
-        pred_prob = self.predict(x=self.x_test)
+        self.pred_prob = self.predict(x=self.x_test)
         
-        temp = np.where(pred_prob < self.nt,0,pred_prob)
-        y_pred = np.where(temp > self.pt,1,temp)
-
-        dfs = pd.DataFrame({"y_test":self.y_test,"y_pred":y_pred.flatten().tolist()})
-        dfs["correct"] = dfs["y_test"] == dfs["y_pred"]
-
-        correct_num = dfs["correct"].loc[dfs["correct"]==True].size
-        pred_num = dfs["y_pred"].loc[(dfs["y_pred"] == 0) | (dfs["y_pred"] == 1) ].size
-        all_num = dfs["correct"].size
-
-        print("Correct = {}, Predict = {}, All = {} ".format(correct_num,pred_num,all_num))
-
-        accuracy = correct_num / pred_num
-        coverage = pred_num / all_num
-
-        print("Accuracy Score: {}, Coverage Score: {}".format(round(accuracy,3), round(coverage,3)))
+        accuracy, coverage = self.predict_with_cutoff(neg_cutoff=self.neg_cutoff,pos_cutoff=self.pos_cutoff)
 
         return accuracy, coverage

@@ -167,3 +167,40 @@ class FeatureManager():
             plt.show()
         else:
             print("No data to show")
+
+    def show_raw_visualization(self):
+
+        size = len(self.cols)
+        ncol = 2
+
+        fig, axes = plt.subplots(
+            nrows=int(size/self.lags/ncol), ncols=ncol, figsize=(16,32), dpi=360, facecolor="w", edgecolor="k")
+
+        colors = [
+            "blue",
+            "orange",
+            "green",
+            "red",
+            "purple",
+            "brown",
+            "pink",
+            "gray",
+            "olive",
+            "cyan",
+        ]
+
+        date = pd.to_datetime(self.df.index, unit="ms", utc=True)
+
+        for i in range(int(size/5)):
+            key  = self.cols[i*5]
+            c = colors[i % (len(colors))]
+            data = self.df[key]
+            data.index = date
+            data.plot(
+                ax=axes[i // ncol, i % ncol],
+                color=c,
+                title="{}".format(key),
+                rot=25,
+            )
+        plt.tight_layout()
+            
