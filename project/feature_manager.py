@@ -9,11 +9,10 @@ class FeatureManager():
 
     def __init__(self,window = 50, lags =5) -> None:
         self.window = window
-        self.lags = lags
         self.cols = []
         self.df = None
 
-    def build_feature(self,data):
+    def build_feature(self,data,lags):
 
         sd = data.copy()
 
@@ -136,7 +135,7 @@ class FeatureManager():
             ]
         
         for f in features:
-            for lag in range(1,self.lags + 1):
+            for lag in range(1,lags + 1):
                 col = "{}_lag_{}".format(f,lag)
                 sd[col] = sd[f].shift(lag)
                 self.cols.append(col)

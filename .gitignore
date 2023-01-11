@@ -1,2 +1,3 @@
-# ignore all files in any directory named data
+# ignore all files in below directories
 nocommit/
+out/
