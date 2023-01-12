@@ -1,9 +1,6 @@
 
 from platform import processor
 import matplotlib.pyplot as plt
-import random
-import numpy as np
-import pandas as pd
 import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
@@ -11,9 +8,11 @@ from keras.regularizers import l1, l2
 from keras import callbacks as kc
 from keras.optimizers import Adam
 from base_classifier import BaseClassifierModel
-from visualizer import visualize_efficiency_by_cutoff
 
-class DNNModel(BaseClassifierModel):
+class DNNClassifer(BaseClassifierModel):
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args,**kwargs)
 
     def configure(self,hl,hu, input_dim, dropout = False, regularize = False, reg = l1(0.0005)):
         if not regularize:
@@ -72,7 +71,7 @@ class DNNModel(BaseClassifierModel):
 
     def run(self,gpu):
        
-        path_checkpoint = "model_dnn_checkpoint.h5"
+        path_checkpoint = "../data/model_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=3)
 
         modelckpt_callback = kc.ModelCheckpoint(
@@ -95,7 +94,7 @@ class DNNModel(BaseClassifierModel):
                 verbose=2,
                 validation_data=(self.x_val,self.y_val), 
                 shuffle=True, 
-                callbacks=[es_callback,modelckpt_callback],
+                callbacks=[es_callback],
                 class_weight=self.cw(self.y_train))
 
         self.saved_history = dict(self.history.history)

@@ -1,12 +1,14 @@
-import pandas as pd
 import numpy as np
 import tensorflow as tf
 from base_classifier import BaseClassifierModel
 from keras.layers import Input, Dense, LSTM
-from keras import Model, optimizers
+from keras import Model, optimizers, callbacks
+import visualizer
 
-
-class LSTMModel(BaseClassifierModel):
+class LSTMClassifier(BaseClassifierModel):
+    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args,**kwargs)
 
     def configure(self, hu, shape):
 
@@ -22,16 +24,8 @@ class LSTMModel(BaseClassifierModel):
             metrics="accuracy")
         self.model.summary()
 
-    def prepare_y_test(self,y_test,sequence_len,sequence_stride,sampling_rate):
-        y_list = []
-        window_len = (sequence_len-1)*sampling_rate + 1
-        for end in range(window_len-1,len(y_test),sequence_stride):
-            y_list.append(y_test[end])
-        return y_list
-
     def prepare_data(self, data, cols, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1):
 
-        
        #Calculate length
         data_len = len(data["dir"])
         train_len = int(data_len*self.train_size)
@@ -86,10 +80,16 @@ class LSTMModel(BaseClassifierModel):
             sampling_rate=sampling_rate
         )
 
+    def prepare_y_test(self,y_test,sequence_len,sequence_stride,sampling_rate):
+        y_list = []
+        window_len = (sequence_len-1)*sampling_rate + 1
+        for end in range(window_len-1,len(y_test),sequence_stride):
+            y_list.append(y_test[end])
+        return y_list
 
     def run(self,gpu):
        
-        path_checkpoint = "model_lstm_checkpoint.h5"
+        path_checkpoint = "../model_lstm_checkpoint.h5"
         es_callback = tf.keras.callbacks.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=3)
 
         modelckpt_callback = tf.keras.callbacks.ModelCheckpoint(
@@ -119,7 +119,13 @@ class LSTMModel(BaseClassifierModel):
         with tf.device(processor):    
             self.pred_prob = self.model.predict(x=self.dataset_test)
 
-        accuracy, coverage = self.filter_prediction_by_cutoff(neg_cutoff=self.neg_cutoff,pos_cutoff=self.pos_cutoff)
+        self.analyze_predict_by_cutoff()
+        visualizer.visualize_efficiency_by_cutoff(self.efficiency,0,0.5)
+
+        accuracy, coverage = self.filter_prediction_by_cutoff(
+            neg_cutoff=self.neg_cutoff,
+            pos_cutoff=self.pos_cutoff
+        )
 
         return accuracy, coverage
     

@@ -1,21 +1,14 @@
 
-from platform import processor
 import matplotlib.pyplot as plt
 import random
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
-from keras.regularizers import l1, l2
-from keras import callbacks as kc
-from keras.optimizers import Adam
 from visualizer import visualize_efficiency_by_cutoff
 
 class BaseClassifierModel():
 
     def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15, epochs=20) -> None:
-        kc.backend.clear_session()
         super().__init__()
         self.model = None
         self.set_seeds(seed)
@@ -54,7 +47,7 @@ class BaseClassifierModel():
         w1 = (1/c1) * (len(data))/2
         return {0:w0,1:w1}
 
-    def configure(self,hl,hu, input_dim, dropout = False, regularize = False, reg = l1(0.0005)):
+    def configure(self):
         pass
 
     def visualize_efficiency_by_cutoff(self, min_delta = 0, max_delta = 0.5):
@@ -76,9 +69,27 @@ class BaseClassifierModel():
         else:
             print("No learning history")
 
-    def prepare_data(self, data, cols, random_state = 1, shuffle = False):
+    def visualize_loss(self):
+        if self.saved_history is not None:
+            loss = self.saved_history["loss"]
+            val_loss = self.saved_history["val_loss"]
+            epochs = range(len(loss))
+            plt.figure(figsize=(8,6))
+            plt.plot(epochs, loss, "b", label="Training loss")
+            plt.plot(epochs, val_loss, "r", label="Validation loss")
+            plt.title("Training and Validation Loss")
+            plt.xlabel("Epochs")
+            plt.ylabel("Loss")
+            plt.legend()
+            plt.show()
+        else:
+            print("No learning history")
+
+    def prepare_data(self):
         pass
-      
+    
+    def run(self):
+        pass
 
     def filter_prediction_by_cutoff(self,neg_cutoff,pos_cutoff): 
         temp = np.where(self.pred_prob < neg_cutoff,0,self.pred_prob)
@@ -125,5 +136,4 @@ class BaseClassifierModel():
 
         self.efficiency = pd.DataFrame({"delta":del_list,"accuracy":acc_list,"coverage":cov_list})
 
-    def run(self,gpu):
-        pass
+  

@@ -1,16 +1,37 @@
-Backtesting the Tripple SMA => DONE. Its result is heavily influenced by market up and down.
-Optimize Tripple SMA => DONE. Heavily influenced by market up and down
-Implement MACD strategy => DONE.
-Backtesting MACD => DONE
-Optimize MACD => The max multiple is only 0.8. A bit disappointed. The culprit is the trading cost. The robot made a lot of trades.
-Add machine learning => Added SVM with parameters as history recent price, history recent price of correlated asset, trade volumn change. Highest accuracy is 54%. Can I make it 70%???
-Normalization data before feeding to SVM => DONE. Doesnt make much difference
-Optimize SVM Classifier with parameter combination => DONE. Take a lot of time. Will run again after Cloud Computing
-Add 1d historical data => Added for BTCUSDT and ETHUSDT
-Reduce trade number to achieve higher result => Tried with DNN and it improved slightly. Improve 4% accuracy, reduce trade number to 20%
-Build a deep learning price direction prediction => DONE. It achieved 57% accuracy, reduced trade number to 20%
-Expand the model to pick the trade with stoploss, takeprofit set, has maximum windows time.
+Backtesting the Tripple SMA
+    DONE. Its result is heavily influenced by market up and down.
+Optimize Tripple SMA
+    DONE. Heavily influenced by market up and down
+Implement MACD strategy
+    DONE
+Backtesting MACD 
+    DONE
+Optimize MACD
+    DONE
+    The max multiple is only 0.8. A bit disappointed. The culprit is the trading cost. The robot made a lot of trades.
+Add machine learning
+    Added SVM with parameters as history recent price, history recent price of correlated asset, trade volumn change. Highest accuracy is 54%. Can I make it 70%???
+Normalization data before feeding to SVM
+    DONE. Doesnt make much difference
+Optimize SVM Classifier with parameter combination
+    DONE. Take a lot of time. Will run again after Cloud Computing
+Add 1d historical data 
+    DONE. Added for BTCUSDT and ETHUSDT
+Reduce trade number to achieve higher result 
+    DONE. Tried with DNN and it improved slightly. Improve 4% accuracy, reduce trade number to 20%
+Build a deep learning price direction prediction 
+    DONE. It achieved 57% accuracy, reduced trade number to 20%
 Build a solid feature engineering with more indicators
+    DONE. Added a bunch of more features using TALib
+Add more timeframe history data 
+    DONE. Added 15m and 1m for BTCUSDT. It is 400M size for 1m. Quite big.
+Add LSTM model  
+    DONE. It does not give good result. May need more modification, future work.
+Added GPU usage
+    DONE. It works but TensorRT, a library that enables faster GPU processig only work with lower Python version for now.
+
+Expand the model to pick the trade with stoploss, takeprofit set, has maximum wndows time.
+
 Assigning and managing future position by traders 
 Performance report of each traders
 Publish it to AWS
