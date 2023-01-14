@@ -14,7 +14,7 @@ class DNNClassifer(BaseClassifierModel):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args,**kwargs)
 
-    def configure(self,hl,hu, input_dim, dropout = False, regularize = False, reg = l1(0.0005)):
+    def configure(self,hl,hu, input_dim, dropout = False, regularize = False, reg = l1(0.0005),loss="binary_crossentropy"):
         if not regularize:
             reg = None
         
@@ -35,12 +35,12 @@ class DNNClassifer(BaseClassifierModel):
         self.model.add(Dense(1,activation="sigmoid"))
         
         self.model.compile(
-            loss="binary_crossentropy",
+            loss=loss,
             optimizer=optimizer,
             metrics=["accuracy"]
         )
 
-    def prepare_data(self, data, cols, random_state = 1, shuffle = False):
+    def prepare_data(self, data, cols, target_col = "dir", random_state = 1, shuffle = False):
 
         # Shuffle data
         if shuffle:
@@ -49,7 +49,7 @@ class DNNClassifer(BaseClassifierModel):
             shuffled = data
         
         #Calculate length
-        data_len = len(data["dir"])
+        data_len = len(data[target_col])
         train_len = int(data_len*self.train_size)
         val_len = int(data_len*self.val_size)
         test_len = data_len - train_len - val_len
@@ -58,7 +58,7 @@ class DNNClassifer(BaseClassifierModel):
 
         #Split data to train + validation + test
         input = shuffled[cols]
-        target = shuffled["dir"]
+        target = shuffled[target_col]
 
         self.x_train = input.head(train_len).values.tolist()
         self.y_train = target.head(train_len).tolist()
@@ -69,10 +69,10 @@ class DNNClassifer(BaseClassifierModel):
         self.x_test = input.tail(test_len).values.tolist()
         self.y_test = target.tail(test_len).tolist()
 
-    def run(self,gpu):
+    def run(self,gpu = False,patient=5):
        
         path_checkpoint = "../data/model_dnn_checkpoint.h5"
-        es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=3)
+        es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=patient)
 
         modelckpt_callback = kc.ModelCheckpoint(
             monitor="val_loss",
@@ -94,16 +94,15 @@ class DNNClassifer(BaseClassifierModel):
                 verbose=2,
                 validation_data=(self.x_val,self.y_val), 
                 shuffle=True, 
-                callbacks=[es_callback],
+                callbacks=[es_callback,modelckpt_callback],
                 class_weight=self.cw(self.y_train))
 
         self.saved_history = dict(self.history.history)
     
-        with tf.device(processor):
-            self.pred_prob = self.model.predict(x=self.x_test)
-        
-        accuracy, coverage = self.filter_prediction_by_cutoff(
-            neg_cutoff=self.neg_cutoff,
-            pos_cutoff=self.pos_cutoff)
+        # with tf.device(processor):
+        #     self.pred_prob = self.model.predict(x=self.x_test)
+        # accuracy, coverage = self.filter_prediction_by_cutoff(
+        #     neg_cutoff=self.neg_cutoff,
+        #     pos_cutoff=self.pos_cutoff)
 
-        return accuracy, coverage
+        # return accuracy, coverage

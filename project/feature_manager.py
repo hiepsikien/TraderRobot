@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import talib as ta
 from sklearn.preprocessing import StandardScaler
 plt.style.use("seaborn")
+from random import randint
 
 class FeatureManager():
 
@@ -149,6 +150,213 @@ class FeatureManager():
             sd[col] = scaler.transform(sd[col].to_frame())
 
         self.df = sd.copy()
+
+    def prepare_trade_forward_data(self, data, take_profit_rate = 0.05, stop_loss_rate = 0.025, max_duration = 7):
+    
+        # fwd_cols = []
+
+        data["long_take_profit"] = data["Close"]*(1+take_profit_rate)
+        data["long_stop_loss"] = data["Close"]*(1-stop_loss_rate)
+
+        data["short_take_profit"] = data["Close"]*(1-take_profit_rate)
+        data["short_stop_loss"] = data["Close"]*(1+stop_loss_rate)
+
+
+        data["cum_return_forward_0"] = data["returns"]
+        data["long_decision_forward_0"] = 0
+        data["short_decision_forward_0"] = 0
+
+        str_trade_signal = "trade_signal"
+        str_trade_return = "trade_return"
+
+        data[str_trade_return] = 0
+        data[str_trade_signal] = 0
+        
+        for i in range(1,max_duration+1):
+            
+            data["High_forward_{}".format(i)] = data["High"].shift(-i)
+            data["Low_forward_{}".format(i)] = data["Low"].shift(-i)
+            data["cum_return_forward_{}".format(i)] = data["cum_return_forward_{}".format(i-1)]+data["returns"].shift(-i)
+
+            long_str = "long_decision_forward_{}".format(i)
+            short_str = "short_decision_forward_{}".format(i)
+
+            # fwd_cols.append(long_str)
+            # fwd_cols.append(short_str)
+
+            data["long_random"] = [randint(0,100) for i in range(0,len(data))]
+            data["short_random"] = 100 - data["long_random"]
+            
+            #Temporarily set all open as closed
+            data[long_str] = 2
+            data[short_str] = 2
+
+            ol_odd_win_cond = data["long_random"]>=50
+            ol_odd_lose_cond = ~ol_odd_win_cond
+            os_odd_win_cond = ol_odd_lose_cond
+            os_odd_lose_cond = ol_odd_win_cond
+
+            # Compute future outcome if long position
+            # 
+
+            ol_cond = data["long_decision_forward_{}".format(i-1)]==0
+            ol_tp_cond = data["High_forward_{}".format(i)] >= data["long_take_profit"]
+            ol_ntp_cond = data["High_forward_{}".format(i)] < data["long_take_profit"]
+            ol_sl_cond = data["Low_forward_{}".format(i)] <= data["long_stop_loss"]
+            ol_nsl_cond = data["Low_forward_{}".format(i)] > data["long_stop_loss"]
+
+            # If only stop-loss reached
+            data.loc[
+                ol_cond &
+                ol_sl_cond &
+                ol_ntp_cond,
+                long_str
+            ] = -1
+
+            # If only take-profit reached
+            data.loc[
+                ol_cond &
+                ol_tp_cond &
+                ol_nsl_cond,
+                long_str
+            ] = 1
+
+            data.loc[
+                ol_cond &
+                ol_tp_cond &
+                ol_nsl_cond,
+                str_trade_signal
+            ] = 1
+
+            data.loc[
+                ol_cond &
+                ol_tp_cond &
+                ol_nsl_cond,
+                str_trade_return
+            ] = np.log(1 + take_profit_rate)
+            
+            # If both take-profit and stop-loss reached, odd say it was stoploss
+            data.loc[
+                ol_cond &
+                ol_sl_cond &
+                ol_tp_cond &
+                ol_odd_lose_cond,
+                long_str
+            ] = -1
+            
+            # If both take-profit and stop-loss reached, odd say it was take-profit
+            data.loc[
+                ol_cond &
+                ol_sl_cond &
+                ol_tp_cond &
+                ol_odd_win_cond,
+                long_str
+            ] = 1
+
+            data.loc[
+                ol_cond &
+                ol_sl_cond &
+                ol_tp_cond &
+                ol_odd_win_cond,
+                str_trade_signal
+            ] = 1
+
+            data.loc[
+                ol_cond &
+                ol_sl_cond &
+                ol_tp_cond &
+                ol_odd_win_cond,
+                str_trade_return
+            ] = np.log(1+take_profit_rate)
+
+            # If both take-profit and stop-loss not reached, leave it as open
+            data.loc[
+                ol_cond &
+                ol_ntp_cond &
+                ol_nsl_cond,
+                long_str
+            ] = 0
+                
+            # Compute future outcome for open short position
+            
+            os_cond = data["short_decision_forward_{}".format(i-1)]==0
+            os_tp_cond = data["Low_forward_{}".format(i)] <= data["short_take_profit"]
+            os_ntp_cond = data["Low_forward_{}".format(i)] > data["short_take_profit"]
+            os_sl_cond = data["High_forward_{}".format(i)] >= data["short_stop_loss"]
+            os_nsl_cond = data["High_forward_{}".format(i)] < data["short_stop_loss"]
+            
+            # If only stop-loss reached
+            data.loc[
+                os_cond &
+                os_sl_cond &
+                os_ntp_cond,
+                short_str
+            ] = -1
+
+            # If only take-profit reached
+            data.loc[
+                os_cond &
+                os_tp_cond &
+                os_nsl_cond,
+                short_str
+            ] = 1
+
+            data.loc[
+                os_cond &
+                os_tp_cond &
+                os_nsl_cond,
+                str_trade_signal
+            ] = 2
+            
+            data.loc[
+                os_cond &
+                os_tp_cond &
+                os_nsl_cond,
+                str_trade_return
+            ] = np.log(1 + take_profit_rate)
+            
+            # If both take-profit and stop-loss reached, odd say it was stoploss
+            data.loc[
+                os_cond &
+                os_odd_lose_cond &
+                os_tp_cond &
+                os_sl_cond,
+                short_str
+            ] = -1
+            
+            # If both take-profit and stop-loss reached, odd say it was take-profit
+
+            data.loc[
+                os_cond &
+                os_odd_win_cond &
+                os_tp_cond &
+                os_sl_cond,
+                short_str
+            ] = 1
+
+            data.loc[
+                os_cond &
+                os_odd_win_cond &
+                os_tp_cond &
+                os_sl_cond,
+                str_trade_signal
+            ] = 2
+
+            data.loc[
+                os_cond &
+                os_odd_win_cond &
+                os_tp_cond &
+                os_sl_cond,
+                str_trade_return
+            ] = np.log(1 + take_profit_rate)
+
+            # If both take-profit and stop-loss not reached, leave it as open
+            data.loc[
+                os_cond &
+                os_ntp_cond &
+                os_nsl_cond,
+                short_str
+            ] = 0
 
     def show_heatmap(self):
 

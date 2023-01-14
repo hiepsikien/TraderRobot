@@ -1,4 +1,5 @@
 
+from optparse import Values
 import matplotlib.pyplot as plt
 import random
 import numpy as np
@@ -42,10 +43,9 @@ class BaseClassifierModel():
         tf.random.set_seed(seed)
 
     def cw(self,data):
-        c0, c1 = np.bincount(data)
-        w0 = (1/c0) * (len(data))/2
-        w1 = (1/c1) * (len(data))/2
-        return {0:w0,1:w1}
+        counts = pd.DataFrame(data=data).value_counts()
+        weights = 1/counts * counts.sum()/2
+        return {i[0]:weights[i[0]] for i in counts.index}
 
     def configure(self):
         pass
