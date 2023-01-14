@@ -1,11 +1,11 @@
 import numpy as np
 import tensorflow as tf
-from base_classifier import BaseClassifierModel
+from base_classifier import BaseClassifier
 from keras.layers import Input, Dense, LSTM
 from keras import Model, optimizers, callbacks
 import visualizer
 
-class LSTMClassifier(BaseClassifierModel):
+class LSTMClassifier(BaseClassifier):
     
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args,**kwargs)

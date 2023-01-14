@@ -6,25 +6,22 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from visualizer import visualize_efficiency_by_cutoff
+from keras import utils
 
-class BaseClassifierModel():
+class BaseClassifier():
 
-    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15, epochs=20) -> None:
+    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15) -> None:
         super().__init__()
         self.model = None
         self.set_seeds(seed)
         self.set_cutoff(neg_cutoff = neg_cutoff, pos_cutoff =pos_cutoff)
         self.set_train_size(train_size)
         self.set_val_size(val_size)
-        self.set_epochs(epochs)
         self.set_dropout_rate(dropout_rate)
         self.saved_history = None
     
     def set_dropout_rate(self,dropout_rate):
         self.dropout_rate = dropout_rate
-
-    def set_epochs(self,epochs):
-        self.epochs = epochs
 
     def set_val_size(self, val_size):
         self.val_size = val_size
@@ -43,9 +40,15 @@ class BaseClassifierModel():
         tf.random.set_seed(seed)
 
     def cw(self,data):
-        counts = pd.DataFrame(data=data).value_counts()
+        c0,c1 = np.bincount(data)
+        w0 = 1/c0 * (c0+c1)/2
+        w1 = 1/c1 * (c0+c1)/2
+        return {0:w0,1:w1}
+
+    def m_cw(self,data):
+        counts = pd.DataFrame(data).value_counts()
         weights = 1/counts * counts.sum()/2
-        return {i[0]:weights[i[0]] for i in counts.index}
+        return {np.argmax(i,axis=-1):weights[i] for i in counts.index}
 
     def configure(self):
         pass
