@@ -151,212 +151,177 @@ class FeatureManager():
 
         self.df = sd.copy()
 
-    def prepare_trade_forward_data(self, data, take_profit_rate = 0.05, stop_loss_rate = 0.025, max_duration = 7):
-    
-        # fwd_cols = []
+    def first_time_go_above_price(self,start_time,end_time,target_price,granular_data):
+        ''' 
+        Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
+        Return time in unix utc milisecond.
+        '''
+        lookup_data = granular_data.iloc[
+            (granular_data.index>=start_time) & 
+            (granular_data.index<end_time)].copy()
+
+        first_index = lookup_data.loc[lookup_data["High"]>=target_price].index.min()
+        return first_index
+
+    def first_time_go_below_price(self,start_time,end_time,target_price,granular_data):
+        ''' 
+        Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
+        Return time in unix utc milisecond.
+        '''
+        lookup_data = granular_data.iloc[
+            (granular_data.index>=start_time) & 
+            (granular_data.index<end_time)].copy()
+
+        first_index = lookup_data.loc[lookup_data["Low"]<target_price].index.min()
+        return first_index
+
+    def calculate_tp_or_sl(self,row,i,is_long,granular_data,timeframe_in_ms):    
+        '''Calculate if a take profit, stop loss event happen
+        '''
+        
+        if is_long:
+            open_cond = row["long_decision_forward_{}".format(i-1)]==0
+            tp_cond = row["High_forward_{}".format(i)] >= row["long_take_profit"]
+            sl_cond = row["Low_forward_{}".format(i)] <= row["long_stop_loss"]
+            
+        else:
+            open_cond = row["short_decision_forward_{}".format(i-1)]==0
+            tp_cond = row["Low_forward_{}".format(i)] <= row["short_take_profit"]
+            sl_cond = row["High_forward_{}".format(i)] >= row["short_stop_loss"]
+          
+        if open_cond:
+            if tp_cond:                                         #  If take-profit hitted
+                if sl_cond:
+                    if is_long:
+                        first_tp_index = self.first_time_go_above_price(
+                            start_time=int(row.name) + i * timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            target_price = row["long_take_profit"],
+                            granular_data=granular_data
+                        )
+                        first_sl_index = self.first_time_go_below_price(
+                            start_time=int(row.name) + i * timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            target_price = row["long_stop_loss"],
+                            granular_data=granular_data
+                        )
+                    else:
+                        first_tp_index = self.first_time_go_below_price(
+                            start_time=int(row.name) + i * timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            target_price = row["short_take_profit"],
+                            granular_data=granular_data
+                        )
+                        first_sl_index = self.first_time_go_above_price(
+                            start_time=int(row.name) + i * timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            target_price = row["short_stop_loss"],
+                            granular_data=granular_data
+                        )                                     #  stop-loss also hitted    
+                    if first_tp_index < first_sl_index:         #  Granular says it is take-profit
+                        return [True, False]
+                    elif first_tp_index > first_sl_index:       #   Granular says it is take-profit
+                        return [False, True]
+                    else:                                       #   Granular can not tell, use random
+                        ran_bool = (randint(0,99) < 50)
+                        return [ran_bool, ~ran_bool]
+                else:   # stop-loss not hitted
+                    return [True, False]
+            else:
+                if sl_cond: #if only stop-loss hitted
+                    return [False, True]
+                else:           #if both not hitted
+                    return [False, False]
+        else:
+            return [False, False]
+
+    def prepare_trade_forward_data(self, data, granular_data,timeframe_in_ms, take_profit_rate = 0.05, stop_loss_rate = 0.025, max_duration = 7):
+        '''   
+        # Compute future will happen outcome and and trade signal
+        # Will update long_decision_forward to 1: take profit, -1: stop loss, 0: keep open, 2: closed 
+        # Will update trade_signal to 1: long, 2: short, 0: no trade
+        '''
 
         data["long_take_profit"] = data["Close"]*(1+take_profit_rate)
         data["long_stop_loss"] = data["Close"]*(1-stop_loss_rate)
-
         data["short_take_profit"] = data["Close"]*(1-take_profit_rate)
         data["short_stop_loss"] = data["Close"]*(1+stop_loss_rate)
-
-
-        data["cum_return_forward_0"] = data["returns"]
         data["long_decision_forward_0"] = 0
         data["short_decision_forward_0"] = 0
-
-        str_trade_signal = "trade_signal"
-        str_trade_return = "trade_return"
-
-        data[str_trade_return] = 0
-        data[str_trade_signal] = 0
+        trade_signal_str = "trade_signal"
+        trade_return_str = "trade_return"
+        data[trade_signal_str] = 0
+        data[trade_return_str] = 0
         
         for i in range(1,max_duration+1):
             
+            print("Processing {}/{}".format(i,max_duration))
+
             data["High_forward_{}".format(i)] = data["High"].shift(-i)
             data["Low_forward_{}".format(i)] = data["Low"].shift(-i)
-            data["cum_return_forward_{}".format(i)] = data["cum_return_forward_{}".format(i-1)]+data["returns"].shift(-i)
-
+    
             long_str = "long_decision_forward_{}".format(i)
             short_str = "short_decision_forward_{}".format(i)
 
-            # fwd_cols.append(long_str)
-            # fwd_cols.append(short_str)
-
-            data["long_random"] = [randint(0,100) for i in range(0,len(data))]
-            data["short_random"] = 100 - data["long_random"]
-            
             #Temporarily set all open as closed
             data[long_str] = 2
             data[short_str] = 2
 
-            ol_odd_win_cond = data["long_random"]>=50
-            ol_odd_lose_cond = ~ol_odd_win_cond
-            os_odd_win_cond = ol_odd_lose_cond
-            os_odd_lose_cond = ol_odd_win_cond
+            open_long_cond = data["long_decision_forward_{}".format(i-1)]==0
+            open_short_condition = data["short_decision_forward_{}".format(i-1)]==0
 
-            # Compute future outcome if long position
-            # 
+            # Compute decision to be take profit or stop loss
+            data[["ol_tp","ol_sl"]]=data.apply(lambda row: self.calculate_tp_or_sl(
+                row=row,
+                i=i,
+                is_long=True,
+                granular_data=granular_data,
+                timeframe_in_ms=timeframe_in_ms
+                ),
+                result_type = "expand",
+                axis=1
+            )
 
-            ol_cond = data["long_decision_forward_{}".format(i-1)]==0
-            ol_tp_cond = data["High_forward_{}".format(i)] >= data["long_take_profit"]
-            ol_ntp_cond = data["High_forward_{}".format(i)] < data["long_take_profit"]
-            ol_sl_cond = data["Low_forward_{}".format(i)] <= data["long_stop_loss"]
-            ol_nsl_cond = data["Low_forward_{}".format(i)] > data["long_stop_loss"]
-
-            # If only stop-loss reached
-            data.loc[
-                ol_cond &
-                ol_sl_cond &
-                ol_ntp_cond,
-                long_str
-            ] = -1
-
-            # If only take-profit reached
-            data.loc[
-                ol_cond &
-                ol_tp_cond &
-                ol_nsl_cond,
-                long_str
-            ] = 1
-
-            data.loc[
-                ol_cond &
-                ol_tp_cond &
-                ol_nsl_cond,
-                str_trade_signal
-            ] = 1
-
-            data.loc[
-                ol_cond &
-                ol_tp_cond &
-                ol_nsl_cond,
-                str_trade_return
-            ] = np.log(1 + take_profit_rate)
+            ol_tp_cond = data["ol_tp"]
+            ol_sl_cond = data["ol_sl"]
             
-            # If both take-profit and stop-loss reached, odd say it was stoploss
-            data.loc[
-                ol_cond &
-                ol_sl_cond &
-                ol_tp_cond &
-                ol_odd_lose_cond,
-                long_str
-            ] = -1
+
+            # Open long positions not hit either take-profit or stop-loss, leave it open
+            data.loc[open_long_cond & ~ol_tp_cond & ~ol_sl_cond, long_str] = 0
             
-            # If both take-profit and stop-loss reached, odd say it was take-profit
-            data.loc[
-                ol_cond &
-                ol_sl_cond &
-                ol_tp_cond &
-                ol_odd_win_cond,
-                long_str
-            ] = 1
+            # Open long positions hit stop-loss
+            data.loc[open_long_cond & ol_sl_cond & ~ol_tp_cond,long_str] = -1
 
-            data.loc[
-                ol_cond &
-                ol_sl_cond &
-                ol_tp_cond &
-                ol_odd_win_cond,
-                str_trade_signal
-            ] = 1
-
-            data.loc[
-                ol_cond &
-                ol_sl_cond &
-                ol_tp_cond &
-                ol_odd_win_cond,
-                str_trade_return
-            ] = np.log(1+take_profit_rate)
-
-            # If both take-profit and stop-loss not reached, leave it as open
-            data.loc[
-                ol_cond &
-                ol_ntp_cond &
-                ol_nsl_cond,
-                long_str
-            ] = 0
+            # Open long positions hit take-profit
+            data.loc[open_long_cond & ol_tp_cond & ~ol_sl_cond,long_str] = 1
+            data.loc[open_long_cond & ol_tp_cond & ~ol_sl_cond,trade_signal_str] = 1
+            data.loc[open_long_cond & ol_tp_cond & ~ol_sl_cond,trade_return_str] = np.log(1 + take_profit_rate)      
                 
-            # Compute future outcome for open short position
+            # Compute future outcome for open short positions
+            data[["os_tp","os_sl"]] = data.apply(lambda row: self.calculate_tp_or_sl(
+                row=row,
+                i=i,
+                is_long=False,
+                granular_data=granular_data,
+                timeframe_in_ms=timeframe_in_ms
+                ),
+                result_type = "expand",
+                axis=1
+            )
+            os_tp_cond = data["os_tp"]
+            os_sl_cond = data["os_sl"]
             
-            os_cond = data["short_decision_forward_{}".format(i-1)]==0
-            os_tp_cond = data["Low_forward_{}".format(i)] <= data["short_take_profit"]
-            os_ntp_cond = data["Low_forward_{}".format(i)] > data["short_take_profit"]
-            os_sl_cond = data["High_forward_{}".format(i)] >= data["short_stop_loss"]
-            os_nsl_cond = data["High_forward_{}".format(i)] < data["short_stop_loss"]
-            
-            # If only stop-loss reached
-            data.loc[
-                os_cond &
-                os_sl_cond &
-                os_ntp_cond,
-                short_str
-            ] = -1
+            # Open short positions not hit either take-profit or stop-loss, leave it open
+            data.loc[open_short_condition & ~os_tp_cond & ~os_sl_cond, short_str] = 0
 
-            # If only take-profit reached
-            data.loc[
-                os_cond &
-                os_tp_cond &
-                os_nsl_cond,
-                short_str
-            ] = 1
+            # Open short positions hit stop-loss
+            data.loc[open_short_condition & os_sl_cond & ~os_tp_cond,short_str] = -1
 
-            data.loc[
-                os_cond &
-                os_tp_cond &
-                os_nsl_cond,
-                str_trade_signal
-            ] = 2
-            
-            data.loc[
-                os_cond &
-                os_tp_cond &
-                os_nsl_cond,
-                str_trade_return
-            ] = np.log(1 + take_profit_rate)
-            
-            # If both take-profit and stop-loss reached, odd say it was stoploss
-            data.loc[
-                os_cond &
-                os_odd_lose_cond &
-                os_tp_cond &
-                os_sl_cond,
-                short_str
-            ] = -1
-            
-            # If both take-profit and stop-loss reached, odd say it was take-profit
+            # Open short positions hit take-profit
+            data.loc[open_short_condition & os_tp_cond & ~os_sl_cond, short_str] = 1
+            data.loc[open_short_condition & os_tp_cond & ~os_sl_cond,trade_signal_str] = 2
+            data.loc[open_short_condition & os_tp_cond & ~os_sl_cond,trade_return_str] = np.log(1 + take_profit_rate)
 
-            data.loc[
-                os_cond &
-                os_odd_win_cond &
-                os_tp_cond &
-                os_sl_cond,
-                short_str
-            ] = 1
-
-            data.loc[
-                os_cond &
-                os_odd_win_cond &
-                os_tp_cond &
-                os_sl_cond,
-                str_trade_signal
-            ] = 2
-
-            data.loc[
-                os_cond &
-                os_odd_win_cond &
-                os_tp_cond &
-                os_sl_cond,
-                str_trade_return
-            ] = np.log(1 + take_profit_rate)
-
-            # If both take-profit and stop-loss not reached, leave it as open
-            data.loc[
-                os_cond &
-                os_ntp_cond &
-                os_nsl_cond,
-                short_str
-            ] = 0
 
     def show_heatmap(self):
 
