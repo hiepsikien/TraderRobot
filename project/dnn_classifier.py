@@ -47,6 +47,7 @@ class DNNClassifer(BaseClassifier):
             shuffled = data.sample(frac=1,random_state=random_state)
         else:
             shuffled = data
+
         
         #Calculate length
         data_len = len(data[target_col])
@@ -101,7 +102,8 @@ class DNNClassifer(BaseClassifier):
     
         with tf.device(processor):
             self.pred_prob = self.model.predict(x=self.x_test)
-            
+
+
         # accuracy, coverage = self.filter_prediction_by_cutoff(
         #     neg_cutoff=self.neg_cutoff,
         #     pos_cutoff=self.pos_cutoff)

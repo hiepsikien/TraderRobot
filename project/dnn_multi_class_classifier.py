@@ -11,7 +11,8 @@ from keras import callbacks as kc
 from keras.optimizers import Adam
 from base_classifier import BaseClassifier
 from keras.utils import np_utils
-from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import classification_report
+from random import randint
 
 class MultiClassDNNClassifer(BaseClassifier):
 
@@ -29,7 +30,7 @@ class MultiClassDNNClassifer(BaseClassifier):
         if dropout:
             self.model.add(Dropout(rate = self.dropout_rate,seed =self.seeds ))
 
-        self.model.add(Dense(int(hu/4), activation="relu"))
+        self.model.add(Dense(int(hu/4),activity_regularizer=reg,activation="relu"))
         
         if dropout:
             self.model.add(Dropout(rate = self.dropout_rate,seed =self.seeds ))
@@ -41,18 +42,28 @@ class MultiClassDNNClassifer(BaseClassifier):
             optimizer=Adam(learning_rate = 0.0001),
             metrics=["accuracy"]
         )
-        self.model.summary()
+        # self.model.summary()
 
-    def prepare_data(self, data, cols, target_col = "dir", random_state = 1, shuffle = False):
+    def prepare_data(self, data, cols, target_col, random_state = 1, shuffle = True,rebalance = True):
+
+        # Resampling to make the imbalance training data
+        self.data_for_classifier = data.copy()
+        
+        if rebalance:
+            val_counts = self.data_for_classifier[target_col].value_counts().sort_index()
+            weights = val_counts.max()/val_counts
+            data_lst = []
+            for i in val_counts.index:
+                data_by_val = self.data_for_classifier[self.data_for_classifier["trade_signal"]==i].sample(replace=True,frac=weights[i],random_state=randint(0,100))
+                data_lst.append(data_by_val)
+            self.data_for_classifier = pd.concat(data_lst)
 
         # Shuffle data
         if shuffle:
-            shuffled = data.sample(frac=1,random_state=random_state)
-        else:
-            shuffled = data
+            self.data_for_classifier = self.data_for_classifier.sample(frac=1,random_state=random_state)
         
         #Calculate length
-        data_len = len(data[target_col])
+        data_len = len(self.data_for_classifier)
         train_len = int(data_len*self.train_size)
         val_len = int(data_len*self.val_size)
         test_len = data_len - train_len - val_len
@@ -60,8 +71,8 @@ class MultiClassDNNClassifer(BaseClassifier):
         print("Train = {}, Val = {}, Test = {}, All = {}".format(train_len,val_len,test_len,data_len))
 
         #Split data to train + validation + test
-        input = shuffled[cols]
-        target = np_utils.to_categorical(shuffled[target_col])
+        input = self.data_for_classifier[cols]
+        target = np_utils.to_categorical(self.data_for_classifier[target_col])
 
         self.x_train = input.head(train_len).values
         self.y_train = target[0:train_len]
@@ -111,9 +122,13 @@ class MultiClassDNNClassifer(BaseClassifier):
             self.pred_prob = self.model.predict(x=self.x_test)
             self.pred_class = np.argmax(self.pred_prob,axis=-1)
 
-
         # accuracy, coverage = self.filter_prediction_by_cutoff(
         #     neg_cutoff=self.neg_cutoff,
         #     pos_cutoff=self.pos_cutoff)
 
         # return accuracy, coverage
+
+    def print_classification_report(self):
+        y_pred_int = np.argmax(self.pred_prob, axis=1)
+        y_test_int = np.argmax(self.y_test,axis = 1)
+        print(classification_report(y_test_int, y_pred_int))
