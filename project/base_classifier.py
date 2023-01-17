@@ -1,12 +1,11 @@
-
-from optparse import Values
 import matplotlib.pyplot as plt
 import random
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from visualizer import visualize_efficiency_by_cutoff
-from keras import utils
+import tr_utils as tu
+from keras.utils import np_utils
 
 class BaseClassifier():
 
@@ -47,7 +46,7 @@ class BaseClassifier():
 
     def m_cw(self,data):
         counts = pd.DataFrame(data).value_counts()
-        weights = 1/counts * counts.sum()/2
+        weights = 1/counts * counts.sum()/(len(counts))
         return {np.argmax(i,axis=-1):weights[i] for i in counts.index}
 
     def configure(self):
@@ -88,9 +87,152 @@ class BaseClassifier():
         else:
             print("No learning history")
 
-    def prepare_data(self):
-        pass
+    def prepare_dataset(self, data, cols, target_col, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1):
+        '''
+        Prepare the dataset that required to feed by model such as LSTM
+
+        Params:
+        - data: input data as dataframe
+        - cols: list of feature column name
+        - target_col: target col name
+        - sequence_len: the length of data windows
+        - squence_stride: the step between one to the next window
+        - batch_size: size of a batch
+        - sampling_rate: the rate to pick up data
+
+        Return: nothing. Store process data as attributes.
+        '''
+
+       #Calculate length
+        data_len = len(data[target_col])
+        train_len = int(data_len*self.train_size)
+        val_len = int(data_len*self.val_size)
+        test_len = data_len - train_len - val_len
+
+        print("Train = {}, Val = {}, Test = {}, All = {}".format(train_len,val_len,test_len,data_len))
+
+        #Split data to train + validation + test
+        x_train = np.asarray(data[cols].head(train_len).values).astype(np.float32)
+        y_train = data[target_col].head(train_len).values
+
+
+        x_val = np.asarray(data[cols].iloc[train_len:train_len+val_len].values).astype(np.float32)
+        y_val = data[target_col].iloc[train_len:train_len+val_len].values
+
+        x_test = np.asarray(data[cols].tail(test_len).values).astype(np.float32)
+        y_test = data[target_col].tail(test_len).values
+
+        #Create the dataset for LSTM
+        self.dataset_train = tf.keras.preprocessing.timeseries_dataset_from_array(
+            x_train,
+            y_train,
+            sequence_length = sequence_len,
+            sequence_stride= sequence_stride,
+            batch_size = batch_size,
+            sampling_rate = sampling_rate
+        )
+
+        self.dataset_val = tf.keras.preprocessing.timeseries_dataset_from_array(
+            x_val,
+            y_val,
+            sequence_length = sequence_len,
+            sequence_stride= sequence_stride,
+            batch_size = batch_size,
+            sampling_rate = sampling_rate
+        )
+
+        self.dataset_test = tf.keras.preprocessing.timeseries_dataset_from_array(
+            x_test,
+            y_test,
+            sequence_length = sequence_len,
+            sequence_stride= sequence_stride,
+            batch_size = batch_size,
+            sampling_rate = sampling_rate
+        )
+
+        self.y_test = self.prepare_y_test(
+            y_test=y_test,
+            sequence_len=sequence_len,
+            sequence_stride=sequence_stride,
+            sampling_rate=sampling_rate
+        )
+
+    def prepare_y_test(self,y_test,sequence_len,sequence_stride,sampling_rate):
+        ''' Calculate y_test
+        '''
+        y_list = []
+        window_len = (sequence_len-1)*sampling_rate + 1
+        for end in range(window_len-1,len(y_test),sequence_stride):
+            y_list.append(y_test[end])
+        return y_list
     
+    def prepare_data(self, data, cols, target_col, random_state = 1, shuffle = True, y_to_categorical = False, rebalance = None, cat_length = None):
+        ''' 
+        Make the data balance for all categories, shuffle and split for train, validation and test
+
+        Params:
+        - data: input data as dataframe
+        - cols: list of features name
+        - target_col: target column name
+        - random_state: a random state used for shuffle data
+        - rebalance: "over": oversampling, "under": under sampling, "fix": fix the number of each cat to cat_length
+        - cat_length: the number of each category if rebalance parameter is "fix"
+        - y_to_categorical: if True, convert y_ data values to hot-bed, ex. 0: [1,0,0], 1:[0,1,0], 2:[0,0,1]
+        
+        Return: nothing. The training, validation, test data is stored as objects attributes.
+        '''
+        # Shuffle data
+        if shuffle:
+            shuffled = data.sample(frac=1,random_state=random_state)
+        else:
+            shuffled = data
+
+        #Calculate length
+        data_len = len(shuffled)
+        train_len = int(data_len*self.train_size)
+        val_len = int(data_len*self.val_size)
+        test_len = data_len - train_len - val_len
+
+        #Split data to train + validation + test
+        self.data_train = shuffled.head(train_len).copy()
+        self.data_val = shuffled.iloc[train_len:train_len+val_len].copy()
+        self.data_test = shuffled.tail(test_len).copy()
+
+        #Rebalance data for train and validation
+        match rebalance:
+            case "over":
+                self.data_train = tu.over_rebalance(data=self.data_train,target_col=target_col)
+                self.data_val = tu.over_rebalance(data=self.data_val,target_col=target_col)
+        
+            case "under":
+                self.data_train = tu.under_rebalance(data=self.data_train,target_col=target_col)
+                self.data_val = tu.under_rebalance(data=self.data_val,target_col=target_col)
+       
+            case "fix":
+                self.data_train = tu.fix_rebalance(cat_length=cat_length,data=self.data_train,target_col=target_col)
+                self.data_val = tu.fix_rebalance(cat_length=cat_length,data=self.data_val,target_col=target_col)
+            
+            case None:  
+                pass
+
+            case other:
+                print("Failed to rebalance data due to wrong arguments")
+            
+
+        self.x_train = self.data_train[cols].values
+        self.x_val = self.data_val[cols].values
+        self.x_test = self.data_test[cols].values
+        
+
+        if y_to_categorical:
+            self.y_train = np_utils.to_categorical(self.data_train[target_col].values,dtype="int64")
+            self.y_val = np_utils.to_categorical(self.data_val[target_col].values,dtype="int64")
+            self.y_test = np_utils.to_categorical(self.data_test[target_col].values,dtype="int64")
+        else:
+            self.y_train = self.data_train[target_col].values
+            self.y_val = self.data_val[target_col].values
+            self.y_test = self.data_test[target_col].values
+
     def run(self):
         pass
 

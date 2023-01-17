@@ -40,37 +40,9 @@ class DNNClassifer(BaseClassifier):
             metrics=["accuracy"]
         )
 
-    def prepare_data(self, data, cols, target_col = "dir", random_state = 1, shuffle = False):
 
-        # Shuffle data
-        if shuffle:
-            shuffled = data.sample(frac=1,random_state=random_state)
-        else:
-            shuffled = data
 
-        
-        #Calculate length
-        data_len = len(data[target_col])
-        train_len = int(data_len*self.train_size)
-        val_len = int(data_len*self.val_size)
-        test_len = data_len - train_len - val_len
-
-        print("Train = {}, Val = {}, Test = {}, All = {}".format(train_len,val_len,test_len,data_len))
-
-        #Split data to train + validation + test
-        input = shuffled[cols]
-        target = shuffled[target_col]
-
-        self.x_train = input.head(train_len).values.tolist()
-        self.y_train = target.head(train_len).tolist()
-
-        self.x_val = input.iloc[train_len:train_len+val_len].values.tolist()
-        self.y_val = target.iloc[train_len:train_len+val_len].tolist()
-
-        self.x_test = input.tail(test_len).values.tolist()
-        self.y_test = target.tail(test_len).tolist()
-
-    def run(self,gpu = False,patient=5):
+    def run(self,gpu = True,patient=5, epochs = 100):
        
         path_checkpoint = "../data/model_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=patient)
@@ -91,7 +63,7 @@ class DNNClassifer(BaseClassifier):
             self.history = self.model.fit(
                 x=self.x_train,
                 y=self.y_train,
-                epochs=self.epochs,
+                epochs=epochs,
                 verbose=2,
                 validation_data=(self.x_val,self.y_val), 
                 shuffle=True, 
@@ -104,8 +76,8 @@ class DNNClassifer(BaseClassifier):
             self.pred_prob = self.model.predict(x=self.x_test)
 
 
-        # accuracy, coverage = self.filter_prediction_by_cutoff(
-        #     neg_cutoff=self.neg_cutoff,
-        #     pos_cutoff=self.pos_cutoff)
+        accuracy, coverage = self.filter_prediction_by_cutoff(
+            neg_cutoff=self.neg_cutoff,
+            pos_cutoff=self.pos_cutoff)
 
-        # return accuracy, coverage
+        return accuracy, coverage

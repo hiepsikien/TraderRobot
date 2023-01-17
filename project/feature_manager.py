@@ -5,6 +5,7 @@ import talib as ta
 from sklearn.preprocessing import StandardScaler
 plt.style.use("seaborn")
 from random import randint
+import tr_utils as tu
 
 class FeatureManager():
 
@@ -14,7 +15,14 @@ class FeatureManager():
         self.df = None
 
     def build_feature(self,data,lags):
-
+        '''
+        Build the normalized features to feed to classifier
+    
+        Params:
+            - data: the dataframe consist original data
+            - lags: the lagging timeframe to be included
+        Output: None. The self.df stored the processed output. self.df stores the feature columns.        
+        '''
         sd = data.copy()
 
         open = sd["Open"]
@@ -22,62 +30,6 @@ class FeatureManager():
         high = sd["High"]
         low = sd["Low"]
         volume = sd["Volumn"]
-
-        sd["returns"] = np.log(close/close.shift())
-        sd["dir"] = np.where(sd["returns"] > 0,1,0)
-        sd["sma"] = close.rolling(self.window).mean() - close.rolling(150).mean()
-        sd["boll"] = (close - close.rolling(self.window).mean()) / close.rolling(self.window).std()
-        sd["boll7"] = (close - close.rolling(7).mean()) / close.rolling(7).std()
-        sd["boll14"] = (close - close.rolling(14).mean()) / close.rolling(14).std()
-        sd["boll21"] = (close - close.rolling(21).mean()) / close.rolling(21).std()
-        sd["min"] = close.rolling(self.window).min() / close - 1
-        sd["min7"] = close.rolling(7).min() / close - 1
-        sd["min14"] = close.rolling(14).min() / close - 1
-        sd["min21"] = close.rolling(21).min() / close - 1
-        sd["max"] = close.rolling(self.window).max() / close - 1
-        sd["max7"] = close.rolling(7).max() / close - 1
-        sd["max14"] = close.rolling(14).max() / close - 1
-        sd["max21"] = close.rolling(21).max() / close - 1
-        sd["mom"] = ta.MOM(close, timeperiod=10)
-        sd["mom7"] = ta.MOM(close, timeperiod=7)
-        sd["mom14"] = ta.MOM(close, timeperiod=14)
-        sd["mom21"] = ta.MOM(close, timeperiod=21)
-        sd["vol"] = sd["returns"].rolling(self.window).std()
-        sd["vol7"] = sd["returns"].rolling(7).std()
-        sd["vol14"] = sd["returns"].rolling(14).std()
-        sd["vol21"] = sd["returns"].rolling(21).std()
-        sd["obv"] = ta.OBV(close,volume)
-        sd["mfi7"] = ta.MFI(high, low, close, volume, timeperiod=7)
-        sd["mfi14"] = ta.MFI(high, low, close, volume, timeperiod=14)
-        sd["mfi21"] = ta.MFI(high, low, close, volume, timeperiod=21)
-        sd["rsi7"] = ta.RSI(close, timeperiod=7)
-        sd["rsi14"] = ta.RSI(close, timeperiod=14)
-        sd["rsi21"] = ta.RSI(close, timeperiod=21)
-        sd["adx7"] = ta.ADX(high, low, close, timeperiod=7)
-        sd["adx14"] = ta.ADX(high, low, close, timeperiod=14)
-        sd["adx21"] = ta.ADX(high, low, close, timeperiod=21)
-        sd["roc"] = ta.ROC(close, timeperiod=10)
-        sd["roc7"] = ta.ROC(close, timeperiod=7)
-        sd["roc14"] = ta.ROC(close, timeperiod=14)
-        sd["roc21"] = ta.ROC(close, timeperiod=21)
-        sd["atr7"] = ta.ATR(high, low, close, timeperiod=7)
-        sd["atr14"] = ta.ATR(high, low, close, timeperiod=14)
-        sd["atr21"] = ta.ATR(high, low, close, timeperiod=21)
-        sd["bop"] = ta.BOP(open, high, low, close)
-        sd["ad"] =ta.AD(high, low, close, volume)
-        sd["adosc"] = ta.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=10)
-        sd["trange"] = ta.TRANGE(high, low, close)
-        sd["ado"] = ta.APO(close, fastperiod=12, slowperiod=26, matype=0)
-        sd["willr7"] = ta.WILLR(high, low, close, timeperiod=7)
-        sd["willr14"] = ta.WILLR(high, low, close, timeperiod=14)
-        sd["willr21"] = ta.WILLR(high, low, close, timeperiod=21)
-        sd["dx7"] = ta.DX(high, low, close, timeperiod=7)
-        sd["dx14"] = ta.DX(high, low, close, timeperiod=14)
-        sd["dx21"] = ta.DX(high, low, close, timeperiod=21)
-        sd["trix"] = ta.TRIX(close, timeperiod=30)
-        sd["ultosc"] = ta.ULTOSC(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)
-
-        sd.dropna(inplace=True)
 
         #Add lags feature
         features = [
@@ -134,6 +86,114 @@ class FeatureManager():
             "trix",     # 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
             "ultosc"    # Ultimate Oscillator
             ]
+
+        sd["returns"] = np.log(close/close.shift())
+        sd["dir"] = np.where(sd["returns"] > 0,1,0)
+        
+        if (key:="sma") in features:
+            sd[key] = close.rolling(self.window).mean() - close.rolling(150).mean()
+        if (key:="boll") in features:
+            sd[key] = (close - close.rolling(self.window).mean()) / close.rolling(self.window).std()
+        if (key:="boll7") in features:
+            sd[key] = (close - close.rolling(7).mean()) / close.rolling(7).std()
+        if (key:="boll14") in features:
+            sd[key] = (close - close.rolling(14).mean()) / close.rolling(14).std()
+        if (key:="boll21") in features:
+            sd[key] = (close - close.rolling(21).mean()) / close.rolling(21).std()
+        if (key:="min") in features:
+            sd[key] = close.rolling(self.window).min() / close - 1
+        if (key:="min7") in features:
+            sd[key] = close.rolling(7).min() / close - 1
+        if (key:="min14") in features:
+            sd[key] = close.rolling(14).min() / close - 1
+        if (key:="min21") in features:
+            sd[key] = close.rolling(21).min() / close - 1
+        if (key:="max") in features:
+            sd[key] = close.rolling(self.window).max() / close - 1
+        if (key:="max7") in features:
+            sd[key] = close.rolling(7).max() / close - 1
+        if (key:="max14") in features:
+            sd[key] = close.rolling(14).max() / close - 1
+        if (key:="max21") in features:
+            sd[key] = close.rolling(21).max() / close - 1
+        if (key:="mom") in features:
+            sd[key] = ta.MOM(close, timeperiod=10)
+        if (key:="mom7") in features:
+            sd[key] = ta.MOM(close, timeperiod=7)
+        if (key:="mom14") in features:
+            sd[key] = ta.MOM(close, timeperiod=14)
+        if (key:="mom21") in features:
+            sd[key] = ta.MOM(close, timeperiod=21)
+        if (key:="vol") in features:
+            sd[key] = sd["returns"].rolling(self.window).std()
+        if (key:="vol7") in features:
+            sd[key] = sd["returns"].rolling(7).std()
+        if (key:="vol14") in features:
+            sd[key] = sd["returns"].rolling(14).std()
+        if (key:="vol21") in features:
+            sd[key] = sd["returns"].rolling(21).std()
+        if (key:="obv") in features:
+            sd[key] = ta.OBV(close,volume)
+        if (key:="mfi7") in features:
+            sd[key] = ta.MFI(high, low, close, volume, timeperiod=7)
+        if (key:="mfi14") in features:
+            sd[key] = ta.MFI(high, low, close, volume, timeperiod=14)
+        if (key:="mfi21") in features:
+            sd[key] = ta.MFI(high, low, close, volume, timeperiod=21)
+        if (key:="rsi7") in features:
+            sd[key] = ta.RSI(close, timeperiod=7)
+        if (key:="rsi14") in features:
+            sd[key] = ta.RSI(close, timeperiod=14)
+        if (key:="rsi21") in features:
+            sd[key] = ta.RSI(close, timeperiod=21)
+        if (key:="adx7") in features:
+            sd[key] = ta.ADX(high, low, close, timeperiod=7)
+        if (key:="adx14") in features:
+            sd[key] = ta.ADX(high, low, close, timeperiod=14)
+        if (key:="adx21") in features:
+            sd[key] = ta.ADX(high, low, close, timeperiod=21)
+        if (key:="roc") in features:
+            sd[key] = ta.ROC(close, timeperiod=10)
+        if (key:="roc7") in features:
+            sd[key] = ta.ROC(close, timeperiod=7)
+        if (key:="roc14") in features:
+            sd[key] = ta.ROC(close, timeperiod=14)
+        if (key:="roc21") in features:
+            sd[key] = ta.ROC(close, timeperiod=21)
+        if (key:="atr7") in features:
+            sd[key] = ta.ATR(high, low, close, timeperiod=7)
+        if (key:="atr14") in features:
+            sd[key] = ta.ATR(high, low, close, timeperiod=14)
+        if (key:="atr21") in features:
+            sd[key] = ta.ATR(high, low, close, timeperiod=21)
+        if (key:="bop") in features:
+            sd[key] = ta.BOP(open, high, low, close)
+        if (key:="ad") in features:
+            sd[key] =ta.AD(high, low, close, volume)
+        if (key:="adosc") in features:
+            sd[key] = ta.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=10)
+        if (key:="trange") in features:
+            sd[key] = ta.TRANGE(high, low, close)
+        if (key:="ado") in features:
+            sd[key] = ta.APO(close, fastperiod=12, slowperiod=26, matype=0)
+        if (key:="willr7") in features:
+            sd[key] = ta.WILLR(high, low, close, timeperiod=7)
+        if (key:="willr14") in features:
+            sd[key] = ta.WILLR(high, low, close, timeperiod=14)
+        if (key:="willr21") in features:
+            sd[key] = ta.WILLR(high, low, close, timeperiod=21)
+        if (key:="dx7") in features:
+            sd[key] = ta.DX(high, low, close, timeperiod=7)
+        if (key:="dx14") in features:
+            sd[key] = ta.DX(high, low, close, timeperiod=14)
+        if (key:="dx21") in features:
+            sd[key] = ta.DX(high, low, close, timeperiod=21)
+        if (key:="trix") in features:
+            sd[key] = ta.TRIX(close, timeperiod=30)
+        if (key:="ultosc") in features:
+            sd[key] = ta.ULTOSC(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)
+
+        sd.dropna(inplace=True)
         
         for f in features:
             for lag in range(1,lags + 1):
@@ -151,32 +211,9 @@ class FeatureManager():
 
         self.df = sd.copy()
 
-    def first_time_go_above_price(self,start_time,end_time,target_price,granular_data):
-        ''' 
-        Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
-        Return time in unix utc milisecond.
-        '''
-        lookup_data = granular_data.iloc[
-            (granular_data.index>=start_time) & 
-            (granular_data.index<end_time)].copy()
-
-        first_index = lookup_data.loc[lookup_data["High"]>=target_price].index.min()
-        return first_index
-
-    def first_time_go_below_price(self,start_time,end_time,target_price,granular_data):
-        ''' 
-        Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
-        Return time in unix utc milisecond.
-        '''
-        lookup_data = granular_data.iloc[
-            (granular_data.index>=start_time) & 
-            (granular_data.index<end_time)].copy()
-
-        first_index = lookup_data.loc[lookup_data["Low"]<target_price].index.min()
-        return first_index
-
     def calculate_tp_or_sl(self,row,i,is_long,granular_data,timeframe_in_ms):    
-        '''Calculate if a take profit, stop loss event happen
+        '''
+        Calculate if a take profit, stop loss event happen
         '''
         
         if is_long:
@@ -193,26 +230,26 @@ class FeatureManager():
             if tp_cond:                                         #  If take-profit hitted
                 if sl_cond:
                     if is_long:
-                        first_tp_index = self.first_time_go_above_price(
+                        first_tp_index = tu.first_time_go_above_price(
                             start_time=int(row.name) + i * timeframe_in_ms,
                             end_time=int(row.name) + (i+1)* timeframe_in_ms,
                             target_price = row["long_take_profit"],
                             granular_data=granular_data
                         )
-                        first_sl_index = self.first_time_go_below_price(
+                        first_sl_index = tu.first_time_go_below_price(
                             start_time=int(row.name) + i * timeframe_in_ms,
                             end_time=int(row.name) + (i+1)* timeframe_in_ms,
                             target_price = row["long_stop_loss"],
                             granular_data=granular_data
                         )
                     else:
-                        first_tp_index = self.first_time_go_below_price(
+                        first_tp_index = tu.first_time_go_below_price(
                             start_time=int(row.name) + i * timeframe_in_ms,
                             end_time=int(row.name) + (i+1)* timeframe_in_ms,
                             target_price = row["short_take_profit"],
                             granular_data=granular_data
                         )
-                        first_sl_index = self.first_time_go_above_price(
+                        first_sl_index = tu.first_time_go_above_price(
                             start_time=int(row.name) + i * timeframe_in_ms,
                             end_time=int(row.name) + (i+1)* timeframe_in_ms,
                             target_price = row["short_stop_loss"],
@@ -237,11 +274,22 @@ class FeatureManager():
 
     def prepare_trade_forward_data(self, data, granular_data,timeframe_in_ms, take_profit_rate = 0.05, stop_loss_rate = 0.025, max_duration = 7):
         '''   
-        # Compute future will happen outcome and and trade signal
-        # Will update long_decision_forward to 1: take profit, -1: stop loss, 0: keep open, 2: closed 
-        # Will update trade_signal to 1: long, 2: short, 0: no trade
-        '''
+        Add trade signal as long, short, no trade that can make a take profit close.
+        
+        Params:
+        - data: the input data as dataframe, will be modified.
+        - granular_data: the shorter timeframe data to be used for decide takeprofit or stoploss happen first
+        - timeframe_in_ms: the timeframe used
+        - take_profit_rate: take-profit as percentage
+        - stop_loss_rate: stop-loss as percentage
+        - max_duration: the longest duration for a position 
 
+        Returns: No returns, input data is modified. Important added columns as belows:.
+        - trade_signal: 0 as no trade, 1 as long, 2 as short
+        - trade_resturn: equal to take_profit rate or 0
+        - long_decision_forward_{i}: for long position, at future timeframe i, 1: take profit, -1: stop loss, 0: keep open, 2: closed 
+        - short_decision_forward_{i}: similar as long_ but for short position
+        '''
         data["long_take_profit"] = data["Close"]*(1+take_profit_rate)
         data["long_stop_loss"] = data["Close"]*(1-stop_loss_rate)
         data["short_take_profit"] = data["Close"]*(1-take_profit_rate)
@@ -254,7 +302,6 @@ class FeatureManager():
         data[trade_return_str] = 0
         
         for i in range(1,max_duration+1):
-            
             print("Processing {}/{}".format(i,max_duration))
 
             data["High_forward_{}".format(i)] = data["High"].shift(-i)
@@ -324,7 +371,8 @@ class FeatureManager():
 
 
     def show_heatmap(self):
-
+        ''' Show the correlation between pairs of features
+        '''
         if self.df is not None:
             data = self.df[self.cols]
             plt.figure(figsize=(20,20))
@@ -341,7 +389,8 @@ class FeatureManager():
             print("No data to show")
 
     def show_raw_visualization(self):
-
+        '''Show the visualiazation of features value along time
+        '''
         size = len(self.cols)
         ncol = 2
 

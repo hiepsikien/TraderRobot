@@ -29,9 +29,14 @@ Add LSTM model
     DONE. It does not give good result. May need more modification, future work.
 Added GPU usage
     DONE. It works but TensorRT, a library that enables faster GPU processig only work with lower Python version for now.
-
 Expand the model to pick the trade with stoploss, takeprofit set, has maximum wndows time.
+    DONE
+Build classifier to learn Long, Short, No Trade
+    DONE
+Money management
 
 Assigning and managing future position by traders 
+
 Performance report of each traders
+
 Publish it to AWS
