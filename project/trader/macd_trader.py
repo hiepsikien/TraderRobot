@@ -1,7 +1,7 @@
 
 # from binance.client import Client
 # from binance import ThreadedWebsocketManager
-from base_trader import BaseTrader
+from trader.base_trader import BaseTrader
 # import pandas as pd
 # import numpy as np
 # from datetime import datetime, timedelta

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from visualizer import visualize_efficiency_by_cutoff
-import tr_utils as tu
+import utils as tu
 from keras.utils import np_utils
 
 class BaseClassifier():

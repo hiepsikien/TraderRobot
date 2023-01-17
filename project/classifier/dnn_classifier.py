@@ -44,7 +44,7 @@ class DNNClassifer(BaseClassifier):
 
     def run(self,gpu = True,patient=5, epochs = 100):
        
-        path_checkpoint = "../data/model_dnn_checkpoint.h5"
+        path_checkpoint = "../../logs/model/model_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=patient)
 
         modelckpt_callback = kc.ModelCheckpoint(

@@ -1,8 +1,5 @@
-
-from math import remainder
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
@@ -61,7 +58,7 @@ class MultiClassDNNClassifer(BaseClassifier):
 
         Return: None
         '''
-        path_checkpoint = "../data/model_dnn_checkpoint.h5"
+        path_checkpoint = "../../logs/model/model_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(
             monitor="val_loss",
             min_delta=0, 
@@ -75,7 +72,7 @@ class MultiClassDNNClassifer(BaseClassifier):
             save_weights_only=True,
             save_best_only=True)
 
-        log_dir = "../logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        log_dir = "../../logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
         processor = "/cpu:0"

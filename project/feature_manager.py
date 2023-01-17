@@ -5,7 +5,7 @@ import talib as ta
 from sklearn.preprocessing import StandardScaler
 plt.style.use("seaborn")
 from random import randint
-import tr_utils as tu
+import utils as tu
 
 class FeatureManager():
 
