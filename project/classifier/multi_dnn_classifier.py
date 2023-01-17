@@ -7,7 +7,7 @@ from keras import callbacks
 from keras.regularizers import l1, l2
 from keras import callbacks as kc
 from keras.optimizers import Adam
-from base_classifier import BaseClassifier
+from classifier.base_classifier import BaseClassifier
 from sklearn.metrics import classification_report
 from random import randint
 import datetime
@@ -58,7 +58,7 @@ class MultiClassDNNClassifer(BaseClassifier):
 
         Return: None
         '''
-        path_checkpoint = "../../logs/model/model_dnn_checkpoint.h5"
+        path_checkpoint = "../logs/model/model_multi_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(
             monitor="val_loss",
             min_delta=0, 

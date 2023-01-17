@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.regularizers import l1, l2
 from keras import callbacks as kc
 from keras.optimizers import Adam
-from base_classifier import BaseClassifier
+from classifier.base_classifier import BaseClassifier
 
 class DNNClassifer(BaseClassifier):
 
@@ -44,7 +44,7 @@ class DNNClassifer(BaseClassifier):
 
     def run(self,gpu = True,patient=5, epochs = 100):
        
-        path_checkpoint = "../../logs/model/model_dnn_checkpoint.h5"
+        path_checkpoint = "../logs/model/model_dnn_checkpoint.h5"
         es_callback = kc.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=patient)
 
         modelckpt_callback = kc.ModelCheckpoint(

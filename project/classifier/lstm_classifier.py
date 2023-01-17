@@ -26,7 +26,7 @@ class LSTMClassifier(BaseClassifier):
 
     def run(self,gpu = True, epochs = 200):
        
-        path_checkpoint = "../../logs/model/model_lstm_checkpoint.h5"
+        path_checkpoint = "../logs/model/model_lstm_checkpoint.h5"
         es_callback = tf.keras.callbacks.EarlyStopping(monitor="val_loss", min_delta=0, verbose=1, patience=3)
 
         modelckpt_callback = tf.keras.callbacks.ModelCheckpoint(
