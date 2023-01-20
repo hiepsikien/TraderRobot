@@ -39,6 +39,7 @@ class DNNClassifer(BaseClassifier):
             optimizer=optimizer,
             metrics=["accuracy"]
         )
+        print(self.model.summary())
 
 
 
@@ -76,7 +77,7 @@ class DNNClassifer(BaseClassifier):
             self.pred_prob = self.model.predict(x=self.x_test)
 
 
-        accuracy, coverage = self.filter_prediction_by_cutoff(
+        accuracy, coverage = self.filter_prediction_by_cutoff_for_binary(
             neg_cutoff=self.neg_cutoff,
             pos_cutoff=self.pos_cutoff)
 

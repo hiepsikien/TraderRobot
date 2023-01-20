@@ -59,7 +59,7 @@ class LSTMClassifier(BaseClassifier):
         self.analyze_predict_by_cutoff()
         visualizer.visualize_efficiency_by_cutoff(self.efficiency,0,0.5)
 
-        accuracy, coverage = self.filter_prediction_by_cutoff(
+        accuracy, coverage = self.filter_prediction_by_cutoff_for_binary(
             neg_cutoff=self.neg_cutoff,
             pos_cutoff=self.pos_cutoff
         )

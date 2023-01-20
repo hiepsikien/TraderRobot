@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 from random import randint
+from sklearn.metrics import confusion_matrix
+import numpy as np
 
 def visualize_efficiency_by_cutoff(data,min_delta,max_delta):
     if data is not None:
@@ -49,3 +51,11 @@ def visualize_scatter(x_list,y_list,x_label,y_label,title,add_point_label = Fals
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.show()
+
+def plot_cm(labels, predictions, p=0.5):
+    cm = confusion_matrix(labels, predictions > p)
+    plt.figure(figsize=(7,7))
+    plt.title('Confusion matrix @{:.2f}'.format(p))
+    plt.ylabel('Actual label')
+    plt.xlabel('Predicted label')
+    sns.heatmap(cm, annot=True, fmt="d")

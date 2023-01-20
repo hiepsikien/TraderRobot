@@ -6,6 +6,8 @@ import tensorflow as tf
 from visualizer import visualize_efficiency_by_cutoff
 import utils as tu
 from keras.utils import np_utils
+import numpy as np
+
 
 class BaseClassifier():
 
@@ -18,6 +20,7 @@ class BaseClassifier():
         self.set_val_size(val_size)
         self.set_dropout_rate(dropout_rate)
         self.saved_history = None
+        self.params = dict()
     
     def set_dropout_rate(self,dropout_rate):
         self.dropout_rate = dropout_rate
@@ -37,17 +40,6 @@ class BaseClassifier():
         random.seed(seed)
         np.random.seed(seed)
         tf.random.set_seed(seed)
-
-    def cw(self,data):
-        c0,c1 = np.bincount(data)
-        w0 = 1/c0 * (c0+c1)/2
-        w1 = 1/c1 * (c0+c1)/2
-        return {0:w0,1:w1}
-
-    def m_cw(self,data):
-        counts = pd.DataFrame(data).value_counts()
-        weights = 1/counts * counts.sum()/(len(counts))
-        return {np.argmax(i,axis=-1):weights[i] for i in counts.index}
 
     def configure(self):
         pass
@@ -158,7 +150,7 @@ class BaseClassifier():
         )
 
     def prepare_y_test(self,y_test,sequence_len,sequence_stride,sampling_rate):
-        ''' Calculate y_test
+        ''' Calculate y_test for dataset
         '''
         y_list = []
         window_len = (sequence_len-1)*sampling_rate + 1
@@ -166,7 +158,8 @@ class BaseClassifier():
             y_list.append(y_test[end])
         return y_list
     
-    def prepare_data(self, data, cols, target_col, random_state = 1, shuffle = True, y_to_categorical = False, rebalance = None, cat_length = None):
+    def prepare_data(self, data:pd.DataFrame, cols:list, target_col:str, random_state:int = 1, 
+        is_shuffle:bool = True, y_to_categorical:bool = False, rebalance = None, cat_length:int = 1000):
         ''' 
         Make the data balance for all categories, shuffle and split for train, validation and test
 
@@ -181,8 +174,16 @@ class BaseClassifier():
         
         Return: nothing. The training, validation, test data is stored as objects attributes.
         '''
+
+        self.params["random_state"] = random_state
+        self.params["is_shuffle"] = is_shuffle
+        self.params["y_to_categorical"] = y_to_categorical
+        self.params["rebalance"] = rebalance
+        self.params["cat_lentgh"] = cat_length
+
         # Shuffle data
-        if shuffle:
+        if is_shuffle:
+            print("Shuffling the data")
             shuffled = data.sample(frac=1,random_state=random_state)
         else:
             shuffled = data
@@ -201,14 +202,17 @@ class BaseClassifier():
         #Rebalance data for train and validation
         match rebalance:
             case "over":
+                print("Rebalancing data with over-sampling")
                 self.data_train = tu.over_rebalance(data=self.data_train,target_col=target_col)
                 self.data_val = tu.over_rebalance(data=self.data_val,target_col=target_col)
         
             case "under":
+                print("Rebalancing data with under-sampling")
                 self.data_train = tu.under_rebalance(data=self.data_train,target_col=target_col)
                 self.data_val = tu.under_rebalance(data=self.data_val,target_col=target_col)
        
             case "fix":
+                print("Rebalancing data with fix category size {}".format(cat_length))
                 self.data_train = tu.fix_rebalance(cat_length=cat_length,data=self.data_train,target_col=target_col)
                 self.data_val = tu.fix_rebalance(cat_length=cat_length,data=self.data_val,target_col=target_col)
             
@@ -233,10 +237,15 @@ class BaseClassifier():
             self.y_val = self.data_val[target_col].values
             self.y_test = self.data_test[target_col].values
 
+        print("Completed. Train: {}, Validation: {}, Test: {}".
+            format(len(self.data_train),len(self.data_val),len(self.data_test)))
+
     def run(self):
         pass
 
-    def filter_prediction_by_cutoff(self,neg_cutoff,pos_cutoff): 
+    def filter_prediction_by_cutoff_binary(self,neg_cutoff:float,pos_cutoff:float): 
+        '''Filter test prediction with threshold, for binary classifier
+        '''
         temp = np.where(self.pred_prob < neg_cutoff,0,self.pred_prob)
         y_pred = np.where(temp > pos_cutoff,1,temp)
 
@@ -258,7 +267,7 @@ class BaseClassifier():
         print("Accuracy Score: {}, Coverage Score: {}".format(round(accuracy,3), round(coverage,3)))
         
         return accuracy, coverage
-
+    
     def analyze_predict_by_cutoff(self):
 
         step = 0.001
@@ -274,11 +283,18 @@ class BaseClassifier():
             delta = i * step
             neg_cutoff = 0.5 - delta
             pos_cutoff = 0.5 + delta
-            acc, cov = self.filter_prediction_by_cutoff(neg_cutoff=neg_cutoff,pos_cutoff=pos_cutoff)
+            acc, cov = self.filter_prediction_by_cutoff_binary(
+                neg_cutoff=neg_cutoff,
+                pos_cutoff=pos_cutoff
+            )
             acc_list.append(acc)
             cov_list.append(cov)
             del_list.append(delta)
 
         self.efficiency = pd.DataFrame({"delta":del_list,"accuracy":acc_list,"coverage":cov_list})
 
-  
+
+
+
+
+    
