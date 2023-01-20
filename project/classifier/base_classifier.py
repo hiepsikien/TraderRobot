@@ -159,7 +159,7 @@ class BaseClassifier():
         return y_list
     
     def prepare_data(self, data:pd.DataFrame, cols:list, target_col:str, random_state:int = 1, 
-        is_shuffle:bool = True, y_to_categorical:bool = False, rebalance = None, cat_length:int = 1000):
+        is_shuffle:bool = True, y_to_categorical:bool = False, rebalance = None, cat_length:int = 1000,file = None):
         ''' 
         Make the data balance for all categories, shuffle and split for train, validation and test
 
@@ -179,11 +179,12 @@ class BaseClassifier():
         self.params["is_shuffle"] = is_shuffle
         self.params["y_to_categorical"] = y_to_categorical
         self.params["rebalance"] = rebalance
-        self.params["cat_lentgh"] = cat_length
+        if rebalance == "fix":
+            self.params["cat_lentgh"] = cat_length
 
         # Shuffle data
         if is_shuffle:
-            print("Shuffling the data")
+            print("Shuffling the data...")
             shuffled = data.sample(frac=1,random_state=random_state)
         else:
             shuffled = data
@@ -195,6 +196,7 @@ class BaseClassifier():
         test_len = data_len - train_len - val_len
 
         #Split data to train + validation + test
+        print("Splitting the data...")
         self.data_train = shuffled.head(train_len).copy()
         self.data_val = shuffled.iloc[train_len:train_len+val_len].copy()
         self.data_test = shuffled.tail(test_len).copy()
@@ -203,18 +205,18 @@ class BaseClassifier():
         match rebalance:
             case "over":
                 print("Rebalancing data with over-sampling")
-                self.data_train = tu.over_rebalance(data=self.data_train,target_col=target_col)
-                self.data_val = tu.over_rebalance(data=self.data_val,target_col=target_col)
+                self.data_train = tu.over_sampling_rebalance(data=self.data_train,target_col=target_col)
+                self.data_val = tu.over_sampling_rebalance(data=self.data_val,target_col=target_col)
         
             case "under":
                 print("Rebalancing data with under-sampling")
-                self.data_train = tu.under_rebalance(data=self.data_train,target_col=target_col)
-                self.data_val = tu.under_rebalance(data=self.data_val,target_col=target_col)
+                self.data_train = tu.under_sampling_rebalance(data=self.data_train,target_col=target_col)
+                self.data_val = tu.under_sampling_rebalance(data=self.data_val,target_col=target_col)
        
             case "fix":
                 print("Rebalancing data with fix category size {}".format(cat_length))
-                self.data_train = tu.fix_rebalance(cat_length=cat_length,data=self.data_train,target_col=target_col)
-                self.data_val = tu.fix_rebalance(cat_length=cat_length,data=self.data_val,target_col=target_col)
+                self.data_train = tu.fix_sampling_rebalance(cat_length=cat_length,data=self.data_train,target_col=target_col)
+                self.data_val = tu.fix_sampling_rebalance(cat_length=cat_length,data=self.data_val,target_col=target_col)
             
             case None:  
                 pass
@@ -237,8 +239,32 @@ class BaseClassifier():
             self.y_val = self.data_val[target_col].values
             self.y_test = self.data_test[target_col].values
 
-        print("Completed. Train: {}, Validation: {}, Test: {}".
-            format(len(self.data_train),len(self.data_val),len(self.data_test)))
+        print("Data preparation completed.")
+        print("==========", file= file)
+        print("DATA:", file = file)
+        print("Data Train: {}, Validation: {}, Test: {}".
+            format(len(self.data_train),len(self.data_val),len(self.data_test)),file = file)
+
+        print("Train:", file = file)
+        self.print_labels_distribution(self.data_train,target_col,file=file)
+
+        print("Validation:", file = file)
+        self.print_labels_distribution(self.data_val,target_col,file=file)
+
+        print("Test:",file = file)
+        self.print_labels_distribution(self.data_test,target_col,file=file)
+
+    def print_labels_distribution(self,data:pd.DataFrame,target_col:str, file=None):
+        value_counts = data[target_col].value_counts()
+        value_counts.sort_index(inplace=True)
+        for i in value_counts.index:
+            print("Label {}: {}({}%)".format(
+                i,
+                value_counts[i],                                    #type: ignore
+                round(value_counts[i]/value_counts.sum()*100,2)     #type: ignore
+                ),
+                file = file
+            )
 
     def run(self):
         pass
@@ -246,7 +272,7 @@ class BaseClassifier():
     def filter_prediction_by_cutoff_binary(self,neg_cutoff:float,pos_cutoff:float): 
         '''Filter test prediction with threshold, for binary classifier
         '''
-        temp = np.where(self.pred_prob < neg_cutoff,0,self.pred_prob)
+        temp = np.where(self.pred_prob < neg_cutoff,0,self.pred_prob) 
         y_pred = np.where(temp > pos_cutoff,1,temp)
 
         dfs = pd.DataFrame({"y_test":self.y_test,"y_pred":y_pred.flatten().tolist()})

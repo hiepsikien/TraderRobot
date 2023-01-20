@@ -7,9 +7,10 @@ plt.style.use("seaborn")
 from random import randint
 import utils as tu
 
+TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"1d":24*60*60*1000}
 class FeatureManager():
 
-    def __init__(self,data:pd.DataFrame,target_col:str,window:int = 50) -> None:
+    def __init__(self,target_col:str, window:int = 50) -> None:
         '''
         Initialize the instance
 
@@ -23,9 +24,27 @@ class FeatureManager():
         '''
         self.window = window
         self.cols = []
-        self.target_col = target_col 
-        self.df = data.copy()
+        self.target_col = target_col
         self.params = dict()
+
+    def import_data(self,symbol: str, trade_timeframe: str, granular_timeframe: str):
+        
+        data_path = "../data/{}-{}.csv".format(symbol,trade_timeframe)
+        self.df = pd.read_csv(
+            data_path, 
+            parse_dates=["Open Time"],
+            index_col = "Open Time"
+        )
+        print("Imported {} with {} rows".format(data_path,len(self.df)))
+        granular_data_path = "../nocommit/{}-{}.csv".format(symbol,granular_timeframe)
+        self.granular_df = pd.read_csv(
+            granular_data_path, 
+            parse_dates=["Open Time"], 
+            index_col = "Open Time"
+        )
+        print("Imported {} with {} rows".format(granular_data_path,len(self.granular_df)))
+        self.trade_timeframe = trade_timeframe
+        self.granular_timeframe = granular_timeframe
 
     def print_parameters(self):
         print("Features manager parameters:")
@@ -243,21 +262,21 @@ class FeatureManager():
 
         print("\nTotal {} features added.".format(len(self.cols)))
 
-    def calculate_tp_or_sl(self,row,i:int,is_long:bool,granular_data:pd.DataFrame,timeframe_in_ms:int):    
+    def calculate_tp_or_sl(self,row,i:int,is_long:bool):    
         '''
         Calculate if a take profit or stop loss event happen first
 
         Params:
         - row: a Dataframe row
         - is_long: is that a long trade or not
-        - granular_data: data to loop up
-        - timeframe_in_ms: trading timeframe
 
         Return: a tupple reprent take profit and stop loss as boolean,
         example, (True, False) means it is a take profit, (False, False) mean not take profit
         not stop loss either.
 
         '''
+
+        trade_timeframe_in_ms = TIMEFRAMES_IN_MS[self.trade_timeframe]
         
         if is_long:
             open_cond = row["long_decision_forward_{}".format(i-1)]==0
@@ -274,29 +293,29 @@ class FeatureManager():
                 if sl_cond:
                     if is_long:
                         first_tp_index = tu.first_time_go_above_price(
-                            start_time=int(row.name) + i * timeframe_in_ms,
-                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            start_time=int(row.name) + i * trade_timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* trade_timeframe_in_ms,
                             target_price = row["long_take_profit"],
-                            granular_data=granular_data
+                            granular_data=self.granular_df
                         )
                         first_sl_index = tu.first_time_go_below_price(
-                            start_time=int(row.name) + i * timeframe_in_ms,
-                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            start_time=int(row.name) + i * trade_timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* trade_timeframe_in_ms,
                             target_price = row["long_stop_loss"],
-                            granular_data=granular_data
+                            granular_data=self.granular_df
                         )
                     else:
                         first_tp_index = tu.first_time_go_below_price(
-                            start_time=int(row.name) + i * timeframe_in_ms,
-                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            start_time=int(row.name) + i * trade_timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* trade_timeframe_in_ms,
                             target_price = row["short_take_profit"],
-                            granular_data=granular_data
+                            granular_data=self.granular_df
                         )
                         first_sl_index = tu.first_time_go_above_price(
-                            start_time=int(row.name) + i * timeframe_in_ms,
-                            end_time=int(row.name) + (i+1)* timeframe_in_ms,
+                            start_time=int(row.name) + i * trade_timeframe_in_ms,
+                            end_time=int(row.name) + (i+1)* trade_timeframe_in_ms,
                             target_price = row["short_stop_loss"],
-                            granular_data=granular_data
+                            granular_data=self.granular_df
                         )                                     #  stop-loss also hitted    
                     if first_tp_index < first_sl_index:         #  Granular says it is take-profit
                         return [True, False]
@@ -315,8 +334,7 @@ class FeatureManager():
         else:
             return [False, False]
 
-    def prepare_trade_forward_data(self,granular_data:pd.DataFrame,timeframe_in_ms:int,
-        take_profit_rate:float = 0.05, stop_loss_rate:float = 0.025, max_duration:int = 7):
+    def prepare_trade_forward_data(self,take_profit_rate:float = 0.05, stop_loss_rate:float = 0.025, max_duration:int = 7):
         '''   
         Add trade signal as long, short, no trade that can make a take profit close.
         
@@ -334,7 +352,7 @@ class FeatureManager():
         - short_decision_forward_{i}: similar as long_ but for short position
         '''
 
-        self.params["timeframe_in_ms"] = timeframe_in_ms
+        self.params["trade_timeframe"] = self.trade_timeframe
         self.params["take_profit_rate"] = take_profit_rate
         self.params["stop_loss_rate"] = stop_loss_rate
         self.params["max_duration"] = max_duration
@@ -351,8 +369,9 @@ class FeatureManager():
         df[trade_signal_str] = 0
         df[trade_return_str] = 0
         
+        print("Scanning {} future timeframes to build trade signal: ".format(max_duration))
         for i in range(1,max_duration+1):
-            print("Processing timeframe {}/{}".format(i,max_duration))
+            print("{},".format(i), end=" ")
 
             df["High_forward_{}".format(i)] = df["High"].shift(-i)
             df["Low_forward_{}".format(i)] = df["Low"].shift(-i)
@@ -372,8 +391,6 @@ class FeatureManager():
                 row=row,
                 i=i,
                 is_long=True,
-                granular_data=granular_data,
-                timeframe_in_ms=timeframe_in_ms
                 ),
                 result_type = "expand",
                 axis=1
@@ -398,9 +415,7 @@ class FeatureManager():
             df[["os_tp","os_sl"]] = df.apply(lambda row: self.calculate_tp_or_sl(
                 row=row,
                 i=i,
-                is_long=False,
-                granular_data=granular_data,
-                timeframe_in_ms=timeframe_in_ms
+                is_long=False
                 ),
                 result_type = "expand",
                 axis=1
@@ -423,7 +438,7 @@ class FeatureManager():
             self.df[trade_return_str] = df[trade_return_str]
             self.df.dropna(inplace=True)
 
-        print("Completed. Value counts of target_col:")
+        print("\nLabel producing completed. \n Value counts:")
         print(self.df[self.target_col].value_counts())
             
 

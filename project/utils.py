@@ -4,7 +4,7 @@ from scipy.optimize import fsolve
 from math import exp
 
 
-def under_rebalance(data:pd.DataFrame,target_col:str):
+def under_sampling_rebalance(data:pd.DataFrame,target_col:str):
     '''
     Under sampling. All categories have data numbers equal to the smallest one
     
@@ -16,9 +16,9 @@ def under_rebalance(data:pd.DataFrame,target_col:str):
     '''
     val_counts = data[target_col].value_counts().sort_index()
     cat_length = val_counts.min()
-    return fix_rebalance(cat_length=cat_length,data=data,target_col=target_col)
+    return fix_sampling_rebalance(cat_length=cat_length,data=data,target_col=target_col)
 
-def over_rebalance(data:pd.DataFrame,target_col:str):
+def over_sampling_rebalance(data:pd.DataFrame,target_col:str):
     '''
     Over-sampling. All categories have data numbers equal to the largest one
 
@@ -30,10 +30,10 @@ def over_rebalance(data:pd.DataFrame,target_col:str):
     '''
     val_counts = data[target_col].value_counts().sort_index()
     cat_length = val_counts.max()
-    return fix_rebalance(cat_length=cat_length,data=data,target_col=target_col)
+    return fix_sampling_rebalance(cat_length=cat_length,data=data,target_col=target_col)
 
 
-def fix_rebalance(cat_length:int,data:pd.DataFrame,target_col:str):
+def fix_sampling_rebalance(cat_length:int,data:pd.DataFrame,target_col:str):
     ''' 
     All categories have a fix number of data
     
@@ -47,8 +47,8 @@ def fix_rebalance(cat_length:int,data:pd.DataFrame,target_col:str):
     data_list = []
     for i in val_counts.index:
         data_cat = data[data[target_col]==i]
-        times = int(cat_length/val_counts[i])
-        remainer = cat_length - times * val_counts[i] 
+        times = int(cat_length/val_counts[i])               #type: ignore
+        remainer = cat_length - times * val_counts[i]       #type: ignore
         for j in range(0,times):
             data_list.append(data_cat) 
         data_remainder =  data_cat.sample(
@@ -110,7 +110,7 @@ def init_imbalanced_bias(data:pd.DataFrame, target_col:str):
     d = dict(data[target_col].value_counts().sort_index())
 
     # define classes frequency list
-    frequency = list(list(d.values())/sum(d.values()))
+    frequency = list(list(d.values())/sum(d.values()))  #type: ignore
 
     # define equations to solve initial bias
     def eqn(x, frequency=frequency):
@@ -118,6 +118,6 @@ def init_imbalanced_bias(data:pd.DataFrame, target_col:str):
         return [exp(x[i])/sum_exp - frequency[i] for i in range(len(frequency))]
 
     # calculate init bias
-    bias_init = fsolve(func=eqn, x0=[0]*len(frequency)).tolist()
+    bias_init = fsolve(func=eqn, x0=[0]*len(frequency)).tolist() #type: ignore
 
     return bias_init

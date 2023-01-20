@@ -1,13 +1,11 @@
-
-from platform import processor
-import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
-from keras.regularizers import l1, l2
+from keras.regularizers import l1
 from keras import callbacks as kc
 from keras.optimizers import Adam
 from classifier.base_classifier import BaseClassifier
+import utils
 
 class DNNClassifer(BaseClassifier):
 
@@ -60,7 +58,7 @@ class DNNClassifer(BaseClassifier):
         if (gpu):
             processor = "/gpu:0"
         
-        with tf.device(processor):
+        with tf.device(processor): #type:ignore
             self.history = self.model.fit(
                 x=self.x_train,
                 y=self.y_train,
@@ -69,11 +67,11 @@ class DNNClassifer(BaseClassifier):
                 validation_data=(self.x_val,self.y_val), 
                 shuffle=True, 
                 callbacks=[es_callback,modelckpt_callback],
-                class_weight=self.cw(self.y_train))
+                class_weight=utils.calculate_weight(self.data_train,target_col))
 
         self.saved_history = dict(self.history.history)
     
-        with tf.device(processor):
+        with tf.device(processor):          #type: ignore
             self.pred_prob = self.model.predict(x=self.x_test)
 
 
