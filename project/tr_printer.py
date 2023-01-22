@@ -70,9 +70,9 @@ def print_confusion_matrix(y_true,y_pred, file = None):
     printb("\n=============",file = file)
     printb("CONFUSION MATRIX:",file = file)
     con_matrix = confusion_matrix(y_true=y_true,y_pred=y_pred) #type: ignore
-    df = pd.DataFrame(con_matrix, columns = ["P-{}".format(i) for i in range(0, len(con_matrix))])
+    df = pd.DataFrame(con_matrix, columns = ["P{}".format(i) for i in range(0, len(con_matrix))])
     df.loc[:,"Total"]= df.sum(axis = 1, numeric_only = True).astype(int)
     df.loc["Total"] = df.sum(axis = 0, numeric_only = True).astype(int)
     for i in range(0, len(con_matrix)):
-        df["RP-{}".format(i)] = round(df["P-{}".format(i)]/df["Total"],3)
+        df["RP{}".format(i)] = round(df["P-{}".format(i)]/df["Total"],3)
     printb(df,file = file)

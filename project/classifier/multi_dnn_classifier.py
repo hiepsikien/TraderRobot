@@ -11,7 +11,7 @@ from classifier.base_classifier import BaseClassifier
 import datetime
 from tr_utils import calculate_weight, init_imbalanced_bias
 import tr_utils
-from tr_printer import printb
+from tr_printer import print_labels_distribution, printb
 import tr_printer as trp
 
 METRICS = [
@@ -97,7 +97,7 @@ class MultiDNNClassifer(BaseClassifier):
             metrics = METRICS
         )
 
-    def run(self, dataset, target_col, gpu = False, set_class_weight = False,
+    def run(self, dataset, shuffle_when_train = False, gpu = False, set_class_weight = False,
         save_check_point = True, early_stopping= True,
         patience = 5, epochs = 200, batch_size = 10, file = None):
         '''  
@@ -123,6 +123,7 @@ class MultiDNNClassifer(BaseClassifier):
         if early_stopping:
             self.params["patience"] = patience
         self.params["epochs"] = epochs
+        self.params["shuffle_when_train"] = shuffle_when_train
         self.params["batch_size"] = batch_size 
 
         print_params(self.params,"CLASSIFIER PARAMS:",file = file)
@@ -159,9 +160,9 @@ class MultiDNNClassifer(BaseClassifier):
 
         if set_class_weight:
             class_weight=calculate_weight(
-                data = self.data_train,
-                target_col= target_col
+                y_train=np.argmax(y_train,axis=-1)
             )
+        
         else:
             class_weight=None
 
@@ -173,7 +174,7 @@ class MultiDNNClassifer(BaseClassifier):
                 verbose="auto", 
                 batch_size=batch_size,
                 validation_data=(x_val,y_val), 
-                shuffle=True,
+                shuffle=shuffle_when_train,
                 class_weight=class_weight,
                 callbacks=callback_list
             )
@@ -222,17 +223,17 @@ def split_to_k_folds(fm:FeatureManager, target_col:str, fold_number:int, train_s
 
     print_params(fm.params,title = "DATA PREPARATION PARAMS:", file=file)
 
+    printb("==========", file= file)
+    printb("DATA:", file = file)
+    printb("Total rows: {}".format(len(fm.df)),file = file)
+    print_labels_distribution(fm.df,target_col=target_col,file=file)
+
     #Calculate length
     print("Splitting the data...")
     fold_len = int(len(fm.df)/fold_number)
     dataset = []
 
-    printb("==========", file= file)
-    printb("DATA:", file = file)
-    
-
     for i in range(0,fold_number):
-        print("Proccesing fold {}".format(i))
         start_train = i * fold_len
         end_train = start_train + int(fold_len * train_size)
         end_val = end_train + int(fold_len * val_size)
@@ -289,13 +290,14 @@ def split_to_k_folds(fm:FeatureManager, target_col:str, fold_number:int, train_s
 def print_features_list(fm: FeatureManager, file = None):
     print("\n=============",file = file)
     print("FEATURES (show 1 for each):",file = file)
+
     for i in range(0,len(fm.cols),fm.params["lags"]):
         print("{},".format(fm.cols[i]),end=" ",file = file)
     print("\n",file=file)
 
 
-def evalute_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bool=False, 
-    save_check_point:bool = True, early_stopping:bool = True, set_class_weight:bool = False,
+def evaluate_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bool=False, 
+    save_check_point:bool = True, early_stopping:bool = True, shuffle_when_train:bool = False, set_class_weight:bool = False,
     epochs:int = 200, dropout = True, dropout_rate = 0.3, patience:int = 5,
     batch_size:int = 24, metrics:list[str] = [], write_to_file:bool = False):
     
@@ -341,7 +343,7 @@ def evalute_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bo
                 gpu = gpu,
                 dataset = dataset_list[i],
                 epochs=epochs,
-                target_col = fm.target_col,
+                shuffle_when_train = shuffle_when_train,
                 patience=patience,
                 early_stopping = early_stopping,
                 save_check_point = save_check_point,
@@ -359,7 +361,7 @@ def evalute_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bo
 
 def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split= True, gpu:bool=False, 
     save_check_point:bool = True, early_stopping:bool = True, set_class_weight:bool = False,
-    epochs:int = 200, dropout = True, dropout_rate = 0.3, patience:int = 5,
+    epochs:int = 200, dropout = True, dropout_rate = 0.3, shuffle_when_train = False, patience:int = 5,
     batch_size:int = 24, metrics:list[str] = [], write_to_file:bool = False):
     ''' 
     Run the classifier multiple time with loop calculate the average and std value of accuracy and loss
@@ -417,7 +419,7 @@ def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split
                 epochs=epochs, 
                 patience=patience,
                 dataset = dataset,
-                target_col = fm.target_col,
+                shuffle_when_train = shuffle_when_train,
                 early_stopping = early_stopping,
                 save_check_point = save_check_point,
                 set_class_weight = set_class_weight,

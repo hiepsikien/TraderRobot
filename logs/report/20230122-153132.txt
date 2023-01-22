@@ -1,0 +1,205 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1h
+take_profit_rate:0.05
+stop_loss_rate:0.05
+max_duration:12
+lags:90
+fold_number:5
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:None
+==========
+DATA:
+Total rows: 46743
+Label 0: 38811(83.03%)
+Label 1: 3712(7.94%)
+Label 2: 4220(9.03%)
+
+FOLD 1
+Train: 6543, Validation: 1402, Test: 1403
+
+Train:
+Label 0: 4001(61.15%)
+Label 1: 1165(17.81%)
+Label 2: 1377(21.05%)
+
+Validation:
+Label 0: 1249(89.09%)
+Label 1: 92(6.56%)
+Label 2: 61(4.35%)
+
+Test:
+Label 0: 1265(90.16%)
+Label 1: 37(2.64%)
+Label 2: 101(7.2%)
+
+FOLD 2
+Train: 6543, Validation: 1402, Test: 1403
+
+Train:
+Label 0: 5789(88.48%)
+Label 1: 384(5.87%)
+Label 2: 370(5.65%)
+
+Validation:
+Label 0: 1033(73.68%)
+Label 1: 156(11.13%)
+Label 2: 213(15.19%)
+
+Test:
+Label 0: 1305(93.01%)
+Label 1: 39(2.78%)
+Label 2: 59(4.21%)
+
+FOLD 3
+Train: 6543, Validation: 1402, Test: 1403
+
+Train:
+Label 0: 5772(88.22%)
+Label 1: 405(6.19%)
+Label 2: 366(5.59%)
+
+Validation:
+Label 0: 1324(94.44%)
+Label 1: 23(1.64%)
+Label 2: 55(3.92%)
+
+Test:
+Label 0: 1341(95.58%)
+Label 1: 34(2.42%)
+Label 2: 28(2.0%)
+
+FOLD 4
+Train: 6543, Validation: 1402, Test: 1403
+
+Train:
+Label 0: 4816(73.61%)
+Label 1: 833(12.73%)
+Label 2: 894(13.66%)
+
+Validation:
+Label 0: 1270(90.58%)
+Label 1: 53(3.78%)
+Label 2: 79(5.63%)
+
+Test:
+Label 0: 1260(89.81%)
+Label 1: 51(3.64%)
+Label 2: 92(6.56%)
+
+FOLD 5
+Train: 6543, Validation: 1402, Test: 1403
+
+Train:
+Label 0: 5766(88.12%)
+Label 1: 363(5.55%)
+Label 2: 414(6.33%)
+
+Validation:
+Label 0: 1296(92.44%)
+Label 1: 49(3.5%)
+Label 2: 57(4.07%)
+
+Test:
+Label 0: 1321(94.16%)
+Label 1: 28(2.0%)
+Label 2: 54(3.85%)
+
+>>>>>> FOLD 1
+
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[0.7668201145079273, -0.4670031283495055, -0.29981699562065395]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[0.7668201145079273, -0.4670031283495055, -0.29981699562065395]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.91      0.98      0.94      1265
+           1       0.37      0.27      0.31        37
+           2       0.43      0.10      0.16       101
+
+    accuracy                           0.90      1403
+   macro avg       0.57      0.45      0.47      1403
+weighted avg       0.86      0.90      0.87      1403
+
+
+=============
+CONFUSION MATRIX:
+        P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0      1236   16   13   1265  0.977  0.013  0.010
+1        27   10    0     37  0.730  0.270  0.000
+2        90    1   10    101  0.891  0.010  0.099
+Total  1353   27   23   1403  0.964  0.019  0.016
+
+>>>>>> FOLD 2
+
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[1.8210947033076719, -0.8919775881828302, -0.9291171351338379]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[1.8210947033076719, -0.8919775881828302, -0.9291171351338379]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20

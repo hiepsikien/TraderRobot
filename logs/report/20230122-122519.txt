@@ -1,0 +1,214 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1d
+take_profit_rate:0.1
+stop_loss_rate:0.08
+max_duration:12
+lags:90
+fold_number:3
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:None
+==========
+DATA:
+
+FOLD 1
+Train: 353, Validation: 75, Test: 77
+
+Train:
+Label 0: 136(38.53%)
+Label 1: 122(34.56%)
+Label 2: 95(26.91%)
+
+Validation:
+Label 0: 28(37.33%)
+Label 1: 19(25.33%)
+Label 2: 28(37.33%)
+
+Test:
+Label 0: 21(27.27%)
+Label 1: 23(29.87%)
+Label 2: 33(42.86%)
+
+FOLD 2
+Train: 353, Validation: 75, Test: 77
+
+Train:
+Label 0: 128(36.26%)
+Label 1: 171(48.44%)
+Label 2: 54(15.3%)
+
+Validation:
+Label 0: 16(21.33%)
+Label 1: 19(25.33%)
+Label 2: 40(53.33%)
+
+Test:
+Label 0: 14(18.18%)
+Label 1: 34(44.16%)
+Label 2: 29(37.66%)
+
+FOLD 3
+Train: 353, Validation: 75, Test: 77
+
+Train:
+Label 0: 104(29.46%)
+Label 1: 105(29.75%)
+Label 2: 144(40.79%)
+
+Validation:
+Label 0: 43(57.33%)
+Label 1: 14(18.67%)
+Label 2: 18(24.0%)
+
+Test:
+Label 0: 58(75.32%)
+Label 1: 5(6.49%)
+Label 2: 14(18.18%)
+
+>>>>>> FOLD 1
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[0.15580393806938062, 0.047170097067815636, -0.20297405606557234]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:False
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.39      0.52      0.45        21
+           1       0.13      0.26      0.17        23
+           2       1.00      0.06      0.11        33
+
+    accuracy                           0.25        77
+   macro avg       0.51      0.28      0.24        77
+weighted avg       0.57      0.25      0.22        77
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0       11   10    0     21  0.524  0.476  0.000
+1       17    6    0     23  0.739  0.261  0.000
+2        0   31    2     33  0.000  0.939  0.061
+Total   28   47    2     77  0.364  0.610  0.026
+
+>>>>>> FOLD 2
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[0.19113764646660975, 0.4807709390493907, -0.6719085708890135]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:False
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00        14
+           1       0.45      0.94      0.61        34
+           2       0.00      0.00      0.00        29
+
+    accuracy                           0.42        77
+   macro avg       0.15      0.31      0.20        77
+weighted avg       0.20      0.42      0.27        77
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total  RP-0   RP-1   RP-2
+0        0   10    4     14   0.0  0.714  0.286
+1        0   32    2     34   0.0  0.941  0.059
+2        0   29    0     29   0.0  1.000  0.000
+Total    0   71    6     77   0.0  0.922  0.078
+
+>>>>>> FOLD 3
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[-0.11166395683383076, -0.10209450581767954, 0.2137584436007974]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:False
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       1.00      0.07      0.13        58
+           1       0.03      0.20      0.06         5
+           2       0.27      0.86      0.41        14
+
+    accuracy                           0.22        77
+   macro avg       0.44      0.38      0.20        77
+weighted avg       0.81      0.22      0.18        77
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0        4   26   28     58  0.069  0.448  0.483
+1        0    1    4      5  0.000  0.200  0.800
+2        0    2   12     14  0.000  0.143  0.857
+Total    4   29   44     77  0.052  0.377  0.571
+
+>>>>>>
+EVALUATION SUMMARY:
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     3.900     0.247      0.247   0.247           0.264        0.247   
+2     6.479     0.416      0.416   0.416           0.413        0.403   
+3     2.710     0.221      0.206   0.182           0.200        0.143   
+mean  4.363     0.294      0.289   0.281           0.292        0.264   
+std   1.927     0.106      0.111   0.121           0.109        0.131   
+min   2.710     0.221      0.206   0.182           0.200        0.143   
+max   6.479     0.416      0.416   0.416           0.413        0.403   
+
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.250        0.195           0.261        0.156  
+2              0.425        0.403           0.435        0.390  
+3              0.171        0.091           0.400        0.078  
+mean           0.282        0.229           0.365        0.208  
+std            0.130        0.159           0.092        0.162  
+min            0.171        0.091           0.261        0.078  
+max            0.425        0.403           0.435        0.390  

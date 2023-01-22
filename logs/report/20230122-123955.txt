@@ -1,0 +1,214 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1d
+take_profit_rate:0.1
+stop_loss_rate:0.08
+max_duration:12
+lags:90
+fold_number:3
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:None
+==========
+DATA:
+
+FOLD 1
+Train: 401, Validation: 86, Test: 87
+
+Train:
+Label 0: 159(39.65%)
+Label 1: 126(31.42%)
+Label 2: 116(28.93%)
+
+Validation:
+Label 0: 6(6.98%)
+Label 1: 49(56.98%)
+Label 2: 31(36.05%)
+
+Test:
+Label 0: 50(57.47%)
+Label 1: 9(10.34%)
+Label 2: 28(32.18%)
+
+FOLD 2
+Train: 401, Validation: 86, Test: 87
+
+Train:
+Label 0: 158(39.4%)
+Label 1: 154(38.4%)
+Label 2: 89(22.19%)
+
+Validation:
+Label 0: 9(10.47%)
+Label 1: 57(66.28%)
+Label 2: 20(23.26%)
+
+Test:
+Label 0: 18(20.69%)
+Label 1: 23(26.44%)
+Label 2: 46(52.87%)
+
+FOLD 3
+Train: 401, Validation: 86, Test: 87
+
+Train:
+Label 0: 107(26.68%)
+Label 1: 128(31.92%)
+Label 2: 166(41.4%)
+
+Validation:
+Label 0: 44(51.16%)
+Label 1: 22(25.58%)
+Label 2: 20(23.26%)
+
+Test:
+Label 0: 66(75.86%)
+Label 1: 6(6.9%)
+Label 2: 15(17.24%)
+
+>>>>>> FOLD 1
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[0.18264544324235676, -0.04997685202628263, -0.13266856787169076]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.68      0.26      0.38        50
+           1       0.16      0.67      0.26         9
+           2       0.37      0.39      0.38        28
+
+    accuracy                           0.34        87
+   macro avg       0.40      0.44      0.34        87
+weighted avg       0.53      0.34      0.37        87
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0       13   19   18     50  0.260  0.380  0.360
+1        2    6    1      9  0.222  0.667  0.111
+2        4   13   11     28  0.143  0.464  0.393
+Total   19   38   30     87  0.218  0.437  0.345
+
+>>>>>> FOLD 2
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[0.199867036770681, 0.17422460615734336, -0.3740916265241459]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.12      0.06      0.08        18
+           1       0.29      1.00      0.45        23
+           2       0.00      0.00      0.00        46
+
+    accuracy                           0.28        87
+   macro avg       0.14      0.35      0.18        87
+weighted avg       0.10      0.28      0.14        87
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1  RP-2
+0        1   17    0     18  0.056  0.944   0.0
+1        0   23    0     23  0.000  1.000   0.0
+2        7   39    0     46  0.152  0.848   0.0
+Total    8   79    0     87  0.092  0.908   0.0
+
+>>>>>> FOLD 3
+
+
+=============
+CLASSIFIER PARAMS:
+hu:1000
+output_bias:[-0.20612013908928775, -0.02691870963157657, 0.2330388148053494]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       1.00      0.15      0.26        66
+           1       0.07      0.17      0.10         6
+           2       0.19      0.80      0.31        15
+
+    accuracy                           0.26        87
+   macro avg       0.42      0.37      0.22        87
+weighted avg       0.80      0.26      0.26        87
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0       10   11   45     66  0.152  0.167  0.682
+1        0    1    5      6  0.000  0.167  0.833
+2        0    3   12     15  0.000  0.200  0.800
+Total   10   15   62     87  0.115  0.172  0.713
+
+>>>>>>
+EVALUATION SUMMARY:
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     2.892     0.345      0.329   0.310           0.357        0.287   
+2     9.307     0.276      0.276   0.276           0.282        0.276   
+3     3.068     0.264      0.267   0.264           0.222        0.184   
+mean  5.089     0.295      0.291   0.284           0.287        0.249   
+std   3.654     0.044      0.034   0.024           0.068        0.057   
+min   2.892     0.264      0.267   0.264           0.222        0.184   
+max   9.307     0.345      0.329   0.310           0.357        0.287   
+
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.306        0.172           0.111        0.023  
+2              0.274        0.264           0.289        0.253  
+3              0.180        0.126           0.162        0.069  
+mean           0.253        0.188           0.188        0.115  
+std            0.065        0.070           0.092        0.122  
+min            0.180        0.126           0.111        0.023  
+max            0.306        0.264           0.289        0.253  

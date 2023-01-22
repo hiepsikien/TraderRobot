@@ -84,8 +84,8 @@ def first_time_go_below_price(start_time:int,end_time:int,target_price:float,gra
     first_index = lookup_data.loc[lookup_data["Low"]<target_price].index.min()
     return first_index
 
-def calculate_weight(data:pd.DataFrame,target_col:str):
-        counts = pd.DataFrame(data[target_col]).value_counts().sort_index()
+def calculate_weight(y_train:str):
+        counts = pd.DataFrame(y_train).value_counts().sort_index()
         weights = 1/counts * counts.sum()/(len(counts))
         return {i:weights[i] for i in counts.index.map(lambda x:x[0])}
 
@@ -101,8 +101,8 @@ def init_imbalanced_bias(y_train):
         bias_init:list e.g. [0.3222079660508266, 0.1168690393701237, -0.43907701967633633]
     Examples:
         bias_init = init_imbalanced_class_weight_bias(df=train_df, lable=label)
-
     """
+    
     # to deal with imbalance classification, calculate class_weight 
     d = dict(pd.DataFrame(y_train).value_counts().sort_index())
 
