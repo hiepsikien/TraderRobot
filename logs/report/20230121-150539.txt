@@ -1,0 +1,83 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+>>>>>> LAP 1
+
+==========
+DATA:
+Data Train: 1206, Validation: 258, Test: 260
+
+Train:
+Label 0: 418(34.66%)
+Label 1: 409(33.91%)
+Label 2: 379(31.43%)
+
+Validation:
+Label 0: 104(40.31%)
+Label 1: 89(34.5%)
+Label 2: 65(25.19%)
+
+Test:
+Label 0: 97(37.31%)
+Label 1: 76(29.23%)
+Label 2: 87(33.46%)
+
+=============
+PARAMS:
+random_state:1
+is_shuffle:True
+categorical_label:True
+rebalance:None
+hu:3000
+output_bias:[0.039903826239926485, 0.01813754975797201, -0.058041401202403496]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:False
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+batch_size:20
+
+=============
+CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+           0       0.75      0.61      0.67        97
+           1       0.67      0.79      0.73        76
+           2       0.76      0.80      0.78        87
+
+    accuracy                           0.73       260
+   macro avg       0.73      0.73      0.73       260
+weighted avg       0.73      0.73      0.72       260
+
+
+=============
+CONFUSION MATRIX:
+       P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
+0       59   22   16     97  0.608  0.227  0.165
+1       10   60    6     76  0.132  0.789  0.079
+2       10    7   70     87  0.115  0.080  0.805
+Total   79   89   92    260  0.304  0.342  0.354
+
+>>>>>>
+EVALUATION SUMMARY:
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     1.324     0.727      0.729   0.715           0.748        0.685   
+mean  1.324     0.727      0.729   0.715           0.748        0.685   
+std     NaN       NaN        NaN     NaN             NaN          NaN   
+min   1.324     0.727      0.729   0.715           0.748        0.685   
+max   1.324     0.727      0.729   0.715           0.748        0.685   
+
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.782        0.635           0.836         0.55  
+mean           0.782        0.635           0.836         0.55  
+std              NaN          NaN             NaN          NaN  
+min            0.782        0.635           0.836         0.55  
+max            0.782        0.635           0.836         0.55  

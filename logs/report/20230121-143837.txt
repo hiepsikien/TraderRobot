@@ -1,7 +1,7 @@
 
 =============
-FEATURES (not including lag):
-returns_lag_1, returns_lag_2, returns_lag_3, returns_lag_4, returns_lag_5, returns_lag_6, returns_lag_7, returns_lag_8, returns_lag_9, returns_lag_10, returns_lag_11, returns_lag_12, returns_lag_13, returns_lag_14, returns_lag_15, returns_lag_16, returns_lag_17, returns_lag_18, returns_lag_19, returns_lag_20, returns_lag_21, returns_lag_22, returns_lag_23, returns_lag_24, returns_lag_25, returns_lag_26, returns_lag_27, returns_lag_28, returns_lag_29, returns_lag_30, returns_lag_31, returns_lag_32, returns_lag_33, returns_lag_34, returns_lag_35, returns_lag_36, returns_lag_37, returns_lag_38, returns_lag_39, returns_lag_40, returns_lag_41, returns_lag_42, returns_lag_43, returns_lag_44, returns_lag_45, returns_lag_46, returns_lag_47, returns_lag_48, returns_lag_49, returns_lag_50, returns_lag_51, returns_lag_52, returns_lag_53, returns_lag_54, returns_lag_55, 
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
 
 
 >>>>>> LAP 1
@@ -9,14 +9,17 @@ returns_lag_1, returns_lag_2, returns_lag_3, returns_lag_4, returns_lag_5, retur
 ==========
 DATA:
 Data Train: 1206, Validation: 258, Test: 260
+
 Train:
 Label 0: 418(34.66%)
 Label 1: 409(33.91%)
 Label 2: 379(31.43%)
+
 Validation:
 Label 0: 104(40.31%)
 Label 1: 89(34.5%)
 Label 2: 65(25.19%)
+
 Test:
 Label 0: 97(37.31%)
 Label 1: 76(29.23%)
@@ -24,14 +27,9 @@ Label 2: 87(33.46%)
 
 =============
 PARAMS:
-trade_timeframe:1d
-take_profit_rate:0.1
-stop_loss_rate:0.08
-max_duration:12
-lags:90
 random_state:1
 is_shuffle:True
-y_to_categorical:True
+categorical_label:True
 rebalance:None
 hu:2000
 output_bias:[0.039903826239926485, 0.01813754975797201, -0.058041401202403496]
@@ -73,14 +71,17 @@ Total   89   91   80    260  0.342  0.350  0.308
 ==========
 DATA:
 Data Train: 1206, Validation: 258, Test: 260
+
 Train:
 Label 0: 447(37.06%)
 Label 1: 387(32.09%)
 Label 2: 372(30.85%)
+
 Validation:
 Label 0: 86(33.33%)
 Label 1: 92(35.66%)
 Label 2: 80(31.01%)
+
 Test:
 Label 0: 86(33.08%)
 Label 1: 95(36.54%)
@@ -88,14 +89,9 @@ Label 2: 79(30.38%)
 
 =============
 PARAMS:
-trade_timeframe:1d
-take_profit_rate:0.1
-stop_loss_rate:0.08
-max_duration:12
-lags:90
 random_state:2
 is_shuffle:True
-y_to_categorical:True
+categorical_label:True
 rebalance:None
 hu:2000
 output_bias:[0.10926621052533671, -0.03486769105844862, -0.0743985298150877]
@@ -137,14 +133,17 @@ Total  103   77   80    260  0.396  0.296  0.308
 ==========
 DATA:
 Data Train: 1206, Validation: 258, Test: 260
+
 Train:
 Label 0: 427(35.41%)
 Label 1: 408(33.83%)
 Label 2: 371(30.76%)
+
 Validation:
 Label 0: 91(35.27%)
 Label 1: 83(32.17%)
 Label 2: 84(32.56%)
+
 Test:
 Label 0: 101(38.85%)
 Label 1: 83(31.92%)
@@ -152,14 +151,9 @@ Label 2: 76(29.23%)
 
 =============
 PARAMS:
-trade_timeframe:1d
-take_profit_rate:0.1
-stop_loss_rate:0.08
-max_duration:12
-lags:90
 random_state:3
 is_shuffle:True
-y_to_categorical:True
+categorical_label:True
 rebalance:None
 hu:2000
 output_bias:[0.06203292028968094, 0.016516081465218123, -0.0785490303315086]
@@ -179,36 +173,39 @@ batch_size:20
 CLASSIFICATION REPORT:
               precision    recall  f1-score   support
 
-           0       0.74      0.63      0.68       101
-           1       0.71      0.81      0.76        83
-           2       0.73      0.76      0.75        76
+           0       0.70      0.58      0.64       101
+           1       0.73      0.81      0.77        83
+           2       0.70      0.78      0.74        76
 
-    accuracy                           0.73       260
-   macro avg       0.73      0.73      0.73       260
-weighted avg       0.73      0.73      0.72       260
+    accuracy                           0.71       260
+   macro avg       0.71      0.72      0.71       260
+weighted avg       0.71      0.71      0.71       260
 
 
 =============
 CONFUSION MATRIX:
        P-0  P-1  P-2  Total   RP-0   RP-1   RP-2
-0       64   20   17    101  0.634  0.198  0.168
+0       59   21   21    101  0.584  0.208  0.208
 1       12   67    4     83  0.145  0.807  0.048
-2       11    7   58     76  0.145  0.092  0.763
-Total   87   94   79    260  0.335  0.362  0.304
+2       13    4   59     76  0.171  0.053  0.776
+Total   84   92   84    260  0.323  0.354  0.323
 
 >>>>>> LAP 4
 
 ==========
 DATA:
 Data Train: 1206, Validation: 258, Test: 260
+
 Train:
 Label 0: 425(35.24%)
 Label 1: 413(34.25%)
 Label 2: 368(30.51%)
+
 Validation:
 Label 0: 105(40.7%)
 Label 1: 83(32.17%)
 Label 2: 70(27.13%)
+
 Test:
 Label 0: 89(34.23%)
 Label 1: 78(30.0%)
@@ -216,14 +213,9 @@ Label 2: 93(35.77%)
 
 =============
 PARAMS:
-trade_timeframe:1d
-take_profit_rate:0.1
-stop_loss_rate:0.08
-max_duration:12
-lags:90
 random_state:4
 is_shuffle:True
-y_to_categorical:True
+categorical_label:True
 rebalance:None
 hu:2000
 output_bias:[0.05754927293885754, 0.028907696975473404, -0.08645695781662842]
@@ -265,14 +257,17 @@ Total   93   76   91    260  0.358  0.292  0.350
 ==========
 DATA:
 Data Train: 1206, Validation: 258, Test: 260
+
 Train:
 Label 0: 436(36.15%)
 Label 1: 402(33.33%)
 Label 2: 368(30.51%)
+
 Validation:
 Label 0: 84(32.56%)
 Label 1: 88(34.11%)
 Label 2: 86(33.33%)
+
 Test:
 Label 0: 99(38.08%)
 Label 1: 84(32.31%)
@@ -280,14 +275,9 @@ Label 2: 77(29.62%)
 
 =============
 PARAMS:
-trade_timeframe:1d
-take_profit_rate:0.1
-stop_loss_rate:0.08
-max_duration:12
-lags:90
 random_state:5
 is_shuffle:True
-y_to_categorical:True
+categorical_label:True
 rebalance:None
 hu:2000
 output_bias:[0.08358315680864217, 0.002393002078628901, -0.08597614837146135]
@@ -326,9 +316,24 @@ Total   92  103   65    260  0.354  0.396  0.250
 
 >>>>>>
 EVALUATION SUMMARY:
-loss mean: 1.006289553642273, std: 0.11403009263831429
-accuracy mean: 0.8287179470062256, std: 0.017401945889730878
-precision mean: 0.7465498805046081, std: 0.027095990659224876
-recall mean: 0.7361538410186768, std: 0.02511512117161639
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     1.094     0.750      0.755   0.746           0.798        0.700   
+2     1.057     0.715      0.723   0.712           0.738        0.650   
+3     1.056     0.712      0.718   0.704           0.754        0.662   
+4     0.781     0.788      0.796   0.781           0.840        0.727   
+5     1.057     0.727      0.730   0.719           0.762        0.654   
+mean  1.009     0.738      0.744   0.732           0.779        0.678   
+std   0.129     0.032      0.032   0.031           0.041        0.034   
+min   0.781     0.712      0.718   0.704           0.738        0.650   
+max   1.094     0.788      0.796   0.781           0.840        0.727   
 
-
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.834        0.619           0.866        0.496  
+2              0.746        0.588           0.836        0.450  
+3              0.795        0.612           0.836        0.469  
+4              0.859        0.631           0.922        0.458  
+5              0.786        0.581           0.815        0.388  
+mean           0.804        0.606           0.855        0.452  
+std            0.044        0.021           0.042        0.040  
+min            0.746        0.581           0.815        0.388  
+max            0.859        0.631           0.922        0.496  

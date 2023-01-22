@@ -5,7 +5,7 @@ import talib as ta
 from sklearn.preprocessing import StandardScaler
 plt.style.use("seaborn")
 from random import randint
-import utils as tu
+import tr_utils as tu
 
 TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"1d":24*60*60*1000}
 class FeatureManager():
@@ -399,7 +399,6 @@ class FeatureManager():
             ol_tp_cond = df["ol_tp"]
             ol_sl_cond = df["ol_sl"]
             
-
             # Open long positions not hit either take-profit or stop-loss, leave it open
             df.loc[open_long_cond & ~ol_tp_cond & ~ol_sl_cond, long_str] = 0
             
@@ -439,8 +438,7 @@ class FeatureManager():
             self.df.dropna(inplace=True)
 
         print("\nLabel producing completed. \n Value counts:")
-        print(self.df[self.target_col].value_counts())
-            
+        print(self.df[self.target_col].value_counts())            
 
     def plot_features_correlation(self):
         ''' Show the correlation between pairs of features

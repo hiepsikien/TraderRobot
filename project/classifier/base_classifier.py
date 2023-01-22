@@ -4,33 +4,22 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from visualizer import visualize_efficiency_by_cutoff
-import utils as tu
+import tr_utils as tu
 from keras.utils import np_utils
 import numpy as np
+from tr_printer import printb, print_labels_distribution
 
 
 class BaseClassifier():
 
-    def __init__(self,seed = 100, dropout_rate = 0.3, neg_cutoff = 0.45, pos_cutoff = 0.55, train_size = 0.7, val_size =0.15) -> None:
+    def __init__(self,seed = 100, neg_cutoff = 0.45, pos_cutoff = 0.55) -> None:
         super().__init__()
         self.model = None
         self.set_seeds(seed)
         self.set_cutoff(neg_cutoff = neg_cutoff, pos_cutoff =pos_cutoff)
-        self.set_train_size(train_size)
-        self.set_val_size(val_size)
-        self.set_dropout_rate(dropout_rate)
         self.saved_history = None
         self.params = dict()
     
-    def set_dropout_rate(self,dropout_rate):
-        self.dropout_rate = dropout_rate
-
-    def set_val_size(self, val_size):
-        self.val_size = val_size
-
-    def set_train_size(self, train_size):
-        self.train_size = train_size
-
     def set_cutoff(self,neg_cutoff, pos_cutoff):
         self.neg_cutoff = neg_cutoff
         self.pos_cutoff = pos_cutoff
@@ -79,7 +68,7 @@ class BaseClassifier():
         else:
             print("No learning history")
 
-    def prepare_dataset(self, data, cols, target_col, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1):
+    def prepare_dataset(self, data, cols, target_col, train_size, val_size, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1):
         '''
         Prepare the dataset that required to feed by model such as LSTM
 
@@ -97,8 +86,8 @@ class BaseClassifier():
 
        #Calculate length
         data_len = len(data[target_col])
-        train_len = int(data_len*self.train_size)
-        val_len = int(data_len*self.val_size)
+        train_len = int(data_len*train_size)
+        val_len = int(data_len*val_size)
         test_len = data_len - train_len - val_len
 
         print("Train = {}, Val = {}, Test = {}, All = {}".format(train_len,val_len,test_len,data_len))
@@ -157,9 +146,9 @@ class BaseClassifier():
         for end in range(window_len-1,len(y_test),sequence_stride):
             y_list.append(y_test[end])
         return y_list
-    
-    def prepare_data(self, data:pd.DataFrame, cols:list, target_col:str, random_state:int = 1, 
-        is_shuffle:bool = True, y_to_categorical:bool = False, rebalance = None, cat_length:int = 1000,file = None):
+
+    def prepare_data(self, data:pd.DataFrame, cols:list, target_col:str, train_size:float=0.7, val_size:float=0.15, random_state:int = 1, 
+        shuffle_before_split:bool = True, categorical_label:bool = False, rebalance = None, cat_length:int = 1000,file = None):
         ''' 
         Make the data balance for all categories, shuffle and split for train, validation and test
 
@@ -167,23 +156,26 @@ class BaseClassifier():
         - data: input data as dataframe
         - cols: list of features name
         - target_col: target column name
+        - train_size: data train ratio, exp 0.7
+        - val_size: data validation ratio, exp 0.15
         - random_state: a random state used for shuffle data
         - rebalance: "over": oversampling, "under": under sampling, "fix": fix the number of each cat to cat_length
         - cat_length: the number of each category if rebalance parameter is "fix"
-        - y_to_categorical: if True, convert y_ data values to hot-bed, ex. 0: [1,0,0], 1:[0,1,0], 2:[0,0,1]
+        - categorical_label: if True, convert y_ data values to hot-bed, ex. 0: [1,0,0], 1:[0,1,0], 2:[0,0,1]
         
-        Return: nothing. The training, validation, test data is stored as objects attributes.
+        Return: The list of data for training, validation and testing.
         '''
 
         self.params["random_state"] = random_state
-        self.params["is_shuffle"] = is_shuffle
-        self.params["y_to_categorical"] = y_to_categorical
+        self.params["is_shuffle"] = shuffle_before_split
+        self.params["categorical_label"] = categorical_label
         self.params["rebalance"] = rebalance
+        
         if rebalance == "fix":
             self.params["cat_lentgh"] = cat_length
 
         # Shuffle data
-        if is_shuffle:
+        if shuffle_before_split:
             print("Shuffling the data...")
             shuffled = data.sample(frac=1,random_state=random_state)
         else:
@@ -191,8 +183,8 @@ class BaseClassifier():
 
         #Calculate length
         data_len = len(shuffled)
-        train_len = int(data_len*self.train_size)
-        val_len = int(data_len*self.val_size)
+        train_len = int(data_len * train_size)
+        val_len = int(data_len * val_size)
         test_len = data_len - train_len - val_len
 
         #Split data to train + validation + test
@@ -225,46 +217,36 @@ class BaseClassifier():
                 print("Failed to rebalance data due to wrong arguments")
             
 
-        self.x_train = self.data_train[cols].values
-        self.x_val = self.data_val[cols].values
-        self.x_test = self.data_test[cols].values
+        x_train = self.data_train[cols].values
+        x_val = self.data_val[cols].values
+        x_test = self.data_test[cols].values
         
 
-        if y_to_categorical:
-            self.y_train = np_utils.to_categorical(self.data_train[target_col].values,dtype="int64")
-            self.y_val = np_utils.to_categorical(self.data_val[target_col].values,dtype="int64")
-            self.y_test = np_utils.to_categorical(self.data_test[target_col].values,dtype="int64")
+        if categorical_label:
+            y_train = np_utils.to_categorical(self.data_train[target_col].values,dtype="int64")
+            y_val = np_utils.to_categorical(self.data_val[target_col].values,dtype="int64")
+            y_test = np_utils.to_categorical(self.data_test[target_col].values,dtype="int64")
         else:
-            self.y_train = self.data_train[target_col].values
-            self.y_val = self.data_val[target_col].values
-            self.y_test = self.data_test[target_col].values
+            y_train = self.data_train[target_col].values
+            y_val = self.data_val[target_col].values
+            y_test = self.data_test[target_col].values
 
         print("Data preparation completed.")
-        print("==========", file= file)
-        print("DATA:", file = file)
-        print("Data Train: {}, Validation: {}, Test: {}".
+        printb("==========", file= file)
+        printb("DATA:", file = file)
+        printb("Data Train: {}, Validation: {}, Test: {}".
             format(len(self.data_train),len(self.data_val),len(self.data_test)),file = file)
 
-        print("Train:", file = file)
-        self.print_labels_distribution(self.data_train,target_col,file=file)
+        printb("\nTrain:", file = file)
+        print_labels_distribution(self.data_train,target_col,file=file)
 
-        print("Validation:", file = file)
-        self.print_labels_distribution(self.data_val,target_col,file=file)
+        printb("\nValidation:", file = file)
+        print_labels_distribution(self.data_val,target_col,file=file)
 
-        print("Test:",file = file)
-        self.print_labels_distribution(self.data_test,target_col,file=file)
+        printb("\nTest:",file = file)
+        print_labels_distribution(self.data_test,target_col,file=file)
 
-    def print_labels_distribution(self,data:pd.DataFrame,target_col:str, file=None):
-        value_counts = data[target_col].value_counts()
-        value_counts.sort_index(inplace=True)
-        for i in value_counts.index:
-            print("Label {}: {}({}%)".format(
-                i,
-                value_counts[i],                                    #type: ignore
-                round(value_counts[i]/value_counts.sum()*100,2)     #type: ignore
-                ),
-                file = file
-            )
+        return [x_train,y_train,x_val,y_val,x_test,y_test]
 
     def run(self):
         pass

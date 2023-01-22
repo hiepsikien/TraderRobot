@@ -67,8 +67,7 @@ def first_time_go_above_price(start_time:int,end_time:int,target_price:float,gra
     Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
     Return time in unix utc milisecond.
     '''
-    lookup_data = granular_data.iloc[
-        (granular_data.index>=start_time) & 
+    lookup_data = granular_data.iloc[(granular_data.index>=start_time) & 
         (granular_data.index<end_time)].copy()
 
     first_index = lookup_data.loc[lookup_data["High"]>=target_price].index.min()
@@ -79,8 +78,7 @@ def first_time_go_below_price(start_time:int,end_time:int,target_price:float,gra
     Find the time in ms that take profit and stop loss condition satisified in the granular data for short trade
     Return time in unix utc milisecond.
     '''
-    lookup_data = granular_data.iloc[
-        (granular_data.index>=start_time) & 
+    lookup_data = granular_data.iloc[(granular_data.index>=start_time) & 
         (granular_data.index<end_time)].copy()
 
     first_index = lookup_data.loc[lookup_data["Low"]<target_price].index.min()
@@ -91,15 +89,14 @@ def calculate_weight(data:pd.DataFrame,target_col:str):
         weights = 1/counts * counts.sum()/(len(counts))
         return {i:weights[i] for i in counts.index.map(lambda x:x[0])}
 
-def init_imbalanced_bias(data:pd.DataFrame, target_col:str):
+def init_imbalanced_bias(y_train):
     """
     To handle imbalanced classification, provide initial bias list and class weight dictionary to 2 places in a tf classifier
     
     In the last layer of classifier: tf.keras.layers.Dense(..., bias_initializer = bias_init)
     
     Args:
-        data:pd.DataFrame=train_df
-        target_col:str
+        y_train: list of class label for train, ex. [1,2,0,1,2 ...]
     Returns:
         bias_init:list e.g. [0.3222079660508266, 0.1168690393701237, -0.43907701967633633]
     Examples:
@@ -107,7 +104,7 @@ def init_imbalanced_bias(data:pd.DataFrame, target_col:str):
 
     """
     # to deal with imbalance classification, calculate class_weight 
-    d = dict(data[target_col].value_counts().sort_index())
+    d = dict(pd.DataFrame(y_train).value_counts().sort_index())
 
     # define classes frequency list
     frequency = list(list(d.values())/sum(d.values()))  #type: ignore

@@ -5,7 +5,7 @@ from keras.regularizers import l1
 from keras import callbacks as kc
 from keras.optimizers import Adam
 from classifier.base_classifier import BaseClassifier
-import utils
+import tr_utils
 
 class DNNClassifer(BaseClassifier):
 
@@ -67,7 +67,7 @@ class DNNClassifer(BaseClassifier):
                 validation_data=(self.x_val,self.y_val), 
                 shuffle=True, 
                 callbacks=[es_callback,modelckpt_callback],
-                class_weight=utils.calculate_weight(self.data_train,target_col))
+                class_weight=tr_utils.calculate_weight(self.data_train,target_col))
 
         self.saved_history = dict(self.history.history)
     

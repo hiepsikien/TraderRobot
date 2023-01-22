@@ -1,29 +1,45 @@
-import pandas as pd
 from feature_manager import FeatureManager
-import utils
 import numpy as np
 import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
-from keras import callbacks
-from keras import metrics
+from keras import callbacks, metrics
+from keras.utils import np_utils
 from keras.regularizers import l1
 from keras.optimizers import Adam
 from classifier.base_classifier import BaseClassifier
 import datetime
-import utils
-from sklearn.metrics import classification_report, confusion_matrix
+from tr_utils import calculate_weight, init_imbalanced_bias
+import tr_utils
+from tr_printer import printb
+import tr_printer as trp
 
 METRICS = [
-      metrics.TruePositives(name='tp'),
-      metrics.FalsePositives(name='fp'),
-      metrics.TrueNegatives(name='tn'),
-      metrics.FalseNegatives(name='fn'), 
-      metrics.BinaryAccuracy(name='accuracy'),
-      metrics.Precision(name='precision'),
-      metrics.Recall(name='recall'),
-      metrics.AUC(name='auc'),
-      metrics.AUC(name='prc', curve='PR'), # precision-recall curve
+    metrics.TruePositives(name='tp'),
+    metrics.FalsePositives(name='fp'),
+    metrics.TrueNegatives(name='tn'),
+    metrics.FalseNegatives(name='fn'), 
+    metrics.CategoricalAccuracy(name='accuracy'),
+    metrics.Precision(name='precision'),
+    metrics.Precision(name='precision-0.55',thresholds=0.55),  
+    metrics.Precision(name='precision-0.60',thresholds=0.6),  
+    metrics.Precision(name='precision-0.65',thresholds=0.65),
+    metrics.Precision(name='precision-0.70',thresholds=0.70),
+    metrics.Precision(name='precision-0.75',thresholds=0.75),
+    metrics.Precision(name='precision-0.80',thresholds=0.80),
+    metrics.Precision(name='precision-0.85',thresholds=0.85),
+    metrics.Precision(name='precision-0.90',thresholds=0.90),
+    metrics.Precision(name='precision-0.95',thresholds=0.95),   
+    metrics.Recall(name='recall'),
+    metrics.Recall(name='recall-0.55',thresholds=0.55),
+    metrics.Recall(name='recall-0.60',thresholds=0.60),
+    metrics.Recall(name='recall-0.65',thresholds=0.65),
+    metrics.Recall(name='recall-0.70',thresholds=0.70),
+    metrics.Recall(name='recall-0.75',thresholds=0.75),
+    metrics.Recall(name='recall-0.80',thresholds=0.80),
+    metrics.Recall(name='recall-0.85',thresholds=0.85),
+    metrics.Recall(name='recall-0.90',thresholds=0.90),
+    metrics.Recall(name='recall-0.95',thresholds=0.95),
 ]
 
 class MultiDNNClassifer(BaseClassifier):
@@ -34,9 +50,10 @@ class MultiDNNClassifer(BaseClassifier):
         super().__init__(*args,**kwargs)
 
     def configure(self,hu, input_dim, class_num, 
+        dropout,
+        dropout_rate,
         output_bias = None, 
         loss="categorical_crossentropy", 
-        dropout = False, 
         regularize = False, 
         reg = l1(0.0005),
         learning_rate = 0.0001):
@@ -55,8 +72,9 @@ class MultiDNNClassifer(BaseClassifier):
         self.params["output_bias"] = output_bias
         self.params["loss"] = loss
         self.params["dropout"] = dropout
+
         if(dropout):
-            self.params["dropout_rate"] = self.dropout_rate
+            self.params["dropout_rate"] = dropout_rate
         self.params["learning_rate"] = learning_rate
 
         if not regularize:
@@ -65,7 +83,7 @@ class MultiDNNClassifer(BaseClassifier):
         self.model = Sequential()
         self.model.add(Dense(hu,input_dim = input_dim, activity_regularizer=reg, activation="relu",name="Dense1"))
         if dropout:
-            self.model.add(Dropout(rate = self.dropout_rate,seed =self.seeds,name="Dropout1"))
+            self.model.add(Dropout(rate = dropout_rate,seed =self.seeds,name="Dropout1"))
         # self.model.add(Dense(int(hu/4),activity_regularizer=reg,activation="relu",name="Dense2"))
         # if dropout:
         #     self.model.add(Dropout(rate = self.dropout_rate,seed =self.seeds,name="Dropout2"))
@@ -79,7 +97,7 @@ class MultiDNNClassifer(BaseClassifier):
             metrics = METRICS
         )
 
-    def run(self, fm:FeatureManager, gpu = False, set_class_weight = False,
+    def run(self, dataset, target_col, gpu = False, set_class_weight = False,
         save_check_point = True, early_stopping= True,
         patience = 5, epochs = 200, batch_size = 10, file = None):
         '''  
@@ -91,6 +109,12 @@ class MultiDNNClassifer(BaseClassifier):
 
         Returns: evalute result on test data
         '''
+        x_train = dataset[0]
+        y_train = dataset[1]
+        x_val = dataset[2]
+        y_val = dataset[3]
+        x_test = dataset[4]
+        y_test = dataset[5]
 
         self.params["gpu"] = gpu
         self.params["set_class_weight"] = set_class_weight
@@ -101,7 +125,7 @@ class MultiDNNClassifer(BaseClassifier):
         self.params["epochs"] = epochs
         self.params["batch_size"] = batch_size 
 
-        self.print_params(fm.params,file = file)
+        print_params(self.params,"CLASSIFIER PARAMS:",file = file)
 
         callback_list = []
 
@@ -134,21 +158,21 @@ class MultiDNNClassifer(BaseClassifier):
             processor = "/gpu:0"
 
         if set_class_weight:
-            class_weight=utils.calculate_weight(
+            class_weight=calculate_weight(
                 data = self.data_train,
-                target_col=fm.target_col
+                target_col= target_col
             )
         else:
             class_weight=None
 
         with tf.device(processor):  # type: ignore 
             self.history = self.model.fit(
-                x = self.x_train,
-                y = self.y_train,
+                x = x_train,
+                y = y_train,
                 epochs=epochs,
-                verbose=2, # type: ignore
+                verbose="auto", 
                 batch_size=batch_size,
-                validation_data=(self.x_val,self.y_val), 
+                validation_data=(x_val,y_val), 
                 shuffle=True,
                 class_weight=class_weight,
                 callbacks=callback_list
@@ -157,54 +181,186 @@ class MultiDNNClassifer(BaseClassifier):
         self.saved_history = dict(self.history.history)  #type: ignore
     
         with tf.device(processor): # type: ignore 
-            self.pred_prob = self.model.predict(x=self.x_test)
+            self.pred_prob = self.model.predict(x=x_test)
             self.pred_class = np.argmax(self.pred_prob,axis=-1)
 
             test_results = self.model.evaluate(
-                self.x_test,
-                self.y_test,
+                x_test,
+                y_test,
                 batch_size = batch_size,
                 return_dict = True
             )
+        y_pred_int = np.argmax(self.pred_prob, axis=1)
+        y_true_int = np.argmax(y_test,axis = 1)    #type: ignore
 
-        self.print_classification_report(file = file)
-        self.print_confusion_matrix(file = file)
+        trp.print_classification_report(y_true=y_true_int,y_pred=y_pred_int, file = file)
+        trp.print_confusion_matrix(y_true=y_true_int,y_pred=y_pred_int,file = file)
 
         return test_results
 
-    def print_params(self,pre_params:dict,file=None):
-        '''Print parameter of the classifier together with required extras
+    
+def print_params(params:dict,title:str,file=None):
         '''
-        params = pre_params | self.params
-        print("\n=============",file = file)
-        print("PARAMS:",file = file)
+        Print parameters 
+        '''
+        printb("\n=============",file = file)
+        printb(title,file = file)
         for key in params.keys():
-            print("{}:{}".format(key,params[key]),file = file)
+            printb("{}:{}".format(key,params[key]),file = file)
 
-    def print_classification_report(self,file=None):
-        '''Print classification report
-        '''
-        y_pred_int = np.argmax(self.pred_prob, axis=1)
-        y_test_int = np.argmax(self.y_test,axis = 1)    #type: ignore
-        print("\n=============",file = file)
-        print("CLASSIFICATION REPORT:",file = file)
-        print(classification_report(y_test_int, y_pred_int),file = file)
 
-    def print_confusion_matrix(self, file = None):
-        '''Print confusion matrix'''
-        print("\n=============",file = file)
-        print("CONFUSION MATRIX:",file = file)
-        con_matrix = confusion_matrix(np.argmax(self.y_test,axis=-1),self.pred_class) #type: ignore
-        df = pd.DataFrame(con_matrix, columns = ["P-{}".format(i) for i in range(0, len(con_matrix))])
-        df.loc[:,"Total"]= df.sum(axis = 1, numeric_only = True).astype(int)
-        df.loc["Total"] = df.sum(axis = 0, numeric_only = True).astype(int)
-        for i in range(0, len(con_matrix)):
-            df["RP-{}".format(i)] = round(df["P-{}".format(i)]/df["Total"],3)
-        print(df,file = file)
+def split_to_k_folds(fm:FeatureManager, target_col:str, fold_number:int, train_size:float=0.7,
+        val_size:float=0.15, categorical_label:bool = True, rebalance = None, file = None):
+    '''Split the number to multiple equal size piece, each piece devided to train, validation, test portion
+    '''
+
+    fm.params["fold_number"] = fold_number
+    fm.params["train_size"] = train_size
+    fm.params["val_size"] = val_size
+    fm.params["categorical_label"] = categorical_label
+    fm.params["rebalance"] = rebalance
+
+    print_params(fm.params,title = "DATA PREPARATION PARAMS:", file=file)
+
+    #Calculate length
+    print("Splitting the data...")
+    fold_len = int(len(fm.df)/fold_number)
+    dataset = []
+
+    printb("==========", file= file)
+    printb("DATA:", file = file)
+    
+
+    for i in range(0,fold_number):
+        print("Proccesing fold {}".format(i))
+        start_train = i * fold_len
+        end_train = start_train + int(fold_len * train_size)
+        end_val = end_train + int(fold_len * val_size)
+        end_test = end_val + fold_len - int(fold_len * train_size) - int(fold_len * val_size)
+        data_train = fm.df.iloc[start_train:end_train]
+        data_val = fm.df.iloc[end_train:end_val]
+        data_test = fm.df.iloc[end_val:end_test]
         
-def loop_classifier(hu:int,fm: FeatureManager,laps:int, gpu:bool=False, 
+        match rebalance:
+            case "over":
+                print("Rebalancing data with over-sampling")
+                data_train = tr_utils.over_sampling_rebalance(data=data_train,target_col=target_col)
+                data_val = tr_utils.over_sampling_rebalance(data=data_val,target_col=target_col)
+            case "under":
+                print("Rebalancing data with under-sampling")
+                data_train = tr_utils.under_sampling_rebalance(data=data_train,target_col=target_col)
+                data_val = tr_utils.under_sampling_rebalance(data=data_val,target_col=target_col)
+            case None:  
+                pass
+            case other:
+                print("Failed to rebalance data due to wrong arguments")
+
+        x_train = data_train[fm.cols].values.copy()
+        x_val = data_val[fm.cols].values.copy()
+        x_test = data_test[fm.cols].values.copy()
+    
+
+        if categorical_label:
+            y_train = np_utils.to_categorical(data_train[target_col].values,dtype="int64")
+            y_val = np_utils.to_categorical(data_val[target_col].values,dtype="int64")
+            y_test = np_utils.to_categorical(data_test[target_col].values,dtype="int64")
+        else:
+            y_train = data_train[target_col].values.copy()
+            y_val = data_val[target_col].values.copy()
+            y_test = data_test[target_col].values.copy()
+        
+        printb("\nFOLD {}".format(i+1),file=file)
+        printb("Train: {}, Validation: {}, Test: {}".
+            format(len(data_train),len(data_val),len(data_test)),file = file)
+
+        printb("\nTrain:", file = file)
+        trp.print_labels_distribution(data_train,target_col,file=file)
+
+        printb("\nValidation:", file = file)
+        trp.print_labels_distribution(data_val,target_col,file=file)
+
+        printb("\nTest:",file = file)
+        trp.print_labels_distribution(data_test,target_col,file=file)
+
+        dataset.append([x_train,y_train,x_val,y_val,x_test,y_test])
+
+    return dataset
+
+def print_features_list(fm: FeatureManager, file = None):
+    print("\n=============",file = file)
+    print("FEATURES (show 1 for each):",file = file)
+    for i in range(0,len(fm.cols),fm.params["lags"]):
+        print("{},".format(fm.cols[i]),end=" ",file = file)
+    print("\n",file=file)
+
+
+def evalute_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bool=False, 
     save_check_point:bool = True, early_stopping:bool = True, set_class_weight:bool = False,
-    epochs:int = 200, patience:int = 5, batch_size:int = 24, write_to_file:bool = False):
+    epochs:int = 200, dropout = True, dropout_rate = 0.3, patience:int = 5,
+    batch_size:int = 24, metrics:list[str] = [], write_to_file:bool = False):
+    
+    #Create a file
+    report_file = None
+    if write_to_file:
+        filename = "../logs/report/{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+        report_file = open(filename,'w')
+
+    print_features_list(fm=fm,file=report_file)
+
+    results_list = []
+
+    dataset_list = split_to_k_folds(
+        fm = fm,
+        categorical_label=True,
+        fold_number=fold_number,
+        target_col=fm.target_col,
+        file = report_file
+    )
+
+    for i in range (0,fold_number):
+        printb("\n>>>>>> FOLD {}\n".format(i+1), file=report_file)
+        callbacks.backend.clear_session()
+        classifier = MultiDNNClassifer()        
+        
+        initial_bias = init_imbalanced_bias(
+            y_train = np.argmax(dataset_list[i][1],axis = -1)
+        )
+
+        classifier.configure(
+            hu = hu, 
+            dropout=dropout,
+            dropout_rate = dropout_rate,
+            input_dim=len(fm.cols),
+            output_bias=initial_bias,
+            class_num=3,
+        )
+
+        processor = "/cpu:0"
+        with tf.device(processor):                          # type: ignore 
+            test_result = classifier.run(
+                gpu = gpu,
+                dataset = dataset_list[i],
+                epochs=epochs,
+                target_col = fm.target_col,
+                patience=patience,
+                early_stopping = early_stopping,
+                save_check_point = save_check_point,
+                set_class_weight = set_class_weight,
+                batch_size = batch_size,
+                file = report_file)
+            results_list.append(test_result)
+
+    trp.print_test_summary(results=results_list,metrics = metrics,file=report_file) #type:_ignore
+    
+    if report_file is not None:
+        report_file.close()
+
+    return results_list
+
+def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split= True, gpu:bool=False, 
+    save_check_point:bool = True, early_stopping:bool = True, set_class_weight:bool = False,
+    epochs:int = 200, dropout = True, dropout_rate = 0.3, patience:int = 5,
+    batch_size:int = 24, metrics:list[str] = [], write_to_file:bool = False):
     ''' 
     Run the classifier multiple time with loop calculate the average and std value of accuracy and loss
 
@@ -213,7 +369,7 @@ def loop_classifier(hu:int,fm: FeatureManager,laps:int, gpu:bool=False,
     - target_col: name of target column
     - laps: number of lap to loop
     
-    Return: None
+    Return: evaluation metrics
     '''
 
     #Create a file
@@ -222,36 +378,33 @@ def loop_classifier(hu:int,fm: FeatureManager,laps:int, gpu:bool=False,
         filename = "../logs/report/{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         report_file = open(filename,'w')
 
-    accuracy_list = []
-    recall_list = []
-    precision_list = []
-    loss_list = []
-
     print_features_list(fm=fm,file=report_file)
 
+    results_list = []
+
     for i in range (0,laps):
-        print("\n>>>>>> LAP {}\n".format(i+1), file=report_file)
+        printb("\n>>>>>> LAP {}\n".format(i+1), file=report_file)
         callbacks.backend.clear_session()
         classifier = MultiDNNClassifer()
         
-        classifier.prepare_data(
+        dataset = classifier.prepare_data(
             data = fm.df,
             cols = fm.cols,
-            is_shuffle = True,
-            y_to_categorical=True,
+            shuffle_before_split = shuffle_before_split,
+            categorical_label=True,
             random_state=i+1,
             target_col=fm.target_col,
             file = report_file
         )
 
-        initial_bias = utils.init_imbalanced_bias(
-            data=classifier.data_train,
-            target_col=fm.target_col
+        initial_bias = init_imbalanced_bias(
+            y_train = dataset[1]
         )
 
         classifier.configure(
             hu = hu, 
-            dropout=True, 
+            dropout=dropout,
+            dropout_rate = dropout_rate,
             input_dim=len(fm.cols),
             output_bias=initial_bias,
             class_num=3,
@@ -259,47 +412,23 @@ def loop_classifier(hu:int,fm: FeatureManager,laps:int, gpu:bool=False,
 
         processor = "/cpu:0"
         with tf.device(processor):                          # type: ignore 
-            test_results = classifier.run(
+            test_result = classifier.run(
                 gpu = gpu,
-                fm =fm,
                 epochs=epochs, 
                 patience=patience,
+                dataset = dataset,
+                target_col = fm.target_col,
                 early_stopping = early_stopping,
                 save_check_point = save_check_point,
                 set_class_weight = set_class_weight,
                 batch_size = batch_size,
                 file = report_file)
 
-        # classifier.visualize_loss()
-        # classifier.visualize_accuracy()
+            results_list.append(test_result)
 
-        loss_list.append(test_results["loss"])              #type: ignore
-        accuracy_list.append(test_results["accuracy"])      #type: ignore
-        precision_list.append(test_results["precision"])    #type: ignore
-        recall_list.append(test_results["recall"])          #type: ignore
-
-    results_dict = dict()
-    results_dict["loss"] = loss_list
-    results_dict["accuracy"] = accuracy_list
-    results_dict["precision"] = precision_list
-    results_dict["recall"] = recall_list
-
-    print_test_summary(results_dict=results_dict,file=report_file) #type:_ignore
+    trp.print_test_summary(results=results_list,metrics = metrics,file=report_file) #type:_ignore
     
     if report_file is not None:
         report_file.close()
 
-def print_features_list(fm: FeatureManager, file = None):
-    print("\n=============",file = file)
-    print("FEATURES (not including lag):",file = file)
-    for i in range(int(len(fm.cols)/fm.params["lags"])):
-        print("{},".format(fm.cols[i]),end=" ",file = file)
-    print("\n",file=file)
-
-def print_test_summary(results_dict:dict,file = None):
-    print("\n>>>>>>",file = file)
-    print("EVALUATION SUMMARY:",file = file)
-    for key in results_dict.keys():
-        temp = np.array(results_dict[key])
-        print("{} mean: {}, std: {}".format(key, temp.mean(),temp.std()),file = file)
-    print("\n",file = file)
+    return results_list
