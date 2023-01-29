@@ -1,0 +1,18 @@
+==========
+DATA:
+Data Train: 8117, Validation: 1739, Test: 1741
+
+Train:
+Label 0: 5013(61.76%)
+Label 1: 1571(19.35%)
+Label 2: 1533(18.89%)
+
+Validation:
+Label 0: 1128(64.86%)
+Label 1: 287(16.5%)
+Label 2: 324(18.63%)
+
+Test:
+Label 0: 1320(75.82%)
+Label 1: 197(11.32%)
+Label 2: 224(12.87%)

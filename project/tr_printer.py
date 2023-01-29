@@ -6,16 +6,19 @@ DEFAULT_PRINT_METRICS = [
     "accuracy",
     "precision",
     "recall",
-    "precision-0.90",
-    "recall-0.90"
+    "precision-0.65",
+    "recall-0.65",
+    "precision-0.80",
+    "recall-0.80",
+    "precision-0.95",
+    "recall-0.95"
 ]
-
 
 def printb(var,file, end = None):
     '''Print to both stdout and file'''
     print(var,end=end)
-    print(var,end=end,file=file)
-    
+    if file is not None:
+        print(var,end=end,file=file)   
 
 def print_test_summary(results:list[dict],metrics:list[str],file = None):
     '''
@@ -26,7 +29,7 @@ def print_test_summary(results:list[dict],metrics:list[str],file = None):
     - cols: list of metrics to show
     '''
     printb("\n>>>>>>",file = file)
-    printb("EVALUATION SUMMARY:",file = file)
+    printb("EVALUATION SUMMARY:\n",file = file)
     
     data = pd.DataFrame(data=results,index=[i for i in range(1,len(results)+1)])
 
@@ -39,15 +42,15 @@ def print_test_summary(results:list[dict],metrics:list[str],file = None):
 
     df = df.astype(float).round(3)
     
-    if metrics is not []:
+    if metrics:
         printb(df[metrics],file=file)
     else:
-        printb(df["loss","accuracy","precision","recall"],file=file)
+        printb(df[DEFAULT_PRINT_METRICS],file=file)
 
-def print_labels_distribution(data:pd.DataFrame,target_col:str, file=None):
-    value_counts = data[target_col].value_counts()
+def print_labels_distribution(y_true, file=None):
+    value_counts = pd.DataFrame(y_true).value_counts()
     value_counts.sort_index(inplace=True)
-    for i in value_counts.index:
+    for i in value_counts.index.get_level_values(0):
         printb("Label {}: {}({}%)".format(
             i,
             value_counts[i],                                    #type: ignore
@@ -55,12 +58,13 @@ def print_labels_distribution(data:pd.DataFrame,target_col:str, file=None):
             ),
             file = file
         )
+        
 def print_classification_report(y_true,y_pred,file=None):
     '''
     Print classification report
     '''
     printb("\n=============",file = file)
-    printb("CLASSIFICATION REPORT:",file = file)
+    printb("CLASSIFICATION REPORT:\n",file = file)
     printb(classification_report(y_true, y_pred),file = file)
 
 def print_confusion_matrix(y_true,y_pred, file = None):
@@ -74,5 +78,5 @@ def print_confusion_matrix(y_true,y_pred, file = None):
     df.loc[:,"Total"]= df.sum(axis = 1, numeric_only = True).astype(int)
     df.loc["Total"] = df.sum(axis = 0, numeric_only = True).astype(int)
     for i in range(0, len(con_matrix)):
-        df["RP{}".format(i)] = round(df["P-{}".format(i)]/df["Total"],3)
+        df["RP{}".format(i)] = round(df["P{}".format(i)]/df["Total"],3)
     printb(df,file = file)

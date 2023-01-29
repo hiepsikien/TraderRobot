@@ -1,0 +1,107 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, hashrate_lag_1, fed_rate_lag_1, gold_lag_1, nasdaq_lag_1, sp500_lag_1, google_trend_lag_1, sma_lag_1, boll_lag_1, min_lag_1, max_lag_1, mom_lag_1, vol_lag_1, obv_lag_1, mfi14_lag_1, rsi14_lag_1, adx14_lag_1, roc_lag_1, atr14_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr14_lag_1, dx14_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1d
+take_profit_rate:0.05
+stop_loss_rate:0.05
+max_duration:3
+lags:90
+fold_number:1
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:over
+
+
+
+============
+DATA:
+Total rows: 1724
+Label 0: 656(38.05%)
+Label 1: 540(31.32%)
+Label 2: 528(30.63%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 1347, Validation: 258, Test: 260
+
+Train:
+Label 0: 449(33.33%)
+Label 1: 449(33.33%)
+Label 2: 449(33.33%)
+
+Validation:
+Label 0: 86(33.33%)
+Label 1: 85(32.95%)
+Label 2: 87(33.72%)
+
+Test:
+Label 0: 121(46.54%)
+Label 1: 63(24.23%)
+Label 2: 76(29.23%)
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:None
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:True
+early_stopping:True
+patience:5
+epochs:200
+shuffle_when_train:True
+batch_size:48
+class_weight:{0: 1.0, 1: 1.0, 2: 1.0}
+
+
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+           0       0.71      0.04      0.08       121
+           1       0.25      0.98      0.39        63
+           2       0.00      0.00      0.00        76
+
+    accuracy                           0.26       260
+   macro avg       0.32      0.34      0.16       260
+weighted avg       0.39      0.26      0.13       260
+
+
+=============
+CONFUSION MATRIX:
+       P0   P1  P2  Total    RP0    RP1  RP2
+0       5  116   0    121  0.041  0.959  0.0
+1       1   62   0     63  0.016  0.984  0.0
+2       1   75   0     76  0.013  0.987  0.0
+Total   7  253   0    260  0.027  0.973  0.0
+
+>>>>>>
+EVALUATION SUMMARY:
+
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     3.133     0.258      0.255   0.254           0.252        0.238   
+mean  3.133     0.258      0.255   0.254           0.252        0.238   
+std     NaN       NaN        NaN     NaN             NaN          NaN   
+min   3.133     0.258      0.255   0.254           0.252        0.238   
+max   3.133     0.258      0.255   0.254           0.252        0.238   
+
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.249        0.215           0.295        0.158  
+mean           0.249        0.215           0.295        0.158  
+std              NaN          NaN             NaN          NaN  
+min            0.249        0.215           0.295        0.158  
+max            0.249        0.215           0.295        0.158  

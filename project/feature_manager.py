@@ -2,13 +2,77 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import talib as ta
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
 plt.style.use("seaborn")
 from random import randint
 import tr_utils as tu
 
-TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"1d":24*60*60*1000}
+TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"4h":4*60*60*1000,"1d":24*60*60*1000}
 class FeatureManager():
+
+    DEFAULT_FEATURES = [
+        "returns",
+        "dir",
+        "hashrate",
+        "fed_rate",
+        "gold",
+        "nasdaq",
+        "sp500",
+        "google_trend",      
+        "sma",      
+        "boll",     
+        "boll7",
+        "boll14",
+        "boll21",
+        "min",      
+        "min7",      
+        "min14",
+        "min21",
+        "max",      
+        "max7",      
+        "max14",
+        "max21",
+        "mom",
+        "mom7",      
+        "mom14",
+        "mom21",
+        "vol",      
+        "vol7",      
+        "vol14",
+        "vol21",
+        "obv",      
+        "mfi7",     
+        "mfi14",
+        "mfi21",
+        "rsi7",      
+        "rsi14",
+        "rsi21",
+        "adx7",      
+        "adx14",
+        "adx21",
+        "roc",      
+        "roc7",      
+        "roc14",
+        "roc21",
+        "atr7",      
+        "atr14",
+        "atr21",
+        "bop",      
+        "ad",       
+        "adosc",     
+        "trange",    
+        "ado",       
+        "willr7",     
+        "willr14",
+        "willr21",
+        "dx7",     
+        "dx14",
+        "dx21",
+        "trix",     # 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
+        "ultosc",   # Ultimate Oscillator
+        "high",
+        "low",
+    ]
 
     def __init__(self,target_col:str, window:int = 50) -> None:
         '''
@@ -27,7 +91,7 @@ class FeatureManager():
         self.target_col = target_col
         self.params = dict()
 
-    def import_data(self,symbol: str, trade_timeframe: str, granular_timeframe: str):
+    def import_trading_data(self,symbol: str, trade_timeframe: str):
         
         data_path = "../data/{}-{}.csv".format(symbol,trade_timeframe)
         self.df = pd.read_csv(
@@ -36,6 +100,10 @@ class FeatureManager():
             index_col = "Open Time"
         )
         print("Imported {} with {} rows".format(data_path,len(self.df)))
+        self.trade_timeframe = trade_timeframe
+    
+
+    def import_granular_data(self,symbol: str, granular_timeframe: str):
         granular_data_path = "../nocommit/{}-{}.csv".format(symbol,granular_timeframe)
         self.granular_df = pd.read_csv(
             granular_data_path, 
@@ -43,14 +111,73 @@ class FeatureManager():
             index_col = "Open Time"
         )
         print("Imported {} with {} rows".format(granular_data_path,len(self.granular_df)))
-        self.trade_timeframe = trade_timeframe
         self.granular_timeframe = granular_timeframe
 
+    def calculate_external_features(self,features:list[str]):
+        print("Calculating external features ...")
+        if (key:="hashrate") in features:
+            hashrate_path = "../data/bitcoin_hashrate.csv"
+            self.import_new_feature(
+                filename=hashrate_path,
+                index_col = "Date",
+                import_label="hashrate",
+                new_label=key
+            )
+        
+        if (key:="fed_rate") in features:
+            fed_rate_path = "../data/fed_rate.csv"
+            self.import_new_feature( 
+                filename=fed_rate_path,
+                index_col = "timestamp", 
+                import_label="value",
+                new_label=key
+        )
+        if (key:="google_trend") in features:
+            bitcoin_google_trend_path = "../data/bitcoin_google_trend.csv"
+            self.import_new_feature( 
+                filename=bitcoin_google_trend_path,
+                index_col = "timestamp", 
+                import_label="Bitcoin",
+                new_label=key
+            )
+
+        if (key:="gold") in features:
+            gold_path = "../data/gold.csv"
+            self.import_new_feature(
+                filename=gold_path,
+                index_col = "timestamp",
+                import_label="Close/Last",
+                new_label=key
+            )
+        
+        if (key:="nasdaq") in features:
+            nasdaq_path = "../data/nasdaq.csv"
+            self.import_new_feature(
+                filename=nasdaq_path,
+                index_col = "timestamp",
+                import_label="Close/Last",
+                new_label=key
+            )
+
+        if (key:="sp500") in features:
+            sp500_path = "../data/sp500.csv"
+            self.import_new_feature(
+                filename=sp500_path,
+                index_col = "timestamp",
+                import_label="Close",
+                new_label=key
+            )
+
+    def import_new_feature(self,filename:str, index_col: str, import_label: str, new_label: str):
+        df = pd.read_csv(filename, index_col=index_col).sort_index(ascending = True)
+        self.df[new_label] = df[import_label]
+        self.df.fillna(method="ffill", inplace = True)
+        
     def print_parameters(self):
         print("Features manager parameters:")
         print(self.params)
 
-    def build_features(self,lags:int):
+    def build_features(self,lags:int, features:list[str]=[],scaler:str = "MaxAbs"):
         '''
         Build the normalized features to feed to classifier
     
@@ -60,77 +187,68 @@ class FeatureManager():
         '''
 
         self.params["lags"] = lags
-        data = self.df
 
+        if not features:
+            features = self.DEFAULT_FEATURES
+            
+        # Import external features
+        self.calculate_external_features(features=features)
+
+        # Calculating ta features
+        self.calculate_technical_analysis_features(features=features)
+        
+        # Adding lags
+        self.add_features_with_lags(features=features,lags=lags)
+
+        # Normalize
+        self.normalize_features(scaler = scaler)
+
+        print("\nTotal {} features added.".format(len(self.cols)))
+
+    def add_features_with_lags(self,features:list[str],lags:int):
+        print("\nAdding features with lags {}:".format(lags), end=" ")
+        self.cols = []
+        for f in features:
+            print("{},".format(f), end=" ")
+            for lag in range(1,lags + 1):
+                col = "{}_lag_{}".format(f,lag)
+                self.df[col] = self.df[f].shift(lag)
+                self.cols.append(col)
+        self.df.dropna(inplace=True)
+        print("")
+ 
+    def normalize_features(self, scaler=None):
+        used_scaler = None
+        match scaler:
+            case "Standard":
+                used_scaler = StandardScaler(with_mean=True,with_std=True,copy=False)
+            case "MinMax":
+                used_scaler = MinMaxScaler(copy = False)
+            case "MaxAbs":
+                used_scaler = MaxAbsScaler(copy = False)
+            case other:
+                used_scaler = MaxAbsScaler(copy=False)
+            
+        if used_scaler:
+            print("\nNormalizing features with {}:".format(scaler), end=" ")
+            for col in self.cols:
+                print("{},".format(col),end=" ")
+                used_scaler.fit(self.df[col].to_frame())
+                self.df[col] = used_scaler.transform(self.df[col].to_frame())
+
+    def calculate_technical_analysis_features(self,features: list[str]):
+        
+        data = self.df
         open = data["Open"]
         close = data["Close"]
         high = data["High"]
         low = data["Low"]
         volume = data["Volumn"]
 
-        #Add lags feature
-        features = [
-            "returns",
-            "dir",      
-            "sma",      
-            "boll",     
-            "boll7",
-            "boll14",
-            "boll21",
-            "min",      
-            "min7",      
-            "min14",
-            "min21",
-            "max",      
-            "max7",      
-            "max14",
-            "max21",
-            "mom",
-            "mom7",      
-            "mom14",
-            "mom21",
-            "vol",      
-            "vol7",      
-            "vol14",
-            "vol21",
-            "obv",      
-            "mfi7",     
-            "mfi14",
-            "mfi21",
-            "rsi7",      
-            "rsi14",
-            "rsi21",
-            "adx7",      
-            "adx14",
-            "adx21",
-            "roc",      
-            "roc7",      
-            "roc14",
-            "roc21",
-            "atr7",      
-            "atr14",
-            "atr21",
-            "bop",      
-            "ad",       
-            "adosc",     
-            "trange",    
-            "ado",       
-            "willr7",     
-            "willr14",
-            "willr21",
-            "dx7",     
-            "dx14",
-            "dx21",
-            "trix",     # 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
-            "ultosc",   # Ultimate Oscillator
-            "high",
-            "low",
-            ]
-        
-        print("Calculating features...")
+        print("Calculating technical features...")
         data["returns"] = np.log(close/close.shift())
         data["dir"] = np.where(data["returns"] > 0,1,0)
-        
+ 
         if (key:="sma") in features:
             data[key] = close.rolling(self.window).mean() - close.rolling(150).mean()
         if (key:="boll") in features:
@@ -142,7 +260,6 @@ class FeatureManager():
         if (key:="boll21") in features:
             data[key] = (close - close.rolling(21).mean()) / close.rolling(21).std()
         if (key:="min") in features:
-            
             data[key] = close.rolling(self.window).min() / close - 1
         if (key:="min7") in features:
             data[key] = close.rolling(7).min() / close - 1
@@ -159,13 +276,13 @@ class FeatureManager():
         if (key:="max21") in features:
             data[key] = close.rolling(21).max() / close - 1
         if (key:="mom") in features:
-            data[key] = ta.MOM(close, timeperiod=10)                    # type: ignore
+            data[key] = ta.MOM(close, timeperiod=10)                                                # type: ignore
         if (key:="mom7") in features:
-            data[key] = ta.MOM(close, timeperiod=7)                     # type: ignore
+            data[key] = ta.MOM(close, timeperiod=7)                                                 # type: ignore
         if (key:="mom14") in features:
-            data[key] = ta.MOM(close, timeperiod=14)                    # type: ignore
+            data[key] = ta.MOM(close, timeperiod=14)                                                # type: ignore
         if (key:="mom21") in features:
-            data[key] = ta.MOM(close, timeperiod=21)                    # type: ignore
+            data[key] = ta.MOM(close, timeperiod=21)                                                # type: ignore
         if (key:="vol") in features:
             data[key] = data["returns"].rolling(self.window).std()
         if (key:="vol7") in features:
@@ -175,63 +292,63 @@ class FeatureManager():
         if (key:="vol21") in features:
             data[key] = data["returns"].rolling(21).std()
         if (key:="obv") in features:
-            data[key] = ta.OBV(close,volume)                            # type: ignore
+            data[key] = ta.OBV(close,volume)                                                        # type: ignore
         if (key:="mfi7") in features:
-            data[key] = ta.MFI(high, low, close, volume, timeperiod=7)  # type: ignore
+            data[key] = ta.MFI(high, low, close, volume, timeperiod=7)                              # type: ignore
         if (key:="mfi14") in features:
-            data[key] = ta.MFI(high, low, close, volume, timeperiod=14) # type: ignore
+            data[key] = ta.MFI(high, low, close, volume, timeperiod=14)                             # type: ignore
         if (key:="mfi21") in features:
-            data[key] = ta.MFI(high, low, close, volume, timeperiod=21) # type: ignore
+            data[key] = ta.MFI(high, low, close, volume, timeperiod=21)                             # type: ignore
         if (key:="rsi7") in features:
-            data[key] = ta.RSI(close, timeperiod=7)                     # type: ignore
+            data[key] = ta.RSI(close, timeperiod=7)                                                 # type: ignore
         if (key:="rsi14") in features:
-            data[key] = ta.RSI(close, timeperiod=14)                    # type: ignore
+            data[key] = ta.RSI(close, timeperiod=14)                                                # type: ignore
         if (key:="rsi21") in features:
-            data[key] = ta.RSI(close, timeperiod=21)                    # type: ignore
+            data[key] = ta.RSI(close, timeperiod=21)                                                # type: ignore
         if (key:="adx7") in features:
-            data[key] = ta.ADX(high, low, close, timeperiod=7)          # type: ignore
+            data[key] = ta.ADX(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="adx14") in features:
-            data[key] = ta.ADX(high, low, close, timeperiod=14)         # type: ignore
+            data[key] = ta.ADX(high, low, close, timeperiod=14)                                     # type: ignore
         if (key:="adx21") in features:
-            data[key] = ta.ADX(high, low, close, timeperiod=21)         # type: ignore
+            data[key] = ta.ADX(high, low, close, timeperiod=21)                                     # type: ignore
         if (key:="roc") in features:
-            data[key] = ta.ROC(close, timeperiod=10)                    # type: ignore
+            data[key] = ta.ROC(close, timeperiod=10)                                                # type: ignore
         if (key:="roc7") in features:
-            data[key] = ta.ROC(close, timeperiod=7)                     # type: ignore
+            data[key] = ta.ROC(close, timeperiod=7)                                                 # type: ignore
         if (key:="roc14") in features:
-            data[key] = ta.ROC(close, timeperiod=14)                    # type: ignore
+            data[key] = ta.ROC(close, timeperiod=14)                                                # type: ignore
         if (key:="roc21") in features:
-            data[key] = ta.ROC(close, timeperiod=21)                    # type: ignore
+            data[key] = ta.ROC(close, timeperiod=21)                                                # type: ignore
         if (key:="atr7") in features:
-            data[key] = ta.ATR(high, low, close, timeperiod=7)          # type: ignore
+            data[key] = ta.ATR(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="atr14") in features:
-            data[key] = ta.ATR(high, low, close, timeperiod=14)         # type: ignore
+            data[key] = ta.ATR(high, low, close, timeperiod=14)                                     # type: ignore
         if (key:="atr21") in features:
-            data[key] = ta.ATR(high, low, close, timeperiod=21)         # type: ignore
+            data[key] = ta.ATR(high, low, close, timeperiod=21)                                     # type: ignore
         if (key:="bop") in features:
-            data[key] = ta.BOP(open, high, low, close)                  # type: ignore
+            data[key] = ta.BOP(open, high, low, close)                                              # type: ignore
         if (key:="ad") in features:
-            data[key] =ta.AD(high, low, close, volume)                  # type: ignore
+            data[key] =ta.AD(high, low, close, volume)                                              # type: ignore
         if (key:="adosc") in features:
-            data[key] = ta.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=10) # type: ignore
+            data[key] = ta.ADOSC(high, low, close, volume, fastperiod=3, slowperiod=10)             # type: ignore
         if (key:="trange") in features:
-            data[key] = ta.TRANGE(high, low, close)                                     # type: ignore
+            data[key] = ta.TRANGE(high, low, close)                                                 # type: ignore
         if (key:="ado") in features:
-            data[key] = ta.APO(close, fastperiod=12,slowperiod=26, matype=0)            # type: ignore
+            data[key] = ta.APO(close, fastperiod=12,slowperiod=26, matype=0)                        # type: ignore
         if (key:="willr7") in features:
-            data[key] = ta.WILLR(high, low, close, timeperiod=7)                        # type: ignore
+            data[key] = ta.WILLR(high, low, close, timeperiod=7)                                    # type: ignore
         if (key:="willr14") in features:
-            data[key] = ta.WILLR(high, low, close, timeperiod=14)                       # type: ignore
+            data[key] = ta.WILLR(high, low, close, timeperiod=14)                                   # type: ignore
         if (key:="willr21") in features:
-            data[key] = ta.WILLR(high, low, close, timeperiod=21)                       # type: ignore
+            data[key] = ta.WILLR(high, low, close, timeperiod=21)                                   # type: ignore
         if (key:="dx7") in features:
-            data[key] = ta.DX(high, low, close, timeperiod=7)                           # type: ignore
+            data[key] = ta.DX(high, low, close, timeperiod=7)                                       # type: ignore
         if (key:="dx14") in features:
-            data[key] = ta.DX(high, low, close, timeperiod=14)                          # type: ignore
+            data[key] = ta.DX(high, low, close, timeperiod=14)                                      # type: ignore
         if (key:="dx21") in features:
-            data[key] = ta.DX(high, low, close, timeperiod=21)                          # type: ignore
+            data[key] = ta.DX(high, low, close, timeperiod=21)                                      # type: ignore
         if (key:="trix") in features:
-            data[key] = ta.TRIX(close, timeperiod=30)                                   # type: ignore
+            data[key] = ta.TRIX(close, timeperiod=30)                                               # type: ignore
         if (key:="ultosc") in features:
             data[key] = ta.ULTOSC(high, low, close, timeperiod1=7, timeperiod2=14, timeperiod3=28)  # type: ignore
         if (key:="high") in features:
@@ -240,27 +357,6 @@ class FeatureManager():
             data[key] = low/close -1
 
         data.dropna(inplace=True)
-        
-        print("\nAdding feature:", end=" ")
-        self.cols = []
-        for f in features:
-            print("{},".format(f), end=" ")
-            for lag in range(1,lags + 1):
-                col = "{}_lag_{}".format(f,lag)
-                data[col] = data[f].shift(lag)
-                self.cols.append(col)
-        print("")
-        data.dropna(inplace=True)
-
-        #Normalize
-        scaler = StandardScaler(with_mean=True,with_std=True,copy=False)
-        print("\nNormalizing feature:", end=" ")
-        for col in self.cols:
-            print("{},".format(col),end=" ")
-            scaler.fit(data[col].to_frame())
-            data[col] = scaler.transform(data[col].to_frame())
-
-        print("\nTotal {} features added.".format(len(self.cols)))
 
     def calculate_tp_or_sl(self,row,i:int,is_long:bool):    
         '''
@@ -371,7 +467,7 @@ class FeatureManager():
         
         print("Scanning {} future timeframes to build trade signal: ".format(max_duration))
         for i in range(1,max_duration+1):
-            print("{},".format(i), end=" ")
+            print("{}".format(i), end=" ")
 
             df["High_forward_{}".format(i)] = df["High"].shift(-i)
             df["Low_forward_{}".format(i)] = df["Low"].shift(-i)
@@ -438,7 +534,7 @@ class FeatureManager():
             self.df.dropna(inplace=True)
 
         print("\nLabel producing completed. \n Value counts:")
-        print(self.df[self.target_col].value_counts())            
+        print(self.df[self.target_col].value_counts().sort_index())            
 
     def plot_features_correlation(self):
         ''' Show the correlation between pairs of features

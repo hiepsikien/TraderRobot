@@ -1,0 +1,81 @@
+==========
+DATA:
+Data Train: 8117, Validation: 1739, Test: 1741
+
+Train:
+Label 0: 5013(61.76%)
+Label 1: 1571(19.35%)
+Label 2: 1533(18.89%)
+
+Validation:
+Label 0: 1128(64.86%)
+Label 1: 287(16.5%)
+Label 2: 324(18.63%)
+
+Test:
+Label 0: 1320(75.82%)
+Label 1: 197(11.32%)
+Label 2: 224(12.87%)
+
+DATA IN FOLD
+Train: 8117, Validation: 1739, Test: 1741
+
+Train:
+Label 0: 5013(61.76%)
+Label 1: 1571(19.35%)
+Label 2: 1533(18.89%)
+
+Validation:
+Label 0: 1128(64.86%)
+Label 1: 287(16.5%)
+Label 2: 324(18.63%)
+
+Test:
+Label 0: 1320(75.82%)
+Label 1: 197(11.32%)
+Label 2: 224(12.87%)
+
+=============
+CLASSIFIER PARAMS:
+random_state:1
+is_shuffle:False
+categorical_label:True
+rebalance:None
+hu:100
+output_bias:[-0.4030979074476157, -0.3786121480633055, 0.7817100309443277]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:False
+save_check_point:True
+early_stopping:False
+epochs:50
+shuffle_when_train:False
+batch_size:48
+class_weight:None
+
+
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+           0       0.78      0.98      0.87      1320
+           1       0.34      0.13      0.19       197
+           2       0.28      0.02      0.04       224
+
+    accuracy                           0.76      1741
+   macro avg       0.47      0.38      0.36      1741
+weighted avg       0.67      0.76      0.68      1741
+
+
+=============
+CONFUSION MATRIX:
+         P0  P1  P2  Total    RP0    RP1    RP2
+0      1289  18  13   1320  0.977  0.014  0.010
+1       172  25   0    197  0.873  0.127  0.000
+2       189  30   5    224  0.844  0.134  0.022
+Total  1650  73  18   1741  0.948  0.042  0.010

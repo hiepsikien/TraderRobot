@@ -33,6 +33,18 @@ Expand the model to pick the trade with stoploss, takeprofit set, has maximum wn
     DONE
 Build classifier to learn Long, Short, No Trade
     DONE
+    Built multiclass dnn classifier. The result is not so good, about 30-40% accuracy.
+    Maybe we need to provide more information, gold price, interest rate, bitcoin hashrate, stock index ...
+    In the meantime, to select features more carefully.
+    May visit LSTM again
+
+Build classifier report autowrite
+    DONE
+
+Add interest rate, gold price, stock price
+
+
+
 Money management
 
 Assigning and managing future position by traders 

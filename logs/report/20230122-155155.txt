@@ -1,0 +1,117 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, dir_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1h
+take_profit_rate:0.013
+stop_loss_rate:0.013
+max_duration:7
+lags:30
+fold_number:5
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:None
+==========
+DATA:
+Total rows: 46803
+Label 0: 15686(33.51%)
+Label 1: 15252(32.59%)
+Label 2: 15865(33.9%)
+
+FOLD 1
+Train: 6552, Validation: 1404, Test: 1404
+
+Train:
+Label 0: 597(9.11%)
+Label 1: 3058(46.67%)
+Label 2: 2897(44.22%)
+
+Validation:
+Label 0: 574(40.88%)
+Label 1: 412(29.34%)
+Label 2: 418(29.77%)
+
+Test:
+Label 0: 532(37.89%)
+Label 1: 381(27.14%)
+Label 2: 491(34.97%)
+
+FOLD 2
+Train: 6552, Validation: 1404, Test: 1404
+
+Train:
+Label 0: 3414(52.11%)
+Label 1: 1598(24.39%)
+Label 2: 1540(23.5%)
+
+Validation:
+Label 0: 221(15.74%)
+Label 1: 562(40.03%)
+Label 2: 621(44.23%)
+
+Test:
+Label 0: 673(47.93%)
+Label 1: 342(24.36%)
+Label 2: 389(27.71%)
+
+FOLD 3
+Train: 6552, Validation: 1404, Test: 1404
+
+Train:
+Label 0: 2882(43.99%)
+Label 1: 1748(26.68%)
+Label 2: 1922(29.33%)
+
+Validation:
+Label 0: 730(51.99%)
+Label 1: 308(21.94%)
+Label 2: 366(26.07%)
+
+Test:
+Label 0: 795(56.62%)
+Label 1: 333(23.72%)
+Label 2: 276(19.66%)
+
+FOLD 4
+Train: 6552, Validation: 1404, Test: 1404
+
+Train:
+Label 0: 815(12.44%)
+Label 1: 2867(43.76%)
+Label 2: 2870(43.8%)
+
+Validation:
+Label 0: 390(27.78%)
+Label 1: 486(34.62%)
+Label 2: 528(37.61%)
+
+Test:
+Label 0: 366(26.07%)
+Label 1: 483(34.4%)
+Label 2: 555(39.53%)
+
+FOLD 5
+Train: 6552, Validation: 1404, Test: 1404
+
+Train:
+Label 0: 2052(31.32%)
+Label 1: 2136(32.6%)
+Label 2: 2364(36.08%)
+
+Validation:
+Label 0: 718(51.14%)
+Label 1: 334(23.79%)
+Label 2: 352(25.07%)
+
+Test:
+Label 0: 924(65.81%)
+Label 1: 204(14.53%)
+Label 2: 276(19.66%)
+
+>>>>>> FOLD 1
+

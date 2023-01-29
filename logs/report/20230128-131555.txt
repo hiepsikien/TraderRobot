@@ -1,0 +1,172 @@
+
+=============
+FEATURES (show 1 for each):
+returns_lag_1, hashrate_lag_1, fed_rate_lag_1, gold_lag_1, nasdaq_lag_1, sp500_lag_1, google_trend_lag_1, sma_lag_1, boll_lag_1, boll7_lag_1, boll14_lag_1, boll21_lag_1, min_lag_1, min7_lag_1, min14_lag_1, min21_lag_1, max_lag_1, max7_lag_1, max14_lag_1, max21_lag_1, mom_lag_1, mom7_lag_1, mom14_lag_1, mom21_lag_1, vol_lag_1, vol7_lag_1, vol14_lag_1, vol21_lag_1, obv_lag_1, mfi7_lag_1, mfi14_lag_1, mfi21_lag_1, rsi7_lag_1, rsi14_lag_1, rsi21_lag_1, adx7_lag_1, adx14_lag_1, adx21_lag_1, roc_lag_1, roc7_lag_1, roc14_lag_1, roc21_lag_1, atr7_lag_1, atr14_lag_1, atr21_lag_1, bop_lag_1, ad_lag_1, adosc_lag_1, trange_lag_1, ado_lag_1, willr7_lag_1, willr14_lag_1, willr21_lag_1, dx7_lag_1, dx14_lag_1, dx21_lag_1, trix_lag_1, ultosc_lag_1, high_lag_1, low_lag_1, 
+
+
+=============
+DATA PREPARATION PARAMS:
+trade_timeframe:1d
+take_profit_rate:0.05
+stop_loss_rate:0.05
+max_duration:7
+lags:1
+fold_number:2
+train_size:0.7
+val_size:0.15
+categorical_label:True
+rebalance:over
+
+
+
+============
+DATA:
+Total rows: 1813
+Label 0: 238(13.13%)
+Label 1: 778(42.91%)
+Label 2: 797(43.96%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 807, Validation: 135, Test: 137
+
+Train:
+Label 0: 269(33.33%)
+Label 1: 269(33.33%)
+Label 2: 269(33.33%)
+
+Validation:
+Label 0: 18(13.33%)
+Label 1: 45(33.33%)
+Label 2: 72(53.33%)
+
+Test:
+Label 0: 24(17.52%)
+Label 1: 54(39.42%)
+Label 2: 59(43.07%)
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[0.0, 0.0, 0.0]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+shuffle_when_train:True
+batch_size:48
+class_weight:{0: 1.0, 1: 1.0, 2: 1.0}
+
+
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+           0       0.40      0.33      0.36        24
+           1       0.37      0.56      0.44        54
+           2       0.33      0.20      0.25        59
+
+    accuracy                           0.36       137
+   macro avg       0.37      0.36      0.35       137
+weighted avg       0.36      0.36      0.35       137
+
+
+=============
+CONFUSION MATRIX:
+       P0  P1  P2  Total    RP0    RP1    RP2
+0       8  12   4     24  0.333  0.500  0.167
+1       4  30  20     54  0.074  0.556  0.370
+2       8  39  12     59  0.136  0.661  0.203
+Total  20  81  36    137  0.146  0.591  0.263
+
+>>>>>> FOLD 2
+
+
+DATA IN FOLD
+Train: 942, Validation: 135, Test: 137
+
+Train:
+Label 0: 314(33.33%)
+Label 1: 314(33.33%)
+Label 2: 314(33.33%)
+
+Validation:
+Label 0: 9(6.67%)
+Label 1: 53(39.26%)
+Label 2: 73(54.07%)
+
+Test:
+Label 0: 44(32.12%)
+Label 1: 43(31.39%)
+Label 2: 50(36.5%)
+
+=============
+CLASSIFIER PARAMS:
+hu:100
+output_bias:[0.0, 0.0, 0.0]
+loss:categorical_crossentropy
+dropout:True
+dropout_rate:0.3
+learning_rate:0.0001
+gpu:False
+set_class_weight:True
+save_check_point:False
+early_stopping:True
+patience:5
+epochs:200
+shuffle_when_train:True
+batch_size:48
+class_weight:{0: 1.0, 1: 1.0, 2: 1.0}
+
+
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+           0       0.43      0.84      0.56        44
+           1       0.27      0.28      0.28        43
+           2       0.83      0.10      0.18        50
+
+    accuracy                           0.39       137
+   macro avg       0.51      0.41      0.34       137
+weighted avg       0.53      0.39      0.33       137
+
+
+=============
+CONFUSION MATRIX:
+       P0  P1  P2  Total    RP0    RP1    RP2
+0      37   6   1     44  0.841  0.136  0.023
+1      31  12   0     43  0.721  0.279  0.000
+2      19  26   5     50  0.380  0.520  0.100
+Total  87  44   6    137  0.635  0.321  0.044
+
+>>>>>>
+EVALUATION SUMMARY:
+
+       loss  accuracy  precision  recall  precision-0.65  recall-0.65  \
+1     1.040     0.365      0.426   0.146           0.429        0.044   
+2     1.126     0.394      0.482   0.292           0.528        0.139   
+mean  1.083     0.380      0.454   0.219           0.478        0.091   
+std   0.061     0.021      0.040   0.103           0.070        0.067   
+min   1.040     0.365      0.426   0.146           0.429        0.044   
+max   1.126     0.394      0.482   0.292           0.528        0.139   
+
+      precision-0.80  recall-0.80  precision-0.95  recall-0.95  
+1              0.571        0.029             0.0          0.0  
+2              0.286        0.015             0.0          0.0  
+mean           0.429        0.022             0.0          0.0  
+std            0.202        0.010             0.0          0.0  
+min            0.286        0.015             0.0          0.0  
+max            0.571        0.029             0.0          0.0  

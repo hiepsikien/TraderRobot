@@ -68,7 +68,7 @@ class BaseClassifier():
         else:
             print("No learning history")
 
-    def prepare_dataset(self, data, cols, target_col, train_size, val_size, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1):
+    def prepare_dataset(self, data, cols, target_col, train_size, val_size, sequence_len = 90, sequence_stride = 14, batch_size = 10, sampling_rate = 1, file = None):
         '''
         Prepare the dataset that required to feed by model such as LSTM
 
@@ -198,12 +198,12 @@ class BaseClassifier():
             case "over":
                 print("Rebalancing data with over-sampling")
                 self.data_train = tu.over_sampling_rebalance(data=self.data_train,target_col=target_col)
-                self.data_val = tu.over_sampling_rebalance(data=self.data_val,target_col=target_col)
+                # self.data_val = tu.over_sampling_rebalance(data=self.data_val,target_col=target_col)
         
             case "under":
                 print("Rebalancing data with under-sampling")
                 self.data_train = tu.under_sampling_rebalance(data=self.data_train,target_col=target_col)
-                self.data_val = tu.under_sampling_rebalance(data=self.data_val,target_col=target_col)
+                # self.data_val = tu.under_sampling_rebalance(data=self.data_val,target_col=target_col)
        
             case "fix":
                 print("Rebalancing data with fix category size {}".format(cat_length))
@@ -238,13 +238,13 @@ class BaseClassifier():
             format(len(self.data_train),len(self.data_val),len(self.data_test)),file = file)
 
         printb("\nTrain:", file = file)
-        print_labels_distribution(self.data_train,target_col,file=file)
+        print_labels_distribution(self.data_train[target_col],file=file)
 
         printb("\nValidation:", file = file)
-        print_labels_distribution(self.data_val,target_col,file=file)
+        print_labels_distribution(self.data_val[target_col],file=file)
 
         printb("\nTest:",file = file)
-        print_labels_distribution(self.data_test,target_col,file=file)
+        print_labels_distribution(self.data_test[target_col],file=file)
 
         return [x_train,y_train,x_val,y_val,x_test,y_test]
 

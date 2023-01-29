@@ -15,8 +15,7 @@ def under_sampling_rebalance(data:pd.DataFrame,target_col:str):
     Return: balanced dataframe
     '''
     val_counts = data[target_col].value_counts().sort_index()
-    cat_length = val_counts.min()
-    return fix_sampling_rebalance(cat_length=cat_length,data=data,target_col=target_col)
+    return fix_sampling_rebalance(cat_length=val_counts.min(),data=data,target_col=target_col)
 
 def over_sampling_rebalance(data:pd.DataFrame,target_col:str):
     '''
@@ -29,8 +28,7 @@ def over_sampling_rebalance(data:pd.DataFrame,target_col:str):
     Return: balanced dataframe
     '''
     val_counts = data[target_col].value_counts().sort_index()
-    cat_length = val_counts.max()
-    return fix_sampling_rebalance(cat_length=cat_length,data=data,target_col=target_col)
+    return fix_sampling_rebalance(cat_length=val_counts.max(),data=data,target_col=target_col)
 
 
 def fix_sampling_rebalance(cat_length:int,data:pd.DataFrame,target_col:str):
