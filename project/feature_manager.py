@@ -1,7 +1,9 @@
+from pyexpat import features
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import talib as ta
+from talib import abstract
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
 plt.style.use("seaborn")
 from random import randint
@@ -19,7 +21,10 @@ class FeatureManager():
         "nasdaq",
         "sp500",
         "google_trend",      
-        "sma",      
+        "sma_3_10",
+        "sma_7_30",
+        "sma_14_50",
+        "sma_28_90",      
         "boll",     
         "boll7",
         "boll14",
@@ -46,7 +51,10 @@ class FeatureManager():
         "mfi21",
         "rsi7",      
         "rsi14",
-        "rsi21",
+        "rsi30",
+        "rsi60",
+        "rsi90",
+        "rsi180",
         "adx7",      
         "adx14",
         "adx21",
@@ -72,6 +80,67 @@ class FeatureManager():
         "ultosc",   # Ultimate Oscillator
         "high",
         "low",
+        "CDL2CROWS",
+        "CDL3BLACKCROWS",
+        "CDL3INSIDE",
+        "CDL3LINESTRIKE",
+        "CDL3OUTSIDE",
+        "CDL3STARSINSOUTH",
+        "CDL3WHITESOLDIERS",
+        "CDLABANDONEDBABY",
+        "CDLADVANCEBLOCK",
+        "CDLBELTHOLD",
+        "CDLBREAKAWAY",
+        "CDLCLOSINGMARUBOZU",
+        "CDLCONCEALBABYSWALL",
+        "CDLCOUNTERATTACK",
+        "CDLDARKCLOUDCOVER",
+        "CDLDOJI",
+        "CDLDOJISTAR",
+        "CDLDRAGONFLYDOJI",
+        "CDLENGULFING",
+        "CDLEVENINGDOJISTAR",
+        "CDLEVENINGSTAR",
+        "CDLGAPSIDESIDEWHITE",
+        "CDLGRAVESTONEDOJI",
+        "CDLHAMMER",
+        "CDLHANGINGMAN",
+        "CDLHARAMI",
+        "CDLHARAMICROSS",
+        "CDLHIGHWAVE",
+        "CDLHIKKAKE",
+        "CDLHIKKAKEMOD",
+        "CDLHOMINGPIGEON",
+        "CDLIDENTICAL3CROWS",
+        "CDLINNECK",
+        "CDLINVERTEDHAMMER",
+        "CDLKICKING",
+        "CDLKICKINGBYLENGTH",
+        "CDLLADDERBOTTOM",
+        "CDLLONGLEGGEDDOJI",
+        "CDLLONGLINE",
+        "CDLMARUBOZU",
+        "CDLMATCHINGLOW",
+        "CDLMATHOLD",
+        "CDLMORNINGDOJISTAR",
+        "CDLMORNINGSTAR",
+        "CDLONNECK",
+        "CDLPIERCING",
+        "CDLRICKSHAWMAN",
+        "CDLRISEFALL3METHODS",
+        "CDLSEPARATINGLINES",
+        "CDLSHOOTINGSTAR",
+        "CDLSHORTLINE",
+        "CDLSPINNINGTOP",
+        "CDLSTALLEDPATTERN",
+        "CDLSTICKSANDWICH",
+        "CDLTAKURI",
+        "CDLTASUKIGAP",
+        "CDLTHRUSTING",
+        "CDLTRISTAR",
+        "CDLUNIQUE3RIVER",
+        "CDLUPSIDEGAP2CROWS",
+        "CDLXSIDEGAP3METHODS"
     ]
 
     def __init__(self,target_col:str, window:int = 50) -> None:
@@ -171,7 +240,7 @@ class FeatureManager():
     def import_new_feature(self,filename:str, index_col: str, import_label: str, new_label: str):
         df = pd.read_csv(filename, index_col=index_col).sort_index(ascending = True)
         self.df[new_label] = df[import_label]
-        self.df.fillna(method="ffill", inplace = True)
+        self.df[new_label].fillna(method="ffill", inplace = True)
         
     def print_parameters(self):
         print("Features manager parameters:")
@@ -196,9 +265,15 @@ class FeatureManager():
 
         # Calculating ta features
         self.calculate_technical_analysis_features(features=features)
+
+        # Calculate candle stick
+        self.calculate_candle_sticks(features=features)
         
         # Adding lags
         self.add_features_with_lags(features=features,lags=lags)
+
+        # Drop na before normalize
+        self.df.dropna(inplace=True)
 
         # Normalize
         self.normalize_features(scaler = scaler)
@@ -208,13 +283,15 @@ class FeatureManager():
     def add_features_with_lags(self,features:list[str],lags:int):
         print("\nAdding features with lags {}:".format(lags), end=" ")
         self.cols = []
+        data = self.df.copy()
         for f in features:
             print("{},".format(f), end=" ")
             for lag in range(1,lags + 1):
                 col = "{}_lag_{}".format(f,lag)
-                self.df[col] = self.df[f].shift(lag)
+                data[col] = data[f].shift(lag)
                 self.cols.append(col)
-        self.df.dropna(inplace=True)
+        # data.dropna(inplace=True)
+        self.df = data
         print("")
  
     def normalize_features(self, scaler=None):
@@ -236,9 +313,27 @@ class FeatureManager():
                 used_scaler.fit(self.df[col].to_frame())
                 self.df[col] = used_scaler.transform(self.df[col].to_frame())
 
-    def calculate_technical_analysis_features(self,features: list[str]):
+    def calculate_candle_sticks(self,features:list[str]):
+        ''' Calculate the candle stick indicators
+        '''
+        data = self.df.copy()
+        open = data["Open"]
+        high = data["High"]
+        close = data["Close"]
+        low = data["Low"]
+
+        all_indicators = [method for method in dir(abstract) if method.startswith('CDL')]
         
-        data = self.df
+        for indicator in all_indicators:
+            if indicator in features:
+                data[str(indicator)] = getattr(abstract, indicator)(open,high,low,close)
+        
+        self.df = data
+
+    def calculate_technical_analysis_features(self,features: list[str]):
+        ''' Calculate the technical analysis not including candle stick
+        '''
+        data = self.df.copy()
         open = data["Open"]
         close = data["Close"]
         high = data["High"]
@@ -248,9 +343,19 @@ class FeatureManager():
         print("Calculating technical features...")
         data["returns"] = np.log(close/close.shift())
         data["dir"] = np.where(data["returns"] > 0,1,0)
- 
-        if (key:="sma") in features:
-            data[key] = close.rolling(self.window).mean() - close.rolling(150).mean()
+         
+        if (key:="sma_3_10") in features:
+            data[key] = close.rolling(3).mean() - close.rolling(7).mean()
+        
+        if (key:="sma_7_30") in features:
+            data[key] = close.rolling(7).mean() - close.rolling(14).mean()
+
+        if (key:="sma_14_50") in features:
+            data[key] = close.rolling(14).mean() - close.rolling(90).mean()
+
+        if (key:="sma_28_90") in features:
+            data[key] = close.rolling(28).mean() - close.rolling(90).mean()
+
         if (key:="boll") in features:
             data[key] = (close - close.rolling(self.window).mean()) / close.rolling(self.window).std()
         if (key:="boll7") in features:
@@ -303,8 +408,15 @@ class FeatureManager():
             data[key] = ta.RSI(close, timeperiod=7)                                                 # type: ignore
         if (key:="rsi14") in features:
             data[key] = ta.RSI(close, timeperiod=14)                                                # type: ignore
-        if (key:="rsi21") in features:
-            data[key] = ta.RSI(close, timeperiod=21)                                                # type: ignore
+        if (key:="rsi30") in features:
+            data[key] = ta.RSI(close, timeperiod=30)                                                # type: ignore
+        if (key:="rsi60") in features:
+            data[key] = ta.RSI(close, timeperiod=60)                                                # type: ignore
+        if (key:="rsi90") in features:
+            data[key] = ta.RSI(close, timeperiod=90)                                                # type: ignore
+        if (key:="rsi180") in features:
+            data[key] = ta.RSI(close, timeperiod=180)                                                # type: ignore
+   
         if (key:="adx7") in features:
             data[key] = ta.ADX(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="adx14") in features:
@@ -355,8 +467,9 @@ class FeatureManager():
             data[key] = high/close -1
         if (key:="low") in features:
             data[key] = low/close -1
-
-        data.dropna(inplace=True)
+        
+        # data.dropna(inplace=True)
+        self.df = data
 
     def calculate_tp_or_sl(self,row,i:int,is_long:bool):    
         '''
@@ -535,6 +648,17 @@ class FeatureManager():
 
         print("\nLabel producing completed. \n Value counts:")
         print(self.df[self.target_col].value_counts().sort_index())            
+
+    def plot_trade_signal(self,dpi:int=240,save_to_file:bool = True):
+        long = self.df.loc[self.df["trade_signal"] == 1]
+        short = self.df.loc[self.df["trade_signal"] == 2]
+        plt.figure(figsize = (20,10), dpi = dpi)
+        plt.plot(self.df.index,self.df["Close"])
+        plt.scatter(long.index,long["Close"],color="g",marker="^")
+        plt.scatter(short.index,short["Close"],color="r",marker="v")
+        if save_to_file:
+            plt.savefig("../out/trade_signal.png")
+        plt.show()
 
     def plot_features_correlation(self):
         ''' Show the correlation between pairs of features

@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn import svm
-from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from itertools import product
 
 class SVMClassifier():
 
@@ -22,20 +20,18 @@ class SVMClassifier():
     def set_test_ratio(self,test_ratio):
         self.test_ratio = test_ratio
 
-    def run(self,data,cols):
+    def run(self,data,cols, target_col):
         accuracy_scores =[]
         coverage_scores =[]
 
         predict_probs = []
 
         x_tests = []
-        targets = data["dir"].copy()
-        targets.replace([0],-1)
 
         for i in range(0,self.test_laps):
             print("=======")
             print("Lap {}: ".format(i+1))
-            x_train, x_test, y_train, y_test = train_test_split(data[cols],targets,test_size=self.test_ratio)
+            x_train, x_test, y_train, y_test = train_test_split(data[cols],data[target_col],test_size=self.test_ratio)
             self.svc.fit(X = x_train, y = y_train)
             print("Trained. Testing...")
 
