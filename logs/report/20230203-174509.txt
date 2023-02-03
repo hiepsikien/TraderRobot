@@ -1,0 +1,164 @@
+
+=============
+FEATURES (show 1 for each):
+sma_3_10_trade_lag_1, sma_7_30_trade_lag_1, sma_14_50_trade_lag_1, sma_28_90_trade_lag_1, obv_trade_lag_1, mfi14_trade_lag_1, rsi7_trade_lag_1, rsi14_trade_lag_1, rsi30_trade_lag_1, CDL2CROWS_trade_lag_1, CDL3BLACKCROWS_trade_lag_1, CDL3INSIDE_trade_lag_1, CDL3LINESTRIKE_trade_lag_1, CDL3OUTSIDE_trade_lag_1, CDL3STARSINSOUTH_trade_lag_1, CDL3WHITESOLDIERS_trade_lag_1, CDLABANDONEDBABY_trade_lag_1, CDLADVANCEBLOCK_trade_lag_1, CDLBELTHOLD_trade_lag_1, CDLBREAKAWAY_trade_lag_1, CDLCLOSINGMARUBOZU_trade_lag_1, CDLCONCEALBABYSWALL_trade_lag_1, CDLCOUNTERATTACK_trade_lag_1, CDLDARKCLOUDCOVER_trade_lag_1, CDLDOJI_trade_lag_1, CDLDOJISTAR_trade_lag_1, CDLDRAGONFLYDOJI_trade_lag_1, CDLENGULFING_trade_lag_1, CDLEVENINGDOJISTAR_trade_lag_1, CDLEVENINGSTAR_trade_lag_1, CDLGAPSIDESIDEWHITE_trade_lag_1, CDLGRAVESTONEDOJI_trade_lag_1, CDLHAMMER_trade_lag_1, CDLHANGINGMAN_trade_lag_1, CDLHARAMI_trade_lag_1, CDLHARAMICROSS_trade_lag_1, CDLHIGHWAVE_trade_lag_1, CDLHIKKAKE_trade_lag_1, CDLHIKKAKEMOD_trade_lag_1, CDLHOMINGPIGEON_trade_lag_1, CDLIDENTICAL3CROWS_trade_lag_1, CDLINNECK_trade_lag_1, CDLINVERTEDHAMMER_trade_lag_1, CDLKICKING_trade_lag_1, CDLKICKINGBYLENGTH_trade_lag_1, CDLLADDERBOTTOM_trade_lag_1, CDLLONGLEGGEDDOJI_trade_lag_1, CDLLONGLINE_trade_lag_1, CDLMARUBOZU_trade_lag_1, CDLMATCHINGLOW_trade_lag_1, CDLMATHOLD_trade_lag_1, CDLMORNINGDOJISTAR_trade_lag_1, CDLMORNINGSTAR_trade_lag_1, CDLONNECK_trade_lag_1, CDLPIERCING_trade_lag_1, CDLRICKSHAWMAN_trade_lag_1, CDLRISEFALL3METHODS_trade_lag_1, CDLSEPARATINGLINES_trade_lag_1, CDLSHOOTINGSTAR_trade_lag_1, CDLSHORTLINE_trade_lag_1, CDLSPINNINGTOP_trade_lag_1, CDLSTALLEDPATTERN_trade_lag_1, CDLSTICKSANDWICH_trade_lag_1, CDLTAKURI_trade_lag_1, CDLTASUKIGAP_trade_lag_1, CDLTHRUSTING_trade_lag_1, CDLTRISTAR_trade_lag_1, CDLUNIQUE3RIVER_trade_lag_1, CDLUPSIDEGAP2CROWS_trade_lag_1, CDLXSIDEGAP3METHODS_trade_lag_1, hashrate_trade_lag_1, fed_rate_trade_lag_1, gold_trade_lag_1, nasdaq_trade_lag_1, sp500_trade_lag_1, google_trend_trade_lag_1, sma_3_10_macro_lag_1, sma_14_50_macro_lag_1, obv_macro_lag_1, rsi7_macro_lag_1, rsi30_macro_lag_1, CDL3BLACKCROWS_macro_lag_1, CDL3LINESTRIKE_macro_lag_1, CDL3STARSINSOUTH_macro_lag_1, CDLABANDONEDBABY_macro_lag_1, CDLBELTHOLD_macro_lag_1, CDLCLOSINGMARUBOZU_macro_lag_1, CDLCOUNTERATTACK_macro_lag_1, CDLDOJI_macro_lag_1, CDLDRAGONFLYDOJI_macro_lag_1, CDLEVENINGDOJISTAR_macro_lag_1, CDLGAPSIDESIDEWHITE_macro_lag_1, CDLHAMMER_macro_lag_1, CDLHARAMI_macro_lag_1, CDLHIGHWAVE_macro_lag_1, CDLHIKKAKEMOD_macro_lag_1, CDLIDENTICAL3CROWS_macro_lag_1, CDLINVERTEDHAMMER_macro_lag_1, CDLKICKINGBYLENGTH_macro_lag_1, CDLLONGLEGGEDDOJI_macro_lag_1, CDLMARUBOZU_macro_lag_1, CDLMATHOLD_macro_lag_1, CDLMORNINGSTAR_macro_lag_1, CDLPIERCING_macro_lag_1, CDLRISEFALL3METHODS_macro_lag_1, CDLSHOOTINGSTAR_macro_lag_1, CDLSPINNINGTOP_macro_lag_1, CDLSTICKSANDWICH_macro_lag_1, CDLTASUKIGAP_macro_lag_1, CDLTRISTAR_macro_lag_1, CDLUPSIDEGAP2CROWS_macro_lag_1, sma_3_10_super_lag_1, mfi14_super_lag_3, CDL3BLACKCROWS_super_lag_2, CDL3WHITESOLDIERS_super_lag_1, CDLBREAKAWAY_super_lag_3, CDLDOJI_super_lag_2, CDLEVENINGSTAR_super_lag_1, CDLHANGINGMAN_super_lag_3, CDLHIKKAKEMOD_super_lag_2, CDLKICKING_super_lag_1, CDLLONGLINE_super_lag_3, CDLMORNINGSTAR_super_lag_2, CDLSEPARATINGLINES_super_lag_1, CDLSTALLEDPATTERN_super_lag_3, CDLTRISTAR_super_lag_2, 
+
+
+=============
+CROSS VALIDATION PARAMS
+classifier:svm
+C:10
+kernel:rbf
+degree:4
+gamma:0.001
+randome_state:1
+probability:True
+fold_numeber:3
+decision_function_shape:ovr
+class_weight:balanced
+split_type:time_series_split
+rebalance:None
+
+
+
+============
+DATA:
+Total rows: 7594
+Label 0.0: 2659(35.01%)
+Label 1.0: 2421(31.88%)
+Label 2.0: 2514(33.11%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 1898, Validation: 1898
+
+Train:
+Label 0.0: 698(36.78%)
+Label 1.0: 573(30.19%)
+Label 2.0: 627(33.03%)
+
+Test:
+Label 0.0: 740(38.99%)
+Label 1.0: 682(35.93%)
+Label 2.0: 476(25.08%)
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+         0.0       0.36      0.07      0.11       740
+         1.0       0.28      0.28      0.28       682
+         2.0       0.27      0.61      0.37       476
+
+    accuracy                           0.28      1898
+   macro avg       0.30      0.32      0.26      1898
+weighted avg       0.31      0.28      0.24      1898
+
+
+=============
+CONFUSION MATRIX:
+        P0   P1    P2  Total    RP0    RP1    RP2
+0       50  336   354    740  0.068  0.454  0.478
+1       49  191   442    682  0.072  0.280  0.648
+2       40  145   291    476  0.084  0.305  0.611
+Total  139  672  1087   1898  0.073  0.354  0.573
+
+>>>>>> FOLD 2
+
+
+DATA IN FOLD
+Train: 3796, Validation: 1898
+
+Train:
+Label 0.0: 1438(37.88%)
+Label 1.0: 1255(33.06%)
+Label 2.0: 1103(29.06%)
+
+Test:
+Label 0.0: 414(21.81%)
+Label 1.0: 678(35.72%)
+Label 2.0: 806(42.47%)
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+         0.0       0.21      0.49      0.29       414
+         1.0       0.37      0.45      0.41       678
+         2.0       0.40      0.06      0.10       806
+
+    accuracy                           0.29      1898
+   macro avg       0.33      0.33      0.27      1898
+weighted avg       0.35      0.29      0.25      1898
+
+
+=============
+CONFUSION MATRIX:
+        P0   P1   P2  Total    RP0    RP1    RP2
+0      201  179   34    414  0.486  0.432  0.082
+1      337  308   33    678  0.497  0.454  0.049
+2      425  336   45    806  0.527  0.417  0.056
+Total  963  823  112   1898  0.507  0.434  0.059
+
+>>>>>> FOLD 3
+
+
+DATA IN FOLD
+Train: 5694, Validation: 1898
+
+Train:
+Label 0.0: 1852(32.53%)
+Label 1.0: 1933(33.95%)
+Label 2.0: 1909(33.53%)
+
+Test:
+Label 0.0: 805(42.41%)
+Label 1.0: 488(25.71%)
+Label 2.0: 605(31.88%)
+
+=============
+CLASSIFICATION REPORT:
+
+              precision    recall  f1-score   support
+
+         0.0       0.50      0.78      0.61       805
+         1.0       0.28      0.18      0.22       488
+         2.0       0.38      0.20      0.26       605
+
+    accuracy                           0.44      1898
+   macro avg       0.38      0.39      0.36      1898
+weighted avg       0.40      0.44      0.40      1898
+
+
+=============
+CONFUSION MATRIX:
+         P0   P1   P2  Total    RP0    RP1    RP2
+0       630  102   73    805  0.783  0.127  0.091
+1       279   87  122    488  0.572  0.178  0.250
+2       363  123  119    605  0.600  0.203  0.197
+Total  1272  312  314   1898  0.670  0.164  0.165
+
+>>>>>>
+EVALUATION SUMMARY:
+
+      accuracy  0.0_precision  0.0_recall  0.0_f1-score  1.0_precision  \
+1        0.280          0.360       0.068         0.114          0.284   
+2        0.292          0.209       0.486         0.292          0.374   
+3        0.440          0.495       0.783         0.607          0.279   
+mean     0.338          0.355       0.445         0.337          0.312   
+std      0.089          0.143       0.359         0.250          0.054   
+min      0.280          0.209       0.068         0.114          0.279   
+max      0.440          0.495       0.783         0.607          0.374   
+
+      1.0_recall  1.0_f1-score  2.0_precision  2.0_recall  2.0_f1-score  
+1          0.280         0.282          0.268       0.611         0.372  
+2          0.454         0.410          0.402       0.056         0.098  
+3          0.178         0.218          0.379       0.197         0.259  
+mean       0.304         0.303          0.349       0.288         0.243  
+std        0.140         0.098          0.072       0.289         0.138  
+min        0.178         0.218          0.268       0.056         0.098  
+max        0.454         0.410          0.402       0.611         0.372  
