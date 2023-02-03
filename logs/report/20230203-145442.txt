@@ -1,0 +1,45 @@
+
+=============
+FEATURES (show 1 for each):
+sma_3_10_trade_lag_1, sma_7_30_trade_lag_1, sma_14_50_trade_lag_1, sma_28_90_trade_lag_1, rsi7_trade_lag_1, rsi14_trade_lag_1, rsi30_trade_lag_1, CDL2CROWS_trade_lag_1, CDL3BLACKCROWS_trade_lag_1, CDL3INSIDE_trade_lag_1, CDL3LINESTRIKE_trade_lag_1, CDL3OUTSIDE_trade_lag_1, CDL3STARSINSOUTH_trade_lag_1, CDL3WHITESOLDIERS_trade_lag_1, CDLABANDONEDBABY_trade_lag_1, CDLADVANCEBLOCK_trade_lag_1, CDLBELTHOLD_trade_lag_1, CDLBREAKAWAY_trade_lag_1, CDLCLOSINGMARUBOZU_trade_lag_1, CDLCONCEALBABYSWALL_trade_lag_1, CDLCOUNTERATTACK_trade_lag_1, CDLDARKCLOUDCOVER_trade_lag_1, CDLDOJI_trade_lag_1, CDLDOJISTAR_trade_lag_1, CDLDRAGONFLYDOJI_trade_lag_1, CDLENGULFING_trade_lag_1, CDLEVENINGDOJISTAR_trade_lag_1, CDLEVENINGSTAR_trade_lag_1, CDLGAPSIDESIDEWHITE_trade_lag_1, CDLGRAVESTONEDOJI_trade_lag_1, CDLHAMMER_trade_lag_1, CDLHANGINGMAN_trade_lag_1, CDLHARAMI_trade_lag_1, CDLHARAMICROSS_trade_lag_1, CDLHIGHWAVE_trade_lag_1, CDLHIKKAKE_trade_lag_1, CDLHIKKAKEMOD_trade_lag_1, CDLHOMINGPIGEON_trade_lag_1, CDLIDENTICAL3CROWS_trade_lag_1, CDLINNECK_trade_lag_1, CDLINVERTEDHAMMER_trade_lag_1, CDLKICKING_trade_lag_1, CDLKICKINGBYLENGTH_trade_lag_1, CDLLADDERBOTTOM_trade_lag_1, CDLLONGLEGGEDDOJI_trade_lag_1, CDLLONGLINE_trade_lag_1, CDLMARUBOZU_trade_lag_1, CDLMATCHINGLOW_trade_lag_1, CDLMATHOLD_trade_lag_1, CDLMORNINGDOJISTAR_trade_lag_1, CDLMORNINGSTAR_trade_lag_1, CDLONNECK_trade_lag_1, CDLPIERCING_trade_lag_1, CDLRICKSHAWMAN_trade_lag_1, CDLRISEFALL3METHODS_trade_lag_1, CDLSEPARATINGLINES_trade_lag_1, CDLSHOOTINGSTAR_trade_lag_1, CDLSHORTLINE_trade_lag_1, CDLSPINNINGTOP_trade_lag_1, CDLSTALLEDPATTERN_trade_lag_1, CDLSTICKSANDWICH_trade_lag_1, CDLTAKURI_trade_lag_1, CDLTASUKIGAP_trade_lag_1, CDLTHRUSTING_trade_lag_1, CDLTRISTAR_trade_lag_1, CDLUNIQUE3RIVER_trade_lag_1, CDLUPSIDEGAP2CROWS_trade_lag_1, CDLXSIDEGAP3METHODS_trade_lag_1, sma_3_10_macro_lag_1, sma_7_30_macro_lag_1, sma_14_50_macro_lag_1, sma_28_90_macro_lag_1, rsi7_macro_lag_1, rsi14_macro_lag_1, rsi30_macro_lag_1, rsi60_macro_lag_1, rsi90_macro_lag_1, CDL2CROWS_macro_lag_1, CDL3BLACKCROWS_macro_lag_1, CDL3INSIDE_macro_lag_1, CDL3LINESTRIKE_macro_lag_1, CDL3OUTSIDE_macro_lag_1, CDL3STARSINSOUTH_macro_lag_1, CDL3WHITESOLDIERS_macro_lag_1, CDLABANDONEDBABY_macro_lag_1, CDLADVANCEBLOCK_macro_lag_1, CDLBELTHOLD_macro_lag_1, CDLBREAKAWAY_macro_lag_1, CDLCLOSINGMARUBOZU_macro_lag_1, CDLCONCEALBABYSWALL_macro_lag_1, CDLCOUNTERATTACK_macro_lag_1, CDLDARKCLOUDCOVER_macro_lag_1, CDLDOJI_macro_lag_1, CDLDOJISTAR_macro_lag_1, CDLDRAGONFLYDOJI_macro_lag_1, CDLENGULFING_macro_lag_1, CDLEVENINGDOJISTAR_macro_lag_1, CDLEVENINGSTAR_macro_lag_1, CDLGAPSIDESIDEWHITE_macro_lag_1, CDLGRAVESTONEDOJI_macro_lag_1, CDLHAMMER_macro_lag_1, CDLHANGINGMAN_macro_lag_1, CDLHARAMI_macro_lag_1, CDLHARAMICROSS_macro_lag_1, CDLHIGHWAVE_macro_lag_1, CDLHIKKAKE_macro_lag_1, CDLHIKKAKEMOD_macro_lag_1, CDLHOMINGPIGEON_macro_lag_1, CDLIDENTICAL3CROWS_macro_lag_1, CDLINNECK_macro_lag_1, CDLINVERTEDHAMMER_macro_lag_1, CDLKICKING_macro_lag_1, CDLKICKINGBYLENGTH_macro_lag_1, CDLLADDERBOTTOM_macro_lag_1, CDLLONGLEGGEDDOJI_macro_lag_1, CDLLONGLINE_macro_lag_1, CDLMARUBOZU_macro_lag_1, CDLMATCHINGLOW_macro_lag_1, CDLMATHOLD_macro_lag_1, CDLMORNINGDOJISTAR_macro_lag_1, CDLMORNINGSTAR_macro_lag_1, CDLONNECK_macro_lag_1, CDLPIERCING_macro_lag_1, CDLRICKSHAWMAN_macro_lag_1, CDLRISEFALL3METHODS_macro_lag_1, CDLSEPARATINGLINES_macro_lag_1, CDLSHOOTINGSTAR_macro_lag_1, CDLSHORTLINE_macro_lag_1, CDLSPINNINGTOP_macro_lag_1, CDLSTALLEDPATTERN_macro_lag_1, CDLSTICKSANDWICH_macro_lag_1, CDLTAKURI_macro_lag_1, CDLTASUKIGAP_macro_lag_1, CDLTHRUSTING_macro_lag_1, CDLTRISTAR_macro_lag_1, CDLUNIQUE3RIVER_macro_lag_1, CDLUPSIDEGAP2CROWS_macro_lag_1, CDLXSIDEGAP3METHODS_macro_lag_1, sma_3_10_super_lag_1, sma_7_30_super_lag_1, rsi7_super_lag_1, rsi14_super_lag_1, rsi30_super_lag_1, CDL2CROWS_super_lag_1, CDL3BLACKCROWS_super_lag_1, CDL3INSIDE_super_lag_1, CDL3LINESTRIKE_super_lag_1, CDL3OUTSIDE_super_lag_1, CDL3STARSINSOUTH_super_lag_1, CDL3WHITESOLDIERS_super_lag_1, CDLABANDONEDBABY_super_lag_1, CDLADVANCEBLOCK_super_lag_1, CDLBELTHOLD_super_lag_1, CDLBREAKAWAY_super_lag_1, CDLCLOSINGMARUBOZU_super_lag_1, CDLCONCEALBABYSWALL_super_lag_1, CDLCOUNTERATTACK_super_lag_1, CDLDARKCLOUDCOVER_super_lag_1, CDLDOJI_super_lag_1, CDLDOJISTAR_super_lag_1, CDLDRAGONFLYDOJI_super_lag_1, CDLENGULFING_super_lag_1, CDLEVENINGDOJISTAR_super_lag_1, CDLEVENINGSTAR_super_lag_1, CDLGAPSIDESIDEWHITE_super_lag_1, CDLGRAVESTONEDOJI_super_lag_1, CDLHAMMER_super_lag_1, CDLHANGINGMAN_super_lag_1, CDLHARAMI_super_lag_1, CDLHARAMICROSS_super_lag_1, CDLHIGHWAVE_super_lag_1, CDLHIKKAKE_super_lag_1, CDLHIKKAKEMOD_super_lag_1, CDLHOMINGPIGEON_super_lag_1, CDLIDENTICAL3CROWS_super_lag_1, CDLINNECK_super_lag_1, CDLINVERTEDHAMMER_super_lag_1, CDLKICKING_super_lag_1, CDLKICKINGBYLENGTH_super_lag_1, CDLLADDERBOTTOM_super_lag_1, CDLLONGLEGGEDDOJI_super_lag_1, CDLLONGLINE_super_lag_1, CDLMARUBOZU_super_lag_1, CDLMATCHINGLOW_super_lag_1, CDLMATHOLD_super_lag_1, CDLMORNINGDOJISTAR_super_lag_1, CDLMORNINGSTAR_super_lag_1, CDLONNECK_super_lag_1, CDLPIERCING_super_lag_1, CDLRICKSHAWMAN_super_lag_1, CDLRISEFALL3METHODS_super_lag_1, CDLSEPARATINGLINES_super_lag_1, CDLSHOOTINGSTAR_super_lag_1, CDLSHORTLINE_super_lag_1, CDLSPINNINGTOP_super_lag_1, CDLSTALLEDPATTERN_super_lag_1, CDLSTICKSANDWICH_super_lag_1, CDLTAKURI_super_lag_1, CDLTASUKIGAP_super_lag_1, CDLTHRUSTING_super_lag_1, CDLTRISTAR_super_lag_1, CDLUNIQUE3RIVER_super_lag_1, CDLUPSIDEGAP2CROWS_super_lag_1, CDLXSIDEGAP3METHODS_super_lag_1, 
+
+
+=============
+CROSS VALIDATION PARAMS
+classifier:svm
+C:4
+kernel:poly
+degree:4
+gamma:scale
+randome_state:1
+probability:True
+fold_numeber:1
+decision_function_shape:ovr
+class_weight:balanced
+split_type:time_series_split
+rebalance:None
+
+
+
+============
+DATA:
+Total rows: 10485
+Label 0.0: 3807(36.31%)
+Label 1.0: 3318(31.65%)
+Label 2.0: 3360(32.05%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 5242, Validation: 5242
+
+Train:
+Label 0.0: 2149(41.0%)
+Label 1.0: 1562(29.8%)
+Label 2.0: 1531(29.21%)
+
+Test:
+Label 0.0: 1657(31.61%)
+Label 1.0: 1756(33.5%)
+Label 2.0: 1829(34.89%)

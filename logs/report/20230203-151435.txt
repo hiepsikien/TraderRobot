@@ -1,0 +1,224 @@
+
+=============
+FEATURES (show 1 for each):
+sma_3_10_trade_lag_1, sma_7_30_trade_lag_1, sma_14_50_trade_lag_1, sma_28_90_trade_lag_1, rsi7_trade_lag_1, rsi14_trade_lag_1, rsi30_trade_lag_1, CDL2CROWS_trade_lag_1, CDL3BLACKCROWS_trade_lag_1, CDL3INSIDE_trade_lag_1, CDL3LINESTRIKE_trade_lag_1, CDL3OUTSIDE_trade_lag_1, CDL3STARSINSOUTH_trade_lag_1, CDL3WHITESOLDIERS_trade_lag_1, CDLABANDONEDBABY_trade_lag_1, CDLADVANCEBLOCK_trade_lag_1, CDLBELTHOLD_trade_lag_1, CDLBREAKAWAY_trade_lag_1, CDLCLOSINGMARUBOZU_trade_lag_1, CDLCONCEALBABYSWALL_trade_lag_1, CDLCOUNTERATTACK_trade_lag_1, CDLDARKCLOUDCOVER_trade_lag_1, CDLDOJI_trade_lag_1, CDLDOJISTAR_trade_lag_1, CDLDRAGONFLYDOJI_trade_lag_1, CDLENGULFING_trade_lag_1, CDLEVENINGDOJISTAR_trade_lag_1, CDLEVENINGSTAR_trade_lag_1, CDLGAPSIDESIDEWHITE_trade_lag_1, CDLGRAVESTONEDOJI_trade_lag_1, CDLHAMMER_trade_lag_1, CDLHANGINGMAN_trade_lag_1, CDLHARAMI_trade_lag_1, CDLHARAMICROSS_trade_lag_1, CDLHIGHWAVE_trade_lag_1, CDLHIKKAKE_trade_lag_1, CDLHIKKAKEMOD_trade_lag_1, CDLHOMINGPIGEON_trade_lag_1, CDLIDENTICAL3CROWS_trade_lag_1, CDLINNECK_trade_lag_1, CDLINVERTEDHAMMER_trade_lag_1, CDLKICKING_trade_lag_1, CDLKICKINGBYLENGTH_trade_lag_1, CDLLADDERBOTTOM_trade_lag_1, CDLLONGLEGGEDDOJI_trade_lag_1, CDLLONGLINE_trade_lag_1, CDLMARUBOZU_trade_lag_1, CDLMATCHINGLOW_trade_lag_1, CDLMATHOLD_trade_lag_1, CDLMORNINGDOJISTAR_trade_lag_1, CDLMORNINGSTAR_trade_lag_1, CDLONNECK_trade_lag_1, CDLPIERCING_trade_lag_1, CDLRICKSHAWMAN_trade_lag_1, CDLRISEFALL3METHODS_trade_lag_1, CDLSEPARATINGLINES_trade_lag_1, CDLSHOOTINGSTAR_trade_lag_1, CDLSHORTLINE_trade_lag_1, CDLSPINNINGTOP_trade_lag_1, CDLSTALLEDPATTERN_trade_lag_1, CDLSTICKSANDWICH_trade_lag_1, CDLTAKURI_trade_lag_1, CDLTASUKIGAP_trade_lag_1, CDLTHRUSTING_trade_lag_1, CDLTRISTAR_trade_lag_1, CDLUNIQUE3RIVER_trade_lag_1, CDLUPSIDEGAP2CROWS_trade_lag_1, CDLXSIDEGAP3METHODS_trade_lag_1, sma_3_10_macro_lag_1, sma_7_30_macro_lag_1, sma_14_50_macro_lag_1, sma_28_90_macro_lag_1, rsi7_macro_lag_1, rsi14_macro_lag_1, rsi30_macro_lag_1, rsi60_macro_lag_1, rsi90_macro_lag_1, CDL2CROWS_macro_lag_1, CDL3BLACKCROWS_macro_lag_1, CDL3INSIDE_macro_lag_1, CDL3LINESTRIKE_macro_lag_1, CDL3OUTSIDE_macro_lag_1, CDL3STARSINSOUTH_macro_lag_1, CDL3WHITESOLDIERS_macro_lag_1, CDLABANDONEDBABY_macro_lag_1, CDLADVANCEBLOCK_macro_lag_1, CDLBELTHOLD_macro_lag_1, CDLBREAKAWAY_macro_lag_1, CDLCLOSINGMARUBOZU_macro_lag_1, CDLCONCEALBABYSWALL_macro_lag_1, CDLCOUNTERATTACK_macro_lag_1, CDLDARKCLOUDCOVER_macro_lag_1, CDLDOJI_macro_lag_1, CDLDOJISTAR_macro_lag_1, CDLDRAGONFLYDOJI_macro_lag_1, CDLENGULFING_macro_lag_1, CDLEVENINGDOJISTAR_macro_lag_1, CDLEVENINGSTAR_macro_lag_1, CDLGAPSIDESIDEWHITE_macro_lag_1, CDLGRAVESTONEDOJI_macro_lag_1, CDLHAMMER_macro_lag_1, CDLHANGINGMAN_macro_lag_1, CDLHARAMI_macro_lag_1, CDLHARAMICROSS_macro_lag_1, CDLHIGHWAVE_macro_lag_1, CDLHIKKAKE_macro_lag_1, CDLHIKKAKEMOD_macro_lag_1, CDLHOMINGPIGEON_macro_lag_1, CDLIDENTICAL3CROWS_macro_lag_1, CDLINNECK_macro_lag_1, CDLINVERTEDHAMMER_macro_lag_1, CDLKICKING_macro_lag_1, CDLKICKINGBYLENGTH_macro_lag_1, CDLLADDERBOTTOM_macro_lag_1, CDLLONGLEGGEDDOJI_macro_lag_1, CDLLONGLINE_macro_lag_1, CDLMARUBOZU_macro_lag_1, CDLMATCHINGLOW_macro_lag_1, CDLMATHOLD_macro_lag_1, CDLMORNINGDOJISTAR_macro_lag_1, CDLMORNINGSTAR_macro_lag_1, CDLONNECK_macro_lag_1, CDLPIERCING_macro_lag_1, CDLRICKSHAWMAN_macro_lag_1, CDLRISEFALL3METHODS_macro_lag_1, CDLSEPARATINGLINES_macro_lag_1, CDLSHOOTINGSTAR_macro_lag_1, CDLSHORTLINE_macro_lag_1, CDLSPINNINGTOP_macro_lag_1, CDLSTALLEDPATTERN_macro_lag_1, CDLSTICKSANDWICH_macro_lag_1, CDLTAKURI_macro_lag_1, CDLTASUKIGAP_macro_lag_1, CDLTHRUSTING_macro_lag_1, CDLTRISTAR_macro_lag_1, CDLUNIQUE3RIVER_macro_lag_1, CDLUPSIDEGAP2CROWS_macro_lag_1, CDLXSIDEGAP3METHODS_macro_lag_1, sma_3_10_super_lag_1, sma_7_30_super_lag_1, rsi7_super_lag_1, rsi14_super_lag_1, rsi30_super_lag_1, CDL2CROWS_super_lag_1, CDL3BLACKCROWS_super_lag_1, CDL3INSIDE_super_lag_1, CDL3LINESTRIKE_super_lag_1, CDL3OUTSIDE_super_lag_1, CDL3STARSINSOUTH_super_lag_1, CDL3WHITESOLDIERS_super_lag_1, CDLABANDONEDBABY_super_lag_1, CDLADVANCEBLOCK_super_lag_1, CDLBELTHOLD_super_lag_1, CDLBREAKAWAY_super_lag_1, CDLCLOSINGMARUBOZU_super_lag_1, CDLCONCEALBABYSWALL_super_lag_1, CDLCOUNTERATTACK_super_lag_1, CDLDARKCLOUDCOVER_super_lag_1, CDLDOJI_super_lag_1, CDLDOJISTAR_super_lag_1, CDLDRAGONFLYDOJI_super_lag_1, CDLENGULFING_super_lag_1, CDLEVENINGDOJISTAR_super_lag_1, CDLEVENINGSTAR_super_lag_1, CDLGAPSIDESIDEWHITE_super_lag_1, CDLGRAVESTONEDOJI_super_lag_1, CDLHAMMER_super_lag_1, CDLHANGINGMAN_super_lag_1, CDLHARAMI_super_lag_1, CDLHARAMICROSS_super_lag_1, CDLHIGHWAVE_super_lag_1, CDLHIKKAKE_super_lag_1, CDLHIKKAKEMOD_super_lag_1, CDLHOMINGPIGEON_super_lag_1, CDLIDENTICAL3CROWS_super_lag_1, CDLINNECK_super_lag_1, CDLINVERTEDHAMMER_super_lag_1, CDLKICKING_super_lag_1, CDLKICKINGBYLENGTH_super_lag_1, CDLLADDERBOTTOM_super_lag_1, CDLLONGLEGGEDDOJI_super_lag_1, CDLLONGLINE_super_lag_1, CDLMARUBOZU_super_lag_1, CDLMATCHINGLOW_super_lag_1, CDLMATHOLD_super_lag_1, CDLMORNINGDOJISTAR_super_lag_1, CDLMORNINGSTAR_super_lag_1, CDLONNECK_super_lag_1, CDLPIERCING_super_lag_1, CDLRICKSHAWMAN_super_lag_1, CDLRISEFALL3METHODS_super_lag_1, CDLSEPARATINGLINES_super_lag_1, CDLSHOOTINGSTAR_super_lag_1, CDLSHORTLINE_super_lag_1, CDLSPINNINGTOP_super_lag_1, CDLSTALLEDPATTERN_super_lag_1, CDLSTICKSANDWICH_super_lag_1, CDLTAKURI_super_lag_1, CDLTASUKIGAP_super_lag_1, CDLTHRUSTING_super_lag_1, CDLTRISTAR_super_lag_1, CDLUNIQUE3RIVER_super_lag_1, CDLUPSIDEGAP2CROWS_super_lag_1, CDLXSIDEGAP3METHODS_super_lag_1, 
+
+
+=============
+CROSS VALIDATION PARAMS
+classifier:svm
+C:4
+kernel:poly
+degree:4
+gamma:scale
+randome_state:1
+probability:True
+fold_numeber:10
+decision_function_shape:ovr
+class_weight:balanced
+split_type:time_series_split
+rebalance:None
+
+
+
+============
+DATA:
+Total rows: 10485
+Label 0.0: 3807(36.31%)
+Label 1.0: 3318(31.65%)
+Label 2.0: 3360(32.05%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 953, Validation: 953
+
+Train:
+Label 0.0: 239(25.08%)
+Label 1.0: 325(34.1%)
+Label 2.0: 389(40.82%)
+
+Test:
+Label 0.0: 477(50.05%)
+Label 1.0: 191(20.04%)
+Label 2.0: 285(29.91%)
+
+>>>>>> FOLD 2
+
+
+DATA IN FOLD
+Train: 1906, Validation: 953
+
+Train:
+Label 0.0: 716(37.57%)
+Label 1.0: 516(27.07%)
+Label 2.0: 674(35.36%)
+
+Test:
+Label 0.0: 432(45.33%)
+Label 1.0: 376(39.45%)
+Label 2.0: 145(15.22%)
+
+>>>>>> FOLD 3
+
+
+DATA IN FOLD
+Train: 2859, Validation: 953
+
+Train:
+Label 0.0: 1148(40.15%)
+Label 1.0: 892(31.2%)
+Label 2.0: 819(28.65%)
+
+Test:
+Label 0.0: 379(39.77%)
+Label 1.0: 232(24.34%)
+Label 2.0: 342(35.89%)
+
+>>>>>> FOLD 4
+
+
+DATA IN FOLD
+Train: 3812, Validation: 953
+
+Train:
+Label 0.0: 1527(40.06%)
+Label 1.0: 1124(29.49%)
+Label 2.0: 1161(30.46%)
+
+Test:
+Label 0.0: 315(33.05%)
+Label 1.0: 338(35.47%)
+Label 2.0: 300(31.48%)
+
+>>>>>> FOLD 5
+
+
+DATA IN FOLD
+Train: 4765, Validation: 953
+
+Train:
+Label 0.0: 1842(38.66%)
+Label 1.0: 1462(30.68%)
+Label 2.0: 1461(30.66%)
+
+Test:
+Label 0.0: 621(65.16%)
+Label 1.0: 184(19.31%)
+Label 2.0: 148(15.53%)
+
+>>>>>> FOLD 6
+
+
+DATA IN FOLD
+Train: 5718, Validation: 953
+
+Train:
+Label 0.0: 2463(43.07%)
+Label 1.0: 1646(28.79%)
+Label 2.0: 1609(28.14%)
+
+Test:
+Label 0.0: 120(12.59%)
+Label 1.0: 502(52.68%)
+Label 2.0: 331(34.73%)
+
+>>>>>> FOLD 7
+
+
+DATA IN FOLD
+Train: 6671, Validation: 953
+
+Train:
+Label 0.0: 2583(38.72%)
+Label 1.0: 2148(32.2%)
+Label 2.0: 1940(29.08%)
+
+Test:
+Label 0.0: 156(16.37%)
+Label 1.0: 346(36.31%)
+Label 2.0: 451(47.32%)
+
+>>>>>> FOLD 8
+
+
+DATA IN FOLD
+Train: 7624, Validation: 953
+
+Train:
+Label 0.0: 2739(35.93%)
+Label 1.0: 2494(32.71%)
+Label 2.0: 2391(31.36%)
+
+Test:
+Label 0.0: 261(27.39%)
+Label 1.0: 336(35.26%)
+Label 2.0: 356(37.36%)
+
+>>>>>> FOLD 9
+
+
+DATA IN FOLD
+Train: 8577, Validation: 953
+
+Train:
+Label 0.0: 3000(34.98%)
+Label 1.0: 2830(33.0%)
+Label 2.0: 2747(32.03%)
+
+Test:
+Label 0.0: 242(25.39%)
+Label 1.0: 293(30.75%)
+Label 2.0: 418(43.86%)
+
+>>>>>> FOLD 10
+
+
+DATA IN FOLD
+Train: 9530, Validation: 953
+
+Train:
+Label 0.0: 3242(34.02%)
+Label 1.0: 3123(32.77%)
+Label 2.0: 3165(33.21%)
+
+Test:
+Label 0.0: 563(59.08%)
+Label 1.0: 195(20.46%)
+Label 2.0: 195(20.46%)
+
+>>>>>>
+EVALUATION SUMMARY:
+
+      accuracy  0.0_precision  0.0_recall  0.0_f1-score  1.0_precision  \
+1        0.346          0.486       0.335         0.397          0.249   
+2        0.306          0.387       0.560         0.457          0.204   
+3        0.285          0.354       0.301         0.325          0.247   
+4        0.323          0.340       0.492         0.402          0.273   
+5        0.390          0.656       0.409         0.504          0.198   
+6        0.371          0.174       0.158         0.166          0.559   
+7        0.275          0.161       0.333         0.217          0.316   
+8        0.375          0.353       0.314         0.333          0.396   
+9        0.356          0.313       0.562         0.402          0.327   
+10       0.379          0.592       0.492         0.537          0.231   
+mean     0.341          0.382       0.396         0.374          0.300   
+std      0.041          0.160       0.130         0.118          0.109   
+min      0.275          0.161       0.158         0.166          0.198   
+max      0.390          0.656       0.562         0.537          0.559   
+
+      1.0_recall  1.0_f1-score  2.0_precision  2.0_recall  2.0_f1-score  
+1          0.346         0.289          0.290       0.365         0.323  
+2          0.080         0.115          0.111       0.138         0.123  
+3          0.284         0.265          0.253       0.269         0.261  
+4          0.142         0.187          0.327       0.350         0.338  
+5          0.272         0.229          0.217       0.459         0.295  
+6          0.114         0.189          0.375       0.840         0.518  
+7          0.301         0.308          0.352       0.235         0.282  
+8          0.256         0.311          0.375       0.531         0.440  
+9          0.273         0.297          0.449       0.294         0.355  
+10         0.262         0.245          0.125       0.169         0.144  
+mean       0.233         0.243          0.287       0.365         0.308  
+std        0.088         0.064          0.111       0.206         0.120  
+min        0.080         0.115          0.111       0.138         0.123  
+max        0.346         0.311          0.449       0.840         0.518  

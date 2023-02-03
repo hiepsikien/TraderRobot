@@ -4,15 +4,12 @@ import tensorflow as tf
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from keras import callbacks, metrics
-from keras.utils import np_utils
 from keras.regularizers import l1
 from keras.optimizers import Adam
 from classifier.base_classifier import BaseClassifier
 import datetime
 from tr_utils import calculate_weight, init_imbalanced_bias
-import tr_utils
-from tr_printer import print_labels_distribution, printb
-import tr_printer as trp
+from tr_printer import printb, print_params, print_test_summary, print_labels_distribution, print_confusion_matrix, print_classification_report
 from variance_importance import VarImpVIANN
 
 METRICS = [
@@ -116,6 +113,8 @@ class MultiDNNClassifer(BaseClassifier):
 
         Returns: evalute result on test data
         '''
+        callbacks.backend.clear_session()
+
         [x_train,y_train,x_val,y_val,x_test, y_test] = dataset
         self.params["gpu"] = gpu
         self.params["set_class_weight"] = set_class_weight
@@ -177,13 +176,13 @@ class MultiDNNClassifer(BaseClassifier):
             format(len(y_train),len(y_val),len(y_test)),file = file)
 
         printb("\nTrain:", file = file)
-        trp.print_labels_distribution(np.argmax(y_train,axis=1),file=file)
+        print_labels_distribution(np.argmax(y_train,axis=1),file=file)
 
         printb("\nValidation:", file = file)
-        trp.print_labels_distribution(np.argmax(y_val,axis=1),file=file)
+        print_labels_distribution(np.argmax(y_val,axis=1),file=file)
 
         printb("\nTest:",file = file)
-        trp.print_labels_distribution(np.argmax(y_test,axis=1),file=file)
+        print_labels_distribution(np.argmax(y_test,axis=1),file=file)
 
         print_params(self.params,"CLASSIFIER PARAMS:",file = file)
 
@@ -215,283 +214,11 @@ class MultiDNNClassifer(BaseClassifier):
         y_pred_int = np.argmax(self.pred_prob, axis= -1)
         y_true_int = np.argmax(y_test,axis = -1)    #type: ignore
 
-        trp.print_classification_report(y_true = y_true_int,y_pred = y_pred_int,file = file)
-        trp.print_confusion_matrix(y_true = y_true_int,y_pred = y_pred_int,file = file)
+        print_classification_report(y_true = y_true_int,y_pred = y_pred_int,file = file)
+        print_confusion_matrix(y_true = y_true_int,y_pred = y_pred_int,file = file)
 
         return test_results
     
-def print_params(params:dict,title:str,file = None):
-    '''
-    Print parameters 
-
-    Params:
-    - params: parameters as dictionary
-    - title: title
-    - file: print to file if any
-    
-    Returns: none
-    '''
-    printb("\n=============",file = file)
-    printb(title,file = file)
-    for key in params.keys():
-        printb("{}:{}".format(key,params[key]),file = file)
-    printb("\n",file = file)
-
-def split_k_fold_time_series(fm:FeatureManager, target_col:str, fold_number:int, 
-    categorical_label:bool = True, rebalance = None, file = None):
-    '''
-    Split to k_fold as timeseries
-    Example: if folds is 3, the data will be devided into 5 equal parts. 
-    Fold 1: Train 1, Val 2, Test 3
-    Fold 2: Train 1+2, Val 3, Test 4
-    Fold 3: Train 1+2+3, Val 4, Test 5
-
-    Params:
-    - fold_number: number of data portion to be splitted
-    ..
-
-    Returns: list of datasets 
-    '''
-    fm.params["fold_number"] = fold_number
-    fm.params["categorical_label"] = categorical_label
-    fm.params["rebalance"] = rebalance
-
-    print_params(fm.params,title = "DATA PREPARATION PARAMS:",file=file)
-
-    printb("\n============", file = file)
-    printb("DATA:", file = file)
-    printb("Total rows: {}".format(len(fm.df)),file = file)
-    print_labels_distribution(fm.df[target_col],file = file)
-
-    #Calculate length
-    print("Splitting the data...")
-    fold_len = int(len(fm.df)/(fold_number+2))
-    dataset_list = []
-
-    for i in range(0,fold_number):
-        data_train = fm.df.iloc[0:(i+1)*fold_len]
-        data_val = fm.df.iloc[(i+1)*fold_len:(i+2)*fold_len]
-        data_test = fm.df.iloc[(i+2)*fold_len:(i+3)*fold_len]
-        
-        match rebalance:
-            case "over":
-                print("Rebalancing data with over-sampling")
-                data_train = tr_utils.over_sampling_rebalance(data = data_train,target_col = target_col)
-                # data_val = tr_utils.over_sampling_rebalance(data=data_val,target_col=target_col)
-            case "under":
-                print("Rebalancing data with under-sampling")
-                data_train = tr_utils.under_sampling_rebalance(data = data_train,target_col = target_col)
-                # data_val = tr_utils.under_sampling_rebalance(data=data_val,target_col=target_col)
-            case None:  
-                pass
-            case other:
-                print("Failed to rebalance data due to wrong arguments")
-
-        x_train = data_train[fm.cols].values.copy()
-        x_val = data_val[fm.cols].values.copy()
-        x_test = data_test[fm.cols].values.copy()
-    
-
-        if categorical_label:
-            y_train = np_utils.to_categorical(data_train[target_col].values,dtype="int64")
-            y_val = np_utils.to_categorical(data_val[target_col].values,dtype="int64")
-            y_test = np_utils.to_categorical(data_test[target_col].values,dtype="int64")
-        else:
-            y_train = data_train[target_col].values.copy()
-            y_val = data_val[target_col].values.copy()
-            y_test = data_test[target_col].values.copy()
-
-        dataset_list.append([x_train,y_train,x_val,y_val,x_test,y_test])
-
-    return dataset_list
-
-
-def split_to_k_folds(fm:FeatureManager, target_col:str, fold_number:int, train_size:float=0.7,
-        val_size:float = 0.15, categorical_label:bool = True, rebalance = None, file = None):
-    '''
-    Split the number to multiple equal size piece, each piece devided to train, validation, test portion
-
-    Params:
-    - fold_number: number of data portion to be splitted
-    ..
-
-    Returns: list of datasets 
-    '''
-
-    fm.params["fold_number"] = fold_number
-    fm.params["train_size"] = train_size
-    fm.params["val_size"] = val_size
-    fm.params["categorical_label"] = categorical_label
-    fm.params["rebalance"] = rebalance
-
-    print_params(fm.params,title = "DATA PREPARATION PARAMS:",file=file)
-
-    printb("\n============", file = file)
-    printb("DATA:", file = file)
-    printb("Total rows: {}".format(len(fm.df)),file = file)
-    print_labels_distribution(fm.df[target_col],file = file)
-
-    #Calculate length
-    print("Splitting the data...")
-    fold_len = int(len(fm.df)/fold_number)
-    dataset_list = []
-
-    for i in range(0,fold_number):
-        start_train = i * fold_len
-        end_train = start_train + int(fold_len * train_size)
-        end_val = end_train + int(fold_len * val_size)
-        end_test = end_val + fold_len - int(fold_len * train_size) - int(fold_len * val_size)
-        data_train = fm.df.iloc[start_train:end_train]
-        data_val = fm.df.iloc[end_train:end_val]
-        data_test = fm.df.iloc[end_val:end_test]
-        
-        match rebalance:
-            case "over":
-                print("Rebalancing data with over-sampling")
-                data_train = tr_utils.over_sampling_rebalance(data = data_train,target_col = target_col)
-                # data_val = tr_utils.over_sampling_rebalance(data=data_val,target_col=target_col)
-            case "under":
-                print("Rebalancing data with under-sampling")
-                data_train = tr_utils.under_sampling_rebalance(data = data_train,target_col = target_col)
-                # data_val = tr_utils.under_sampling_rebalance(data=data_val,target_col=target_col)
-            case None:  
-                pass
-            case other:
-                print("Failed to rebalance data due to wrong arguments")
-
-        x_train = data_train[fm.cols].values.copy()
-        x_val = data_val[fm.cols].values.copy()
-        x_test = data_test[fm.cols].values.copy()
-    
-
-        if categorical_label:
-            y_train = np_utils.to_categorical(data_train[target_col].values,dtype="int64")
-            y_val = np_utils.to_categorical(data_val[target_col].values,dtype="int64")
-            y_test = np_utils.to_categorical(data_test[target_col].values,dtype="int64")
-        else:
-            y_train = data_train[target_col].values.copy()
-            y_val = data_val[target_col].values.copy()
-            y_test = data_test[target_col].values.copy()
-
-        dataset_list.append([x_train,y_train,x_val,y_val,x_test,y_test])
-
-    return dataset_list
-
-def print_features_list(fm: FeatureManager, file = None):
-    print("\n=============",file = file)
-    print("FEATURES (show 1 for each):",file = file)
-
-    for i in range(0,len(fm.cols),fm.params["lags"]):
-        print("{},".format(fm.cols[i]),end=" ",file = file)
-    print("\n",file=file)
-
-
-def evaluate_classifier_k_folds(hu:int,fm: FeatureManager,fold_number:int, gpu:bool=False, 
-    save_check_point:bool = True, early_stop:bool = True, rebalance = None, split_type:str="time_series_split", set_initial_bias:bool = True, shuffle_when_train:bool = False, set_class_weight:bool = False,
-    epochs:int = 200, dropout = True, dropout_rate = 0.3, patience:int = 5,
-    batch_size:int = 24, metrics:list[str] = [], write_to_file:bool = False):
-    ''' 
-    Split the data to k equal parts, each part split to train, validation, test.
-    Run the classifier on each parts.
-
-    Params:
-    - fold_number: number of fold
-    - shuffle_when_train: to shuffle the data when training or not
-
-    Returns: result list
-    '''
-
-    fm.params["split_type"] = split_type
-
-    #Create a file
-    report_file = None
-    if write_to_file:
-        filename = "../logs/report/{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
-        report_file = open(filename,'w')
-
-    print_features_list(
-        fm = fm,
-        file = report_file
-    )
-
-    results_list = []
-
-    match split_type:
-        case "equal_split":
-            dataset_list = split_to_k_folds(
-                fm = fm,
-                categorical_label = True,
-                fold_number = fold_number,
-                target_col = fm.target_col,
-                rebalance = rebalance,
-                file = report_file
-            )
-        case "time_series_split":
-            dataset_list = split_k_fold_time_series(
-                fm = fm,
-                categorical_label = True,
-                fold_number = fold_number,
-                target_col = fm.target_col,
-                rebalance = rebalance,
-                file = report_file
-            )
-        case other:
-            dataset_list = split_k_fold_time_series(
-                fm = fm,
-                categorical_label = True,
-                fold_number = fold_number,
-                target_col = fm.target_col,
-                rebalance = rebalance,
-                file = report_file
-            )
-
-    for i in range (0,fold_number):
-        printb("\n>>>>>> FOLD {}\n".format(i+1), file = report_file)
-        callbacks.backend.clear_session()
-        classifier = MultiDNNClassifer()
-        
-        if set_initial_bias:
-            initial_bias = init_imbalanced_bias(
-                y_train = np.argmax(dataset_list[i][1],axis = -1)
-            )
-        else:
-            initial_bias = None
-
-        classifier.configure(
-            hu = hu, 
-            dropout=dropout,
-            dropout_rate = dropout_rate,
-            input_dim = len(fm.cols),
-            output_bias = initial_bias,
-            class_num = 3,
-        )
-
-        processor = "/cpu:0"
-        with tf.device(processor):                          # type: ignore 
-            test_result = classifier.run(
-                gpu = gpu,
-                dataset = dataset_list[i],
-                epochs = epochs,
-                shuffle_when_train = shuffle_when_train,
-                patience=patience,
-                early_stop = early_stop,
-                save_check_point = save_check_point,
-                set_class_weight = set_class_weight,
-                batch_size = batch_size,
-                file = report_file)
-            results_list.append(test_result)
-
-    trp.print_test_summary(
-        results = results_list,
-        metrics = metrics,
-        file = report_file
-    ) 
-    
-    if report_file is not None:
-        report_file.close()
-
-    return results_list
-
 def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split = True, gpu:bool=False, 
     save_check_point:bool = True, early_stopping:bool = True, set_class_weight:bool = False,
     epochs:int = 200, dropout = True, dropout_rate = 0.3, shuffle_when_train = False, patience:int = 5,
@@ -512,11 +239,6 @@ def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split
     if write_to_file:
         filename = "../logs/report/{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
         report_file = open(filename,'w')
-
-    print_features_list(
-        fm=fm,
-        file=report_file
-    )
 
     results_list = []
 
@@ -564,7 +286,7 @@ def evaluate_classifier(hu:int,fm: FeatureManager,laps:int, shuffle_before_split
             )
             results_list.append(test_result)
 
-    trp.print_test_summary(
+    print_test_summary(
         results = results_list,
         metrics = metrics,
         file = report_file

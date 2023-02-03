@@ -921,7 +921,7 @@ class FeatureManager():
         print("\nLabel producing completed. \n Value counts:")
         print(self.df[self.target_col].value_counts().sort_index())            
 
-    def plot_trade_signal(self,dpi:int=240,save_to_file:bool = True):
+    def plot_trade_signal(self,dpi:int=240,save_to_file:bool = False):
         long = self.df.loc[self.df["trade_signal"] == 1]
         short = self.df.loc[self.df["trade_signal"] == 2]
         plt.figure(figsize = (20,10), dpi = dpi)

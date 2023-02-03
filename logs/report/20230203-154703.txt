@@ -1,0 +1,224 @@
+
+=============
+FEATURES (show 1 for each):
+sma_3_10_trade_lag_1, sma_7_30_trade_lag_1, sma_14_50_trade_lag_1, sma_28_90_trade_lag_1, rsi7_trade_lag_1, rsi14_trade_lag_1, rsi30_trade_lag_1, CDL2CROWS_trade_lag_1, CDL3BLACKCROWS_trade_lag_1, CDL3INSIDE_trade_lag_1, CDL3LINESTRIKE_trade_lag_1, CDL3OUTSIDE_trade_lag_1, CDL3STARSINSOUTH_trade_lag_1, CDL3WHITESOLDIERS_trade_lag_1, CDLABANDONEDBABY_trade_lag_1, CDLADVANCEBLOCK_trade_lag_1, CDLBELTHOLD_trade_lag_1, CDLBREAKAWAY_trade_lag_1, CDLCLOSINGMARUBOZU_trade_lag_1, CDLCONCEALBABYSWALL_trade_lag_1, CDLCOUNTERATTACK_trade_lag_1, CDLDARKCLOUDCOVER_trade_lag_1, CDLDOJI_trade_lag_1, CDLDOJISTAR_trade_lag_1, CDLDRAGONFLYDOJI_trade_lag_1, CDLENGULFING_trade_lag_1, CDLEVENINGDOJISTAR_trade_lag_1, CDLEVENINGSTAR_trade_lag_1, CDLGAPSIDESIDEWHITE_trade_lag_1, CDLGRAVESTONEDOJI_trade_lag_1, CDLHAMMER_trade_lag_1, CDLHANGINGMAN_trade_lag_1, CDLHARAMI_trade_lag_1, CDLHARAMICROSS_trade_lag_1, CDLHIGHWAVE_trade_lag_1, CDLHIKKAKE_trade_lag_1, CDLHIKKAKEMOD_trade_lag_1, CDLHOMINGPIGEON_trade_lag_1, CDLIDENTICAL3CROWS_trade_lag_1, CDLINNECK_trade_lag_1, CDLINVERTEDHAMMER_trade_lag_1, CDLKICKING_trade_lag_1, CDLKICKINGBYLENGTH_trade_lag_1, CDLLADDERBOTTOM_trade_lag_1, CDLLONGLEGGEDDOJI_trade_lag_1, CDLLONGLINE_trade_lag_1, CDLMARUBOZU_trade_lag_1, CDLMATCHINGLOW_trade_lag_1, CDLMATHOLD_trade_lag_1, CDLMORNINGDOJISTAR_trade_lag_1, CDLMORNINGSTAR_trade_lag_1, CDLONNECK_trade_lag_1, CDLPIERCING_trade_lag_1, CDLRICKSHAWMAN_trade_lag_1, CDLRISEFALL3METHODS_trade_lag_1, CDLSEPARATINGLINES_trade_lag_1, CDLSHOOTINGSTAR_trade_lag_1, CDLSHORTLINE_trade_lag_1, CDLSPINNINGTOP_trade_lag_1, CDLSTALLEDPATTERN_trade_lag_1, CDLSTICKSANDWICH_trade_lag_1, CDLTAKURI_trade_lag_1, CDLTASUKIGAP_trade_lag_1, CDLTHRUSTING_trade_lag_1, CDLTRISTAR_trade_lag_1, CDLUNIQUE3RIVER_trade_lag_1, CDLUPSIDEGAP2CROWS_trade_lag_1, CDLXSIDEGAP3METHODS_trade_lag_1, sma_3_10_macro_lag_1, sma_14_50_macro_lag_1, rsi7_macro_lag_1, rsi30_macro_lag_1, rsi90_macro_lag_1, CDL3BLACKCROWS_macro_lag_1, CDL3LINESTRIKE_macro_lag_1, CDL3STARSINSOUTH_macro_lag_1, CDLABANDONEDBABY_macro_lag_1, CDLBELTHOLD_macro_lag_1, CDLCLOSINGMARUBOZU_macro_lag_1, CDLCOUNTERATTACK_macro_lag_1, CDLDOJI_macro_lag_1, CDLDRAGONFLYDOJI_macro_lag_1, CDLEVENINGDOJISTAR_macro_lag_1, CDLGAPSIDESIDEWHITE_macro_lag_1, CDLHAMMER_macro_lag_1, CDLHARAMI_macro_lag_1, CDLHIGHWAVE_macro_lag_1, CDLHIKKAKEMOD_macro_lag_1, CDLIDENTICAL3CROWS_macro_lag_1, CDLINVERTEDHAMMER_macro_lag_1, CDLKICKINGBYLENGTH_macro_lag_1, CDLLONGLEGGEDDOJI_macro_lag_1, CDLMARUBOZU_macro_lag_1, CDLMATHOLD_macro_lag_1, CDLMORNINGSTAR_macro_lag_1, CDLPIERCING_macro_lag_1, CDLRISEFALL3METHODS_macro_lag_1, CDLSHOOTINGSTAR_macro_lag_1, CDLSPINNINGTOP_macro_lag_1, CDLSTICKSANDWICH_macro_lag_1, CDLTASUKIGAP_macro_lag_1, CDLTRISTAR_macro_lag_1, CDLUPSIDEGAP2CROWS_macro_lag_1, sma_3_10_super_lag_1, rsi30_super_lag_3, CDL3OUTSIDE_super_lag_2, CDLBELTHOLD_super_lag_1, CDLCOUNTERATTACK_super_lag_3, CDLENGULFING_super_lag_2, CDLHAMMER_super_lag_1, CDLHIGHWAVE_super_lag_3, CDLINNECK_super_lag_2, CDLLONGLEGGEDDOJI_super_lag_1, CDLMATHOLD_super_lag_3, CDLRICKSHAWMAN_super_lag_2, CDLSPINNINGTOP_super_lag_1, CDLTASUKIGAP_super_lag_3, CDLXSIDEGAP3METHODS_super_lag_2, 
+
+
+=============
+CROSS VALIDATION PARAMS
+classifier:svm
+C:4
+kernel:poly
+degree:4
+gamma:scale
+randome_state:1
+probability:True
+fold_numeber:10
+decision_function_shape:ovr
+class_weight:balanced
+split_type:time_series_split
+rebalance:None
+
+
+
+============
+DATA:
+Total rows: 10401
+Label 0.0: 3806(36.59%)
+Label 1.0: 3291(31.64%)
+Label 2.0: 3304(31.77%)
+
+>>>>>> FOLD 1
+
+
+DATA IN FOLD
+Train: 945, Validation: 945
+
+Train:
+Label 0.0: 269(28.47%)
+Label 1.0: 319(33.76%)
+Label 2.0: 357(37.78%)
+
+Test:
+Label 0.0: 500(52.91%)
+Label 1.0: 184(19.47%)
+Label 2.0: 261(27.62%)
+
+>>>>>> FOLD 2
+
+
+DATA IN FOLD
+Train: 1890, Validation: 945
+
+Train:
+Label 0.0: 769(40.69%)
+Label 1.0: 503(26.61%)
+Label 2.0: 618(32.7%)
+
+Test:
+Label 0.0: 378(40.0%)
+Label 1.0: 378(40.0%)
+Label 2.0: 189(20.0%)
+
+>>>>>> FOLD 3
+
+
+DATA IN FOLD
+Train: 2835, Validation: 945
+
+Train:
+Label 0.0: 1147(40.46%)
+Label 1.0: 881(31.08%)
+Label 2.0: 807(28.47%)
+
+Test:
+Label 0.0: 393(41.59%)
+Label 1.0: 238(25.19%)
+Label 2.0: 314(33.23%)
+
+>>>>>> FOLD 4
+
+
+DATA IN FOLD
+Train: 3780, Validation: 945
+
+Train:
+Label 0.0: 1540(40.74%)
+Label 1.0: 1119(29.6%)
+Label 2.0: 1121(29.66%)
+
+Test:
+Label 0.0: 315(33.33%)
+Label 1.0: 334(35.34%)
+Label 2.0: 296(31.32%)
+
+>>>>>> FOLD 5
+
+
+DATA IN FOLD
+Train: 4725, Validation: 945
+
+Train:
+Label 0.0: 1855(39.26%)
+Label 1.0: 1453(30.75%)
+Label 2.0: 1417(29.99%)
+
+Test:
+Label 0.0: 618(65.4%)
+Label 1.0: 184(19.47%)
+Label 2.0: 143(15.13%)
+
+>>>>>> FOLD 6
+
+
+DATA IN FOLD
+Train: 5670, Validation: 945
+
+Train:
+Label 0.0: 2473(43.62%)
+Label 1.0: 1637(28.87%)
+Label 2.0: 1560(27.51%)
+
+Test:
+Label 0.0: 112(11.85%)
+Label 1.0: 500(52.91%)
+Label 2.0: 333(35.24%)
+
+>>>>>> FOLD 7
+
+
+DATA IN FOLD
+Train: 6615, Validation: 945
+
+Train:
+Label 0.0: 2585(39.08%)
+Label 1.0: 2137(32.31%)
+Label 2.0: 1893(28.62%)
+
+Test:
+Label 0.0: 155(16.4%)
+Label 1.0: 339(35.87%)
+Label 2.0: 451(47.72%)
+
+>>>>>> FOLD 8
+
+
+DATA IN FOLD
+Train: 7560, Validation: 945
+
+Train:
+Label 0.0: 2740(36.24%)
+Label 1.0: 2476(32.75%)
+Label 2.0: 2344(31.01%)
+
+Test:
+Label 0.0: 259(27.41%)
+Label 1.0: 327(34.6%)
+Label 2.0: 359(37.99%)
+
+>>>>>> FOLD 9
+
+
+DATA IN FOLD
+Train: 8505, Validation: 945
+
+Train:
+Label 0.0: 2999(35.26%)
+Label 1.0: 2803(32.96%)
+Label 2.0: 2703(31.78%)
+
+Test:
+Label 0.0: 242(25.61%)
+Label 1.0: 297(31.43%)
+Label 2.0: 406(42.96%)
+
+>>>>>> FOLD 10
+
+
+DATA IN FOLD
+Train: 9450, Validation: 945
+
+Train:
+Label 0.0: 3241(34.3%)
+Label 1.0: 3100(32.8%)
+Label 2.0: 3109(32.9%)
+
+Test:
+Label 0.0: 559(59.15%)
+Label 1.0: 191(20.21%)
+Label 2.0: 195(20.63%)
+
+>>>>>>
+EVALUATION SUMMARY:
+
+      accuracy  0.0_precision  0.0_recall  0.0_f1-score  1.0_precision  \
+1        0.265          0.528       0.168         0.255          0.217   
+2        0.323          0.377       0.683         0.486          0.418   
+3        0.368          0.455       0.489         0.471          0.275   
+4        0.398          0.398       0.670         0.499          0.398   
+5        0.401          0.636       0.508         0.565          0.131   
+6        0.415          0.154       0.125         0.138          0.556   
+7        0.246          0.137       0.426         0.207          0.324   
+8        0.341          0.300       0.116         0.167          0.347   
+9        0.399          0.381       0.550         0.450          0.360   
+10       0.480          0.628       0.685         0.655          0.239   
+mean     0.363          0.399       0.442         0.389          0.327   
+std      0.072          0.172       0.228         0.182          0.119   
+min      0.246          0.137       0.116         0.138          0.131   
+max      0.480          0.636       0.685         0.655          0.556   
+
+      1.0_recall  1.0_f1-score  2.0_precision  2.0_recall  2.0_f1-score  
+1          0.272         0.242          0.209       0.444         0.284  
+2          0.061         0.106          0.117       0.127         0.122  
+3          0.286         0.280          0.319       0.280         0.298  
+4          0.228         0.290          0.397       0.301         0.342  
+5          0.120         0.125          0.152       0.301         0.202  
+6          0.300         0.390          0.390       0.685         0.497  
+7          0.274         0.297          0.417       0.162         0.233  
+8          0.434         0.386          0.344       0.418         0.377  
+9          0.313         0.335          0.447       0.372         0.406  
+10         0.309         0.269          0.136       0.062         0.085  
+mean       0.260         0.272          0.293       0.315         0.285  
+std        0.105         0.095          0.127       0.180         0.128  
+min        0.061         0.106          0.117       0.062         0.085  
+max        0.434         0.390          0.447       0.685         0.497  

@@ -80,3 +80,20 @@ def print_confusion_matrix(y_true,y_pred, file = None):
     for i in range(0, len(con_matrix)):
         df["RP{}".format(i)] = round(df["P{}".format(i)]/df["Total"],3)
     printb(df,file = file)
+
+def print_params(params:dict,title:str,file = None):
+    '''
+    Print parameters 
+
+    Params:
+    - params: parameters as dictionary
+    - title: title
+    - file: print to file if any
+    
+    Returns: none
+    '''
+    printb("\n=============",file = file)
+    printb(title,file = file)
+    for key in params.keys():
+        printb("{}:{}".format(key,params[key]),file = file)
+    printb("\n",file = file)
