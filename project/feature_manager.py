@@ -10,9 +10,142 @@ from random import randint
 import tr_utils as tu
 
 TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"4h":4*60*60*1000,"1d":24*60*60*1000}
-class FeatureManager():
 
-    DEFAULT_FEATURES = [
+DEFAULT_MACRO_FEATURES = [
+        "sma_3_10",
+        "sma_7_30",
+        "rsi7",      
+        "rsi14",
+        "CDL2CROWS",
+        "CDL3BLACKCROWS",
+        "CDL3INSIDE",
+        "CDL3LINESTRIKE",
+        "CDL3OUTSIDE",
+        "CDL3STARSINSOUTH",
+        "CDL3WHITESOLDIERS",
+        "CDLABANDONEDBABY",
+        "CDLADVANCEBLOCK",
+        "CDLBELTHOLD",
+        "CDLBREAKAWAY",
+        "CDLCLOSINGMARUBOZU",
+        "CDLCONCEALBABYSWALL",
+        "CDLCOUNTERATTACK",
+        "CDLDARKCLOUDCOVER",
+        "CDLDOJI",
+        "CDLDOJISTAR",
+        "CDLDRAGONFLYDOJI",
+        "CDLENGULFING",
+        "CDLEVENINGDOJISTAR",
+        "CDLEVENINGSTAR",
+        "CDLGAPSIDESIDEWHITE",
+        "CDLGRAVESTONEDOJI",
+        "CDLHAMMER",
+        "CDLHANGINGMAN",
+        "CDLHARAMI",
+        "CDLHARAMICROSS",
+        "CDLHIGHWAVE",
+        "CDLHIKKAKE",
+        "CDLHIKKAKEMOD",
+        "CDLHOMINGPIGEON",
+        "CDLIDENTICAL3CROWS",
+        "CDLINNECK",
+        "CDLINVERTEDHAMMER",
+        "CDLKICKING",
+        "CDLKICKINGBYLENGTH",
+        "CDLLADDERBOTTOM",
+        "CDLLONGLEGGEDDOJI",
+        "CDLLONGLINE",
+        "CDLMARUBOZU",
+        "CDLMATCHINGLOW",
+        "CDLMATHOLD",
+        "CDLMORNINGDOJISTAR",
+        "CDLMORNINGSTAR",
+        "CDLONNECK",
+        "CDLPIERCING",
+        "CDLRICKSHAWMAN",
+        "CDLRISEFALL3METHODS",
+        "CDLSEPARATINGLINES",
+        "CDLSHOOTINGSTAR",
+        "CDLSHORTLINE",
+        "CDLSPINNINGTOP",
+        "CDLSTALLEDPATTERN",
+        "CDLSTICKSANDWICH",
+        "CDLTAKURI",
+        "CDLTASUKIGAP",
+        "CDLTHRUSTING",
+        "CDLTRISTAR",
+        "CDLUNIQUE3RIVER",
+        "CDLUPSIDEGAP2CROWS",
+        "CDLXSIDEGAP3METHODS"
+    ]
+
+DEFAULT_SUPER_FEATURES = [
+        "sma_3_10",
+        "rsi7",      
+        "CDL2CROWS",
+        "CDL3BLACKCROWS",
+        "CDL3INSIDE",
+        "CDL3LINESTRIKE",
+        "CDL3OUTSIDE",
+        "CDL3STARSINSOUTH",
+        "CDL3WHITESOLDIERS",
+        "CDLABANDONEDBABY",
+        "CDLADVANCEBLOCK",
+        "CDLBELTHOLD",
+        "CDLBREAKAWAY",
+        "CDLCLOSINGMARUBOZU",
+        "CDLCONCEALBABYSWALL",
+        "CDLCOUNTERATTACK",
+        "CDLDARKCLOUDCOVER",
+        "CDLDOJI",
+        "CDLDOJISTAR",
+        "CDLDRAGONFLYDOJI",
+        "CDLENGULFING",
+        "CDLEVENINGDOJISTAR",
+        "CDLEVENINGSTAR",
+        "CDLGAPSIDESIDEWHITE",
+        "CDLGRAVESTONEDOJI",
+        "CDLHAMMER",
+        "CDLHANGINGMAN",
+        "CDLHARAMI",
+        "CDLHARAMICROSS",
+        "CDLHIGHWAVE",
+        "CDLHIKKAKE",
+        "CDLHIKKAKEMOD",
+        "CDLHOMINGPIGEON",
+        "CDLIDENTICAL3CROWS",
+        "CDLINNECK",
+        "CDLINVERTEDHAMMER",
+        "CDLKICKING",
+        "CDLKICKINGBYLENGTH",
+        "CDLLADDERBOTTOM",
+        "CDLLONGLEGGEDDOJI",
+        "CDLLONGLINE",
+        "CDLMARUBOZU",
+        "CDLMATCHINGLOW",
+        "CDLMATHOLD",
+        "CDLMORNINGDOJISTAR",
+        "CDLMORNINGSTAR",
+        "CDLONNECK",
+        "CDLPIERCING",
+        "CDLRICKSHAWMAN",
+        "CDLRISEFALL3METHODS",
+        "CDLSEPARATINGLINES",
+        "CDLSHOOTINGSTAR",
+        "CDLSHORTLINE",
+        "CDLSPINNINGTOP",
+        "CDLSTALLEDPATTERN",
+        "CDLSTICKSANDWICH",
+        "CDLTAKURI",
+        "CDLTASUKIGAP",
+        "CDLTHRUSTING",
+        "CDLTRISTAR",
+        "CDLUNIQUE3RIVER",
+        "CDLUPSIDEGAP2CROWS",
+        "CDLXSIDEGAP3METHODS"
+    ]
+
+DEFAULT_FEATURES = [
         "returns",
         "dir",
         "hashrate",
@@ -143,6 +276,8 @@ class FeatureManager():
         "CDLXSIDEGAP3METHODS"
     ]
 
+class FeatureManager():
+
     def __init__(self,target_col:str, window:int = 50) -> None:
         '''
         Initialize the instance
@@ -161,25 +296,55 @@ class FeatureManager():
         self.params = dict()
 
     def import_trading_data(self,symbol: str, trade_timeframe: str):
-        
+        '''Import trading data
+        '''
         data_path = "../data/{}-{}.csv".format(symbol,trade_timeframe)
         self.df = pd.read_csv(
             data_path, 
             parse_dates=["Open Time"],
             index_col = "Open Time"
         )
-        print("Imported {} with {} rows".format(data_path,len(self.df)))
+        print("Imported trading data from {} with {} rows".format(data_path,len(self.df)))
         self.trade_timeframe = trade_timeframe
     
+    def import_macro_data(self,symbol: str, macro_timeframe: str):
+        '''
+        Import macro data, one level higher than trading data.
+        Use it to calculate technical analysis indicator
+        '''
+        macro_data_path = "../data/{}-{}.csv".format(symbol,macro_timeframe)
+        self.macro_df = pd.read_csv(
+            macro_data_path, 
+            parse_dates=["Open Time"], 
+            index_col = "Open Time"
+        )
+        print("Imported macro data from {} with {} rows".format(macro_data_path,len(self.macro_df)))
+        self.macro_timeframe = macro_timeframe
+
+    def import_super_data(self,symbol: str, super_timeframe: str):
+        '''
+        Import super macro data, one level higher than trading data.
+        Use it to calculate technical analysis indicator
+        '''
+        data_path = "../data/{}-{}.csv".format(symbol,super_timeframe)
+        self.super_df = pd.read_csv(
+            data_path, 
+            parse_dates=["Open Time"], 
+            index_col = "Open Time"
+        )
+        print("Imported super macro data from {} with {} rows".format(data_path,len(self.super_df)))
+        self.super_timeframe = super_timeframe
 
     def import_granular_data(self,symbol: str, granular_timeframe: str):
+        '''Import most detail data, used to check stoploss and take profit hit
+        '''
         granular_data_path = "../nocommit/{}-{}.csv".format(symbol,granular_timeframe)
         self.granular_df = pd.read_csv(
             granular_data_path, 
             parse_dates=["Open Time"], 
             index_col = "Open Time"
         )
-        print("Imported {} with {} rows".format(granular_data_path,len(self.granular_df)))
+        print("Imported granular data from {} with {} rows".format(granular_data_path,len(self.granular_df)))
         self.granular_timeframe = granular_timeframe
 
     def calculate_external_features(self,features:list[str]):
@@ -246,7 +411,8 @@ class FeatureManager():
         print("Features manager parameters:")
         print(self.params)
 
-    def build_features(self,lags:int, features:list[str]=[],scaler:str = "MaxAbs"):
+    def build_features(self,lags:int,macro_lags:int,super_lags:int, 
+        features:list[str]=DEFAULT_FEATURES, macro_features:list[str]=DEFAULT_MACRO_FEATURES, super_features:list=DEFAULT_SUPER_FEATURES, scaler:str = "MaxAbs"):
         '''
         Build the normalized features to feed to classifier
     
@@ -254,24 +420,30 @@ class FeatureManager():
             - lags: the lagging timeframe to be included
         Output: None. The self.df stored the processed output. self.df stores the feature columns.        
         '''
-
         self.params["lags"] = lags
-
-        if not features:
-            features = self.DEFAULT_FEATURES
+        self.params["scaler"] = scaler
             
         # Import external features
         self.calculate_external_features(features=features)
 
-        # Calculating ta features
-        self.calculate_technical_analysis_features(features=features)
+        # Calculating TA features for trading timeframe
+        self.calculate_technical_analysis_features(features=features,level="trade")
+        self.calculate_technical_analysis_features(features=macro_features,level="macro")
+        self.calculate_technical_analysis_features(features=super_features,level="super")
 
-        # Calculate candle stick
-        self.calculate_candle_sticks(features=features)
-        
+        # Calculate candle stick features for trading timeframe
+        self.calculate_candle_sticks(features=features,level="trade")
+        self.calculate_candle_sticks(features=macro_features,level="macro")
+        self.calculate_candle_sticks(features=super_features,level="super")
+
         # Adding lags
-        self.add_features_with_lags(features=features,lags=lags)
-
+        self.add_features_with_lags(features=features,lags=lags,level="trade")
+        self.add_features_with_lags(features=macro_features,lags=macro_lags,level="macro")
+        self.add_features_with_lags(features=super_features,lags=super_lags,level="super")
+ 
+        # macro features with trading features
+        self.merge_features_all_level()
+       
         # Drop na before normalize
         self.df.dropna(inplace=True)
 
@@ -280,21 +452,61 @@ class FeatureManager():
 
         print("\nTotal {} features added.".format(len(self.cols)))
 
-    def add_features_with_lags(self,features:list[str],lags:int):
-        print("\nAdding features with lags {}:".format(lags), end=" ")
-        self.cols = []
-        data = self.df.copy()
+    def merge_features_all_level(self):
+        merged_pd = pd.concat([self.df,self.macro_df[self.macro_cols],self.super_df[self.super_cols]],axis=1)
+        
+        for col in self.macro_cols:
+            merged_pd[col].fillna(method="ffill",inplace=True)
+
+        for col in self.super_cols:
+            merged_pd[col].fillna(method="ffill",inplace=True)
+
+        self.df = merged_pd
+        self.cols = self.cols + self.macro_cols + self.super_cols
+
+
+    def add_features_with_lags(self,features:list[str],lags:int,level:str):
+        
+        print("\nAdding features for {} timeframe with lags {}:".format(level,lags), end=" ")
+
+        match level:
+            case "super":
+                data = self.super_df.copy()
+            case "macro":
+                data = self.macro_df.copy()
+            case "trade":
+                data = self.df.copy()
+            case other:
+                raise ValueError("level must be one of: trading, macro, super")
+        
+        cols = []
         for f in features:
             print("{},".format(f), end=" ")
             for lag in range(1,lags + 1):
-                col = "{}_lag_{}".format(f,lag)
+                col = "{}_{}_lag_{}".format(f,level,lag)
                 data[col] = data[f].shift(lag)
-                self.cols.append(col)
-        # data.dropna(inplace=True)
-        self.df = data
+                cols.append(col)
         print("")
+
+        match level:
+            case "super":
+                self.super_df = data.copy()
+                self.super_cols = cols
+            case "macro":
+                self.macro_df = data.copy()
+                self.macro_cols = cols
+            case "trade":
+                self.df = data.copy()
+                self.cols = cols
  
-    def normalize_features(self, scaler=None):
+    def normalize_features(self,scaler=None):
+        ''' Normalize features
+
+            Params:
+            -scaler: 'Standard' , 'MinMax', 'MaxAbs'
+
+            Returns: None
+        '''
         used_scaler = None
         match scaler:
             case "Standard":
@@ -304,7 +516,7 @@ class FeatureManager():
             case "MaxAbs":
                 used_scaler = MaxAbsScaler(copy = False)
             case other:
-                used_scaler = MaxAbsScaler(copy=False)
+                raise ValueError("'scaler' must be one of 'Standard','MinMax','MaxAbs'")
             
         if used_scaler:
             print("\nNormalizing features with {}:".format(scaler), end=" ")
@@ -313,10 +525,29 @@ class FeatureManager():
                 used_scaler.fit(self.df[col].to_frame())
                 self.df[col] = used_scaler.transform(self.df[col].to_frame())
 
-    def calculate_candle_sticks(self,features:list[str]):
-        ''' Calculate the candle stick indicators
+    def calculate_candle_sticks(self,features:list[str], level:str):
+        ''' 
+        Calculate the candle stick patterns indicators
+
+        Params:
+        - features: list of features
+        - level: one of 'trade', 'macro', 'super'
+
+        Returns: None
         '''
-        data = self.df.copy()
+        print("Calculating candlestick of {} timeframe".format(level))
+
+        data = None
+        match level:
+            case "super":
+                data = self.super_df.copy()
+            case "macro":
+                data = self.macro_df.copy()
+            case "trade":
+                data = self.df.copy()
+            case other:
+                raise ValueError("level must be one of: trading, macro, super")
+
         open = data["Open"]
         high = data["High"]
         close = data["Close"]
@@ -327,20 +558,44 @@ class FeatureManager():
         for indicator in all_indicators:
             if indicator in features:
                 data[str(indicator)] = getattr(abstract, indicator)(open,high,low,close)
-        
-        self.df = data
 
-    def calculate_technical_analysis_features(self,features: list[str]):
-        ''' Calculate the technical analysis not including candle stick
+        match level:
+            case "super":
+                self.super_df = data
+            case "macro":
+                self.macro_df = data
+            case "trade":
+                self.df = data
+
+    def calculate_technical_analysis_features(self,features: list[str],level:str):
+        ''' 
+        Calculate the technical analysis not including candle stick
+        
+        Params:
+        - features: list of features
+        - level: one of 'trade', 'macro', 'super'
+
+        Returns: None
         '''
-        data = self.df.copy()
+        print("Calculating TA indicators of {} timeframe".format(level))
+
+        data = None
+        match level:
+            case "super":
+                data = self.super_df.copy()
+            case "macro":
+                data = self.macro_df.copy()
+            case "trade":
+                data = self.df.copy()
+            case other:
+                raise ValueError("Argument 'level' must be one of: 'trade', 'macro', 'super'")
+
         open = data["Open"]
         close = data["Close"]
         high = data["High"]
         low = data["Low"]
         volume = data["Volumn"]
 
-        print("Calculating technical features...")
         data["returns"] = np.log(close/close.shift())
         data["dir"] = np.where(data["returns"] > 0,1,0)
          
@@ -416,7 +671,6 @@ class FeatureManager():
             data[key] = ta.RSI(close, timeperiod=90)                                                # type: ignore
         if (key:="rsi180") in features:
             data[key] = ta.RSI(close, timeperiod=180)                                                # type: ignore
-   
         if (key:="adx7") in features:
             data[key] = ta.ADX(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="adx14") in features:
@@ -468,8 +722,26 @@ class FeatureManager():
         if (key:="low") in features:
             data[key] = low/close -1
         
-        # data.dropna(inplace=True)
-        self.df = data
+        match level:
+            case "super":
+                self.super_df = data
+            case "macro":
+                self.macro_df = data
+            case "trade":
+                self.df = data
+    '''
+    def get_macro_open_time(self,current_time:int):
+        maybe_in = None
+        last_index = None
+        for i in self.macro_df.index:
+            if current_time >= int(i):
+                maybe_in = True
+                last_index = i 
+            else:
+                if maybe_in and (current_time < int(i)):
+                    return last_index
+        return None
+    '''
 
     def calculate_tp_or_sl(self,row,i:int,is_long:bool):    
         '''
@@ -654,8 +926,8 @@ class FeatureManager():
         short = self.df.loc[self.df["trade_signal"] == 2]
         plt.figure(figsize = (20,10), dpi = dpi)
         plt.plot(self.df.index,self.df["Close"])
-        plt.scatter(long.index,long["Close"],color="g",marker="^")
-        plt.scatter(short.index,short["Close"],color="r",marker="v")
+        plt.scatter(long.index,long["Close"],color="g",marker="^")      #type: ignore
+        plt.scatter(short.index,short["Close"],color="r",marker="v")    #type: ignore
         if save_to_file:
             plt.savefig("../out/trade_signal.png")
         plt.show()
