@@ -28,8 +28,9 @@ class CryptoTradingEnv(gym.Env):
         state_space: int,      # Number of state
         reward_scaling: float,   # Initial cash balance
         indicators: list[str],   # indicator to be used in observation
-        buy_trading_fee: float = 0.001,     #buy cost
-        sell_trading_fee: float = 0.001,    #sell cost
+        buy_trading_fee: float = 0.0002,     #buy cost
+        sell_trading_fee: float = 0.0002,    #sell cost
+        money_sleep_cost = 0.00002,
         day:int=0,                          #timeframe passed from start
         initial:bool = True,                # is that intial state or not
 
@@ -38,6 +39,7 @@ class CryptoTradingEnv(gym.Env):
         self.df = df
         self.buy_trading_fee = buy_trading_fee
         self.sell_trading_fee = sell_trading_fee
+        self.money_sleep_cost = money_sleep_cost
         self.reward_scaling = reward_scaling
         self.state_space = state_space
         self.indicators = indicators
@@ -95,8 +97,8 @@ class CryptoTradingEnv(gym.Env):
                 case 2: # In short position
                     match int(action):
                         case 0:
-                            # Close the position, increase trade
-                            self.reward =  (enter_price-current_price)/enter_price - self.buy_trading_fee
+                            # Close short position, increase trade count
+                            self.reward = (enter_price-current_price)/enter_price - self.buy_trading_fee
                             self.trades+=1
                             enter_price = 0
                         case 1:
@@ -106,7 +108,8 @@ class CryptoTradingEnv(gym.Env):
                             self.trades+=2
                             enter_price = current_price
                         case 2:
-                            # Do nothing, reward = 0
+                            # Stay short
+                            self.reward = (enter_price-current_price)/enter_price
                             pass
                         case other:
                             raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
@@ -115,17 +118,17 @@ class CryptoTradingEnv(gym.Env):
                     match int(action):
                         case 0:
                             # Stay netral
-                            self.reward = 0
+                            self.reward -= self.money_sleep_cost
                         case 1:
                             # From netral to long
                             self.reward = -self.buy_trading_fee
-                            self.trades +=1
                             enter_price = current_price
+                            self.trades +=1
                         case 2:
                             # From neutral to short
                             self.reward = - self.sell_trading_fee
                             enter_price = current_price
-                            self.trades+=1
+                            self.trades +=1
                         case other:
                             raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
                     
@@ -134,10 +137,11 @@ class CryptoTradingEnv(gym.Env):
                         case 0:
                             # Close long position
                             self.reward = (current_price-enter_price)/enter_price - self.sell_trading_fee
-                            self.trades+=1
                             enter_price = 0
+                            self.trades+=1
                         case 1:
                             # Stay short
+                            self.reward = (current_price-enter_price)/enter_price
                             pass
                         case 2:
                             # Close long position and then short
@@ -169,10 +173,8 @@ class CryptoTradingEnv(gym.Env):
         self.state = self._initiate_state()
 
         self.day = 0
-        self.cost = 0
         self.trades = 0
         self.terminal = False
-        self.cost = 0
         self.rewards_memory = []
         self.action_memory = []
         self.episode += 1
