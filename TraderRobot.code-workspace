@@ -2,6 +2,13 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"name": "FinRL",
+			"path": "../FinRL"
+		},
+		{
+			"path": "../TrainGround"
 		}
 	],
 	"settings": {}

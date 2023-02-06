@@ -42,10 +42,11 @@ Build classifier report autowrite
     DONE
 
 Add interest rate, gold price, stock price
-
-
-
+    DONE
 Money management
+
+Write a deep RL agent to make action long or short with different algorithm
+
 
 Assigning and managing future position by traders 
 
