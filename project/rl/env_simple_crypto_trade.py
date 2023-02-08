@@ -7,6 +7,8 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 import matplotlib.pyplot as plt
+from stable_baselines3.common.vec_env import DummyVecEnv
+
 
 class CryptoTradingEnv(gym.Env):
     ''' 
@@ -59,11 +61,26 @@ class CryptoTradingEnv(gym.Env):
         self.trades = 0
         self.episode = 0
         self.action_memory = []
-        self.rewards_memory = []
-        self.profit_memory = []
-        self.state_memory = []
+        self.trade_profit_memory = []
+        self.reward_memory = []
         self.cost_memory = []
+        self.state_memory = []
         self._seed()
+
+    def get_reward_memory(self):
+        return self.reward_memory
+    
+    def get_trade_profit_memory(self):
+        return self.trade_profit_memory
+
+    def get_action_memory(self):
+        return self.action_memory
+    
+    def get_cost_memory(self):
+        return self.cost_memory
+    
+    def get_trade_number(self):
+        return self.trades
 
     def _seed(self, seed=None):
         ''' Set random seed
@@ -71,16 +88,19 @@ class CryptoTradingEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def _cal_reward_with_sltp(self,return_rate:float):
+    def _cal_reward_with_sltp(self,trade_profit:float, position, action):
         ''' 
         Calculate reward with regard to stop loss and take profit
         If it is over take profit and stop loss level, return full, 
         otherwise, return half of that
         '''
-        if (return_rate > self.take_profit_rate) or (return_rate < self.stop_loss_rate):
-            return return_rate
+        if (trade_profit > self.take_profit_rate) or (trade_profit < self.stop_loss_rate):
+            return trade_profit
         else:
-            return 0.0
+            if (trade_profit>0) and (position == action):
+                return trade_profit
+            else:
+                return 0.0
 
     def _get_reward(self,position,action,enter_price,current_price):
         '''
@@ -96,19 +116,19 @@ class CryptoTradingEnv(gym.Env):
         '''
 
         reward = 0.0
-        return_rate = (enter_price-current_price)/enter_price if enter_price>0 else 0
+        price_change = (current_price-enter_price)/enter_price if enter_price>0 else 0
         match int(position):
             case 2: # In short position
                 match action:
                     case 0:
                         # Close short position 
-                        reward = self._cal_reward_with_sltp(return_rate) - self.buy_trading_fee
+                        reward = self._cal_reward_with_sltp(-price_change,position,action) - self.buy_trading_fee
                     case 1:
                         # Close short and then long     
-                        reward = self._cal_reward_with_sltp(return_rate) - 2 * self.buy_trading_fee
+                        reward = self._cal_reward_with_sltp(-price_change,position,action) - 2 * self.buy_trading_fee
                     case 2:
                         # Stay short
-                        reward = self._cal_reward_with_sltp(return_rate)
+                        reward = self._cal_reward_with_sltp(-price_change,position,action)
                     case other:
                         raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
         
@@ -131,19 +151,19 @@ class CryptoTradingEnv(gym.Env):
                 match action:
                     case 0:
                         # Close long position
-                        reward = self._cal_reward_with_sltp(return_rate) - self.sell_trading_fee
+                        reward = self._cal_reward_with_sltp(price_change,position,action) - self.sell_trading_fee
                     case 1:
                         # Stay long
-                        reward = self._cal_reward_with_sltp(return_rate)
+                        reward = self._cal_reward_with_sltp(price_change,position,action)
                     case 2:
                         # Close long position and then short
-                        reward = self._cal_reward_with_sltp(return_rate) - 2 *self.sell_trading_fee
+                        reward = self._cal_reward_with_sltp(price_change,position,action) - 2 *self.sell_trading_fee
                     case other:
                         raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
             case other:
                 raise(ValueError("Position must be 0,1,2. We got {}".format(self.position)))
         return reward
-    
+
     def step(self, action):
         '''
         The main logic for each time step.
@@ -164,6 +184,7 @@ class CryptoTradingEnv(gym.Env):
             data = self.df.iloc[self.day,:]
             current_price = data["Close"]
             enter_price = self.state[2]
+            last_price = self.state[1]
             
             #Get reward
             self.reward= self._get_reward(
@@ -174,22 +195,27 @@ class CryptoTradingEnv(gym.Env):
             )
             
             trading_cost = 0.0
-            trade_profit = (enter_price-current_price)/enter_price if enter_price>0 else 0  
-
+            assumed_trade_profit_before_cost = 0.0
+            asset_value_change = 0.0  
+            trade_profit_before_cost = 0.0                                    
             #Other update
             match int(self.position):
                 case 2: # In short position
+                    asset_value_change = -(current_price-last_price)/last_price
+                    assumed_trade_profit_before_cost = -(current_price-enter_price)/enter_price 
                     match int(action):
                         case 0:
                             # Close short position, increase trade count
                             self.trades+=1
                             trading_cost = -self.buy_trading_fee
                             enter_price = 0
+                            trade_profit_before_cost = assumed_trade_profit_before_cost
                         case 1:
                             # Close short and then long
                             self.trades+=2
                             trading_cost = 2 * -self.buy_trading_fee
                             enter_price = current_price
+                            trade_profit_before_cost = assumed_trade_profit_before_cost
                         case 2:
                             # Stay short
                             pass
@@ -215,33 +241,39 @@ class CryptoTradingEnv(gym.Env):
                             raise(ValueError("Action must be 0,1,2. We got {}".format(int(action))))
                     
                 case 1: # In long position
+                    asset_value_change = (current_price-last_price)/last_price
+                    assumed_trade_profit_before_cost = (current_price-enter_price)/enter_price
                     match int(action):
                         case 0:
                             # Close long position
                             trading_cost = -self.sell_trading_fee
                             enter_price = 0
                             self.trades+=1
+                            trade_profit_before_cost = assumed_trade_profit_before_cost
                         case 1:
-                            # Stay short
+                            # Stay long
                             pass
                         case 2:
                             # Close long position and then short
                             self.trades+=2
                             trading_cost =  -2*self.sell_trading_fee
                             enter_price = current_price
+                            trade_profit_before_cost = assumed_trade_profit_before_cost
                         case other:
                             raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
                 case other:
                     raise(ValueError("Position must be 0,1,2. We got {}".format(int(self.position))))
 
-            self.profit = trade_profit + trading_cost
+            self.trade_profit = trade_profit_before_cost + trading_cost
+            self.assumed_trade_profit = assumed_trade_profit_before_cost
             self.previous_position = self.position
             self.position = int(action)
             self.state = [self.position, current_price, enter_price] + data[self.indicators].tolist()
             self.reward = self.reward * self.reward_scaling
             self.action_memory.append(action)
-            self.rewards_memory.append(self.reward)
-            self.profit_memory.append(self.profit) 
+            self.reward_memory.append(self.reward)
+            self.trade_profit_memory.append(self.trade_profit)
+            self.asset_value_change_memory.append(asset_value_change)
             self.cost_memory.append(trading_cost)
             self.state_memory.append(self.state)
             self.day +=1
@@ -253,9 +285,10 @@ class CryptoTradingEnv(gym.Env):
         self.state = self._initiate_state()
         self.trades = 0
         self.terminal = False
-        self.rewards_memory = []
+        self.reward_memory = []
         self.action_memory = []
-        self.profit_memory = []
+        self.trade_profit_memory = []
+        self.asset_value_change_memory = []
         self.cost_memory = []
         self.episode += 1
 
@@ -268,48 +301,57 @@ class CryptoTradingEnv(gym.Env):
         
     def render(self, mode="human", close=False):
         position_state = {0:"NEUTRAL",1:"LONG",2:"SHORT"}
-        print("{}: Previous: {} | Action: {} | Reward: {} | Profit : {} {}".
+        print("{}: Previous:{} | Action:{} | Reward:{} | Profit:{} | Assumed Profit:{} |{}".
             format(
                 self.day, 
                 position_state[self.previous_position], 
                 position_state[self.position], 
                 round(self.reward,5), 
-                round(self.profit,5), 
+                round(self.trade_profit,5), 
+                round(self.assumed_trade_profit,5), 
                 self.terminal))
         
         return self.state
     
-    def plot_multiple(self,data:pd.DataFrame):
-        only_first_change = data.loc[data["action"] != data["action"].shift()]
-        long = only_first_change.loc[data["action"]==1]
-        short = only_first_change.loc[data["action"]==2]
-        neutral = only_first_change.loc[data["action"]==0]
-        plt.figure(figsize=(12,6),dpi=720)
-        plt.title("RobotTrader Performance")
-        plt.plot(data.index,data["cumsum_profit"],color="tab:blue",label="profit_after_cost")
-        plt.plot(data.index,data["cumsum_cost"],color="tab:red",label="trading_cost")
-        plt.plot(data.index,data["relative_price"],color="tab:cyan",label="relative_price")
-        plt.scatter(long.index,long["relative_price"],color="tab:green",marker="o")             #type: ignore
-        plt.scatter(neutral.index,neutral["relative_price"],color="tab:orange",marker="o")       #type: ignore
-        plt.scatter(short.index,short["relative_price"],color="tab:red",marker="o")           #type: ignore
-        plt.ylabel("Multiples")
-        plt.xlabel("Timeframe")
-        plt.legend()
-        plt.show()
+    # def plot_multiple(self,data:pd.DataFrame):
+        
+    #     data["y_long"] = 0
+    #     data["y_neutral"] = -0.1
+    #     data["y_short"] = -0.2
+      
+    #     # only_first_change = data.loc[data["action"] != data["action"].shift()]
+    #     long = data.loc[data["action"]==1]
+    #     short = data.loc[data["action"]==2]
+    #     neutral = data.loc[data["action"]==0]
+    #     plt.figure(figsize=(12,6),dpi=720)
+    #     plt.title("RobotTrader Performance")
+    #     # plt.plot(data.index,data["cumsum_asset_value_change"], linewidth = 1, color="tab:blue",label="assumed_asset_value_after_cost")
+    #     plt.plot(data.index,data["cumsum_trade_profit"],linewidth = 1,color="tab:green",label="real_asset_value_after_cost")
+    #     plt.plot(data.index,data["cumsum_cost"],linewidth = 1,color="tab:red",label="trading_cost")
+    #     plt.plot(data.index,data["relative_price"],linewidth = 1,color="tab:cyan",label="relative_price")
+    #     plt.scatter(long.index,long["y_long"],s=1,color="tab:green")             #type: ignore
+    #     plt.scatter(neutral.index,neutral["y_neutral"],s=1,color="tab:orange")       #type: ignore
+    #     plt.scatter(short.index,short["y_short"],s=1,color="tab:red")           #type: ignore
+    #     plt.ylabel("Multiples")
+    #     plt.xlabel("Timeframe")
+    #     plt.legend()
+    #     plt.show()
 
-    def make_result_data(self):
-        result = pd.DataFrame({
-            "reward":self.rewards_memory,
-            "profit":self.profit_memory,
-            "action":self.action_memory,
-            "cost": self.cost_memory
-            })
-        result["log_profit"] = np.log(result["profit"]+1)
-        result["cumsum_profit"] = np.exp(result["log_profit"].cumsum(axis=0))
-        result["log_cost"] = np.log(1-result["cost"])
-        result["cumsum_cost"] = np.exp(result["log_cost"].cumsum(axis=0)) -1
-        result["cumsum_profit_before_cost"] = result["cumsum_profit"] + result["cumsum_cost"]
-        result["price"] = self.df["Close"].values
-        result["relative_price"] = result["price"]/result.iloc[0,:]["price"]
-        print(result["action"].value_counts())
-        return result.copy()
+    # def make_result_data(self):
+    #     result = pd.DataFrame({
+    #         "reward":self.reward_memory,
+    #         "trade_profit":self.trade_profit_memory,
+    #         "asset_value_change": self.asset_value_change_memory,
+    #         "action":self.action_memory,
+    #         "cost": self.cost_memory
+    #         })
+    #     result["log_asset_value_change"] = np.log(result["asset_value_change"]+1+result["cost"])
+    #     result["cumsum_asset_value_change"] = np.exp(result["log_asset_value_change"].cumsum(axis=0))
+    #     result["log_trade_profit"] = np.log(result["trade_profit"]+1)
+    #     result["cumsum_trade_profit"] = np.exp(result["log_trade_profit"].cumsum(axis=0))
+    #     result["log_cost"] = np.log(1-result["cost"])
+    #     result["cumsum_cost"] = np.exp(result["log_cost"].cumsum(axis=0)) -1
+    #     result["price"] = self.df["Close"].values
+    #     result["relative_price"] = result["price"]/result.iloc[0,:]["price"]
+    #     print(result["action"].sort_index().value_counts())
+    #     return result.copy()

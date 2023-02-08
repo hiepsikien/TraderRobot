@@ -46,7 +46,15 @@ Add interest rate, gold price, stock price
 Money management
 
 Write a deep RL agent to make action long or short with different algorithm
+    DONE. The robot trade all-in either LONG or SHORT or go to NEUTRAL.
+    The performance is good. But heavily influenced by the trained data.
+    Work good in trendy market.
+    Further works include testout other model, refining reward function, 
+    multiple agents work in parallel and select the best to trade.
 
+Write agent class, do agent selection from multi agents
+    DONE HALF with writing agent class. The result via calling agent is dropping. Still dubious.
+Test out other RL models: DQN,DDPG, 
 
 Assigning and managing future position by traders 
 
