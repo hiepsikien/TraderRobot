@@ -1,4 +1,4 @@
 # ignore all files in below directories
 nocommit/
 out/
-saved_model/
+saved_models/

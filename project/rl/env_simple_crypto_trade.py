@@ -8,6 +8,7 @@ from gym import spaces
 from gym.utils import seeding
 import matplotlib.pyplot as plt
 from stable_baselines3.common.vec_env import DummyVecEnv
+import rl.rewards as rwd
 
 
 class CryptoTradingEnv(gym.Env):
@@ -88,82 +89,6 @@ class CryptoTradingEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def _cal_reward_with_sltp(self,trade_profit:float, position, action):
-        ''' 
-        Calculate reward with regard to stop loss and take profit
-        If it is over take profit and stop loss level, return full, 
-        otherwise, return half of that
-        '''
-        if (trade_profit > self.take_profit_rate) or (trade_profit < self.stop_loss_rate):
-            return trade_profit
-        else:
-            if (trade_profit>0) and (position == action):
-                return trade_profit
-            else:
-                return 0.0
-
-    def _get_reward(self,position,action,enter_price,current_price):
-        '''
-        Reward function for ML model.
-
-        Params:
-        - position: current position 0:Neutral, 1:Long, 2: Short
-        - action: predicted action 0:Neutral, 1: Long, 2: Short
-        - enter_price: the entered price if it is in long or short, otherwise 0
-        - current_price: the current price
-
-        Return: reward 
-        '''
-
-        reward = 0.0
-        price_change = (current_price-enter_price)/enter_price if enter_price>0 else 0
-        match int(position):
-            case 2: # In short position
-                match action:
-                    case 0:
-                        # Close short position 
-                        reward = self._cal_reward_with_sltp(-price_change,position,action) - self.buy_trading_fee
-                    case 1:
-                        # Close short and then long     
-                        reward = self._cal_reward_with_sltp(-price_change,position,action) - 2 * self.buy_trading_fee
-                    case 2:
-                        # Stay short
-                        reward = self._cal_reward_with_sltp(-price_change,position,action)
-                    case other:
-                        raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
-        
-            case 0: # In neural position
-                match action:
-                    case 0:
-                        # Stay netral
-                        reward = -self.money_sleep_cost
-                    case 1:
-                        # From netral to long
-                        reward = -self.buy_trading_fee
-                    case 2:
-                        # From neutral to short
-                        reward = -self.sell_trading_fee
-            
-                    case other:
-                        raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
-                
-            case 1: # In long position
-                match action:
-                    case 0:
-                        # Close long position
-                        reward = self._cal_reward_with_sltp(price_change,position,action) - self.sell_trading_fee
-                    case 1:
-                        # Stay long
-                        reward = self._cal_reward_with_sltp(price_change,position,action)
-                    case 2:
-                        # Close long position and then short
-                        reward = self._cal_reward_with_sltp(price_change,position,action) - 2 *self.sell_trading_fee
-                    case other:
-                        raise(ValueError("Action must be 0,1,2. We got {}".format(action)))
-            case other:
-                raise(ValueError("Position must be 0,1,2. We got {}".format(self.position)))
-        return reward
-
     def step(self, action):
         '''
         The main logic for each time step.
@@ -175,6 +100,7 @@ class CryptoTradingEnv(gym.Env):
         '''
         #check if it last day
         self.terminal = (self.day >= len(self.df))
+        last_day = self.day == (len(self.df)-1)
 
         if self.terminal:
             return self.state, self.reward, self.terminal, {}
@@ -187,11 +113,16 @@ class CryptoTradingEnv(gym.Env):
             last_price = self.state[1]
             
             #Get reward
-            self.reward= self._get_reward(
+            self.reward= rwd.get_reward_simple_env(
                 position = self.position,
                 action = int(action),
                 enter_price = self.state[2],
-                current_price = data["Close"]
+                current_price = data["Close"],
+                take_profit_rate= self.take_profit_rate,
+                stop_loss_rate= self.stop_loss_rate,
+                buy_trading_fee = self.buy_trading_fee,
+                sell_trading_fee = self.sell_trading_fee,
+                money_sleep_cost = self.money_sleep_cost
             )
             
             trading_cost = 0.0
@@ -264,7 +195,13 @@ class CryptoTradingEnv(gym.Env):
                 case other:
                     raise(ValueError("Position must be 0,1,2. We got {}".format(int(self.position))))
 
-            self.trade_profit = trade_profit_before_cost + trading_cost
+            if (last_day):
+                # neglect minor different in possible incured trading cost
+                self.trade_profit = assumed_trade_profit_before_cost
+                
+            else:
+                self.trade_profit = trade_profit_before_cost + trading_cost
+
             self.assumed_trade_profit = assumed_trade_profit_before_cost
             self.previous_position = self.position
             self.position = int(action)
