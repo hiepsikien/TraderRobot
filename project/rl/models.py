@@ -27,9 +27,9 @@ class TensorboardCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         try:
-            self.logger.record(key="train/reward", value=self.locals["rewards"][0])
+            self.logger.record(key="train/reward", value=self.locals["rewards"][0]) #type: ignore
         except BaseException:
-            self.logger.record(key="train/reward", value=self.locals["reward"][0])
+            self.logger.record(key="train/reward", value=self.locals["reward"][0])  #type: ignore
         return True
 
 class DRLTradeAgent:
@@ -70,6 +70,7 @@ class DRLTradeAgent:
     def get_model(
         self,
         model_name,
+        gamma,
         policy="MlpPolicy",
         model_kwargs=None,
         verbose=1,
@@ -83,6 +84,7 @@ class DRLTradeAgent:
             env=self.env,
             verbose=verbose,
             seed=seed,
+            gamma=gamma,
             tensorboard_log=cf.TENSORBOARD_LOGDIR,
         )
 
@@ -92,17 +94,24 @@ class DRLTradeAgent:
         
         self.env.reset()
         checkpoint_callback = None
+        callbacks = []
+
+        callbacks.append(
+            TensorboardCallback()
+        )
+
         if checkpoint:
             checkpoint_callback = CheckpointCallback(
                 save_freq=save_frequency, 
                 save_path="{}{}/".format(cf.CHECKPOINT_CALLBACK["save_dir"],checkpoint_subdir_name)
             )
+            callbacks.append(checkpoint_callback)
 
         model = model.learn(
             total_timesteps = total_timesteps,
             reset_num_timesteps = reset_num_timesteps,
             progress_bar = progress_bar,
-            callback = [TensorboardCallback(),checkpoint_callback]
+            callback = callbacks
         )
 
         self.latest_model = model
@@ -119,9 +128,7 @@ class DRLTradeAgent:
             render=render
         )
         self.latest_model = model
-        result_df = self.make_result_data()
-        self.describe_trades(result_df)
-        self.plot_multiple(result_df)
+        self.result_df = self.make_result_data()
 
     @staticmethod
     def DRL_prediction(model, test_env, deterministic:bool, render:bool):
@@ -148,7 +155,6 @@ class DRLTradeAgent:
                 trade_profit_memory = test_env.get_trade_profit_memory()
                 cost_memory = test_env.get_cost_memory()
                 trade_number = test_env.get_trade_number()
-                print("hit end!")
                 break
 
         return action_memory, reward_memory, trade_profit_memory, cost_memory, trade_number 
@@ -205,14 +211,15 @@ class DRLTradeAgent:
         except BaseException:
             raise ValueError("Fail to save model!")
 
-    def plot_multiple(self,data:pd.DataFrame):
+    def plot_multiple(self,log:bool=False):
         ''' 
         Plot trading results as multiple of initial
         '''
-        data["y_long"] = -0.5
-        data["y_neutral"] = -0.1
-        data["y_short"] = -1.5
-      
+        data = self.result_df.copy()
+
+        # data["y_long"] = -0.5
+        # data["y_neutral"] = -0.1
+        # data["y_short"] = -1.5
         # only_first_change = data.loc[data["action"] != data["action"].shift()]
         # long = data.loc[data["action"]==1]
         # short = data.loc[data["action"]==2]
@@ -221,23 +228,25 @@ class DRLTradeAgent:
         plt.title("RobotTrader Performance")
         # plt.plot(data.index,data["cumsum_asset_value_change"], linewidth = 1, color="tab:blue",label="assumed_asset_value_after_cost")
         plt.plot(data.index,data["cumsum_trade_profit"],linewidth = 1,color="tab:green",label="real_asset_value_after_cost")
-        # plt.plot(data.index,data["cumsum_cost"],linewidth = 1,color="tab:red",label="trading_cost")
+        plt.plot(data.index,data["cumsum_cost"]+1,linewidth = 1,color="tab:red",label="trading_cost")
         plt.plot(data.index,data["relative_price"],linewidth = 1,color="tab:cyan",label="relative_price")
         # plt.scatter(long.index,long["y_long"],s=1,color="tab:green")             #type: ignore
         # plt.scatter(neutral.index,neutral["y_neutral"],s=1,color="tab:orange")       #type: ignore
         # plt.scatter(short.index,short["y_short"],s=1,color="tab:red")           #type: ignore
         plt.ylabel("Multiples")
-        plt.yscale("log")
+        if log:
+            plt.yscale("log")
         plt.grid(True,which="both")
         plt.xlabel("Timeframe")
         plt.legend()
         plt.show()
 
-    def describe_trades(self,result_df):
+    def describe_trades(self):
         stat_dict = {}
+        df = self.result_df
         for action in range(3):
-            g = result_df['action'].ne(result_df['action'].shift()).cumsum()
-            g = g[result_df['action'].eq(action)]
+            g = df['action'].ne(df['action'].shift()).cumsum()
+            g = g[df['action'].eq(action)]
             g = g.groupby(g).count().sort_values()
             stat_dict[action] = g.describe()[["count","mean","std","min","25%","50%","75%","max"]]
         print("Trade count and duration statistics:")

@@ -8,273 +8,8 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, MaxAbsScaler
 plt.style.use("seaborn")
 from random import randint
 import tr_utils as tu
+import config as cf
 
-TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"4h":4*60*60*1000,"1d":24*60*60*1000}
-
-DEFAULT_MACRO_FEATURES = [
-        "sma_3_10",
-        "sma_7_30",
-        "rsi7",      
-        "rsi14",
-        "CDL2CROWS",
-        "CDL3BLACKCROWS",
-        "CDL3INSIDE",
-        "CDL3LINESTRIKE",
-        "CDL3OUTSIDE",
-        "CDL3STARSINSOUTH",
-        "CDL3WHITESOLDIERS",
-        "CDLABANDONEDBABY",
-        "CDLADVANCEBLOCK",
-        "CDLBELTHOLD",
-        "CDLBREAKAWAY",
-        "CDLCLOSINGMARUBOZU",
-        "CDLCONCEALBABYSWALL",
-        "CDLCOUNTERATTACK",
-        "CDLDARKCLOUDCOVER",
-        "CDLDOJI",
-        "CDLDOJISTAR",
-        "CDLDRAGONFLYDOJI",
-        "CDLENGULFING",
-        "CDLEVENINGDOJISTAR",
-        "CDLEVENINGSTAR",
-        "CDLGAPSIDESIDEWHITE",
-        "CDLGRAVESTONEDOJI",
-        "CDLHAMMER",
-        "CDLHANGINGMAN",
-        "CDLHARAMI",
-        "CDLHARAMICROSS",
-        "CDLHIGHWAVE",
-        "CDLHIKKAKE",
-        "CDLHIKKAKEMOD",
-        "CDLHOMINGPIGEON",
-        "CDLIDENTICAL3CROWS",
-        "CDLINNECK",
-        "CDLINVERTEDHAMMER",
-        "CDLKICKING",
-        "CDLKICKINGBYLENGTH",
-        "CDLLADDERBOTTOM",
-        "CDLLONGLEGGEDDOJI",
-        "CDLLONGLINE",
-        "CDLMARUBOZU",
-        "CDLMATCHINGLOW",
-        "CDLMATHOLD",
-        "CDLMORNINGDOJISTAR",
-        "CDLMORNINGSTAR",
-        "CDLONNECK",
-        "CDLPIERCING",
-        "CDLRICKSHAWMAN",
-        "CDLRISEFALL3METHODS",
-        "CDLSEPARATINGLINES",
-        "CDLSHOOTINGSTAR",
-        "CDLSHORTLINE",
-        "CDLSPINNINGTOP",
-        "CDLSTALLEDPATTERN",
-        "CDLSTICKSANDWICH",
-        "CDLTAKURI",
-        "CDLTASUKIGAP",
-        "CDLTHRUSTING",
-        "CDLTRISTAR",
-        "CDLUNIQUE3RIVER",
-        "CDLUPSIDEGAP2CROWS",
-        "CDLXSIDEGAP3METHODS"
-    ]
-
-DEFAULT_SUPER_FEATURES = [
-        "sma_3_10",
-        "rsi7",      
-        "CDL2CROWS",
-        "CDL3BLACKCROWS",
-        "CDL3INSIDE",
-        "CDL3LINESTRIKE",
-        "CDL3OUTSIDE",
-        "CDL3STARSINSOUTH",
-        "CDL3WHITESOLDIERS",
-        "CDLABANDONEDBABY",
-        "CDLADVANCEBLOCK",
-        "CDLBELTHOLD",
-        "CDLBREAKAWAY",
-        "CDLCLOSINGMARUBOZU",
-        "CDLCONCEALBABYSWALL",
-        "CDLCOUNTERATTACK",
-        "CDLDARKCLOUDCOVER",
-        "CDLDOJI",
-        "CDLDOJISTAR",
-        "CDLDRAGONFLYDOJI",
-        "CDLENGULFING",
-        "CDLEVENINGDOJISTAR",
-        "CDLEVENINGSTAR",
-        "CDLGAPSIDESIDEWHITE",
-        "CDLGRAVESTONEDOJI",
-        "CDLHAMMER",
-        "CDLHANGINGMAN",
-        "CDLHARAMI",
-        "CDLHARAMICROSS",
-        "CDLHIGHWAVE",
-        "CDLHIKKAKE",
-        "CDLHIKKAKEMOD",
-        "CDLHOMINGPIGEON",
-        "CDLIDENTICAL3CROWS",
-        "CDLINNECK",
-        "CDLINVERTEDHAMMER",
-        "CDLKICKING",
-        "CDLKICKINGBYLENGTH",
-        "CDLLADDERBOTTOM",
-        "CDLLONGLEGGEDDOJI",
-        "CDLLONGLINE",
-        "CDLMARUBOZU",
-        "CDLMATCHINGLOW",
-        "CDLMATHOLD",
-        "CDLMORNINGDOJISTAR",
-        "CDLMORNINGSTAR",
-        "CDLONNECK",
-        "CDLPIERCING",
-        "CDLRICKSHAWMAN",
-        "CDLRISEFALL3METHODS",
-        "CDLSEPARATINGLINES",
-        "CDLSHOOTINGSTAR",
-        "CDLSHORTLINE",
-        "CDLSPINNINGTOP",
-        "CDLSTALLEDPATTERN",
-        "CDLSTICKSANDWICH",
-        "CDLTAKURI",
-        "CDLTASUKIGAP",
-        "CDLTHRUSTING",
-        "CDLTRISTAR",
-        "CDLUNIQUE3RIVER",
-        "CDLUPSIDEGAP2CROWS",
-        "CDLXSIDEGAP3METHODS"
-    ]
-
-DEFAULT_FEATURES = [
-        "returns",
-        "dir",
-        "hashrate",
-        "fed_rate",
-        "gold",
-        "nasdaq",
-        "sp500",
-        "google_trend",      
-        "sma_3_10",
-        "sma_7_30",
-        "sma_14_50",
-        "sma_28_90",      
-        "boll",     
-        "boll7",
-        "boll14",
-        "boll21",
-        "min",      
-        "min7",      
-        "min14",
-        "min21",
-        "max",      
-        "max7",      
-        "max14",
-        "max21",
-        "mom",
-        "mom7",      
-        "mom14",
-        "mom21",
-        "vol",      
-        "vol7",      
-        "vol14",
-        "vol21",
-        "obv",      
-        "mfi7",     
-        "mfi14",
-        "mfi21",
-        "rsi7",      
-        "rsi14",
-        "rsi30",
-        "rsi60",
-        "rsi90",
-        "rsi180",
-        "adx7",      
-        "adx14",
-        "adx21",
-        "roc",      
-        "roc7",      
-        "roc14",
-        "roc21",
-        "atr7",      
-        "atr14",
-        "atr21",
-        "bop",      
-        "ad",       
-        "adosc",     
-        "trange",    
-        "ado",       
-        "willr7",     
-        "willr14",
-        "willr21",
-        "dx7",     
-        "dx14",
-        "dx21",
-        "trix",     # 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
-        "ultosc",   # Ultimate Oscillator
-        "high",
-        "low",
-        "CDL2CROWS",
-        "CDL3BLACKCROWS",
-        "CDL3INSIDE",
-        "CDL3LINESTRIKE",
-        "CDL3OUTSIDE",
-        "CDL3STARSINSOUTH",
-        "CDL3WHITESOLDIERS",
-        "CDLABANDONEDBABY",
-        "CDLADVANCEBLOCK",
-        "CDLBELTHOLD",
-        "CDLBREAKAWAY",
-        "CDLCLOSINGMARUBOZU",
-        "CDLCONCEALBABYSWALL",
-        "CDLCOUNTERATTACK",
-        "CDLDARKCLOUDCOVER",
-        "CDLDOJI",
-        "CDLDOJISTAR",
-        "CDLDRAGONFLYDOJI",
-        "CDLENGULFING",
-        "CDLEVENINGDOJISTAR",
-        "CDLEVENINGSTAR",
-        "CDLGAPSIDESIDEWHITE",
-        "CDLGRAVESTONEDOJI",
-        "CDLHAMMER",
-        "CDLHANGINGMAN",
-        "CDLHARAMI",
-        "CDLHARAMICROSS",
-        "CDLHIGHWAVE",
-        "CDLHIKKAKE",
-        "CDLHIKKAKEMOD",
-        "CDLHOMINGPIGEON",
-        "CDLIDENTICAL3CROWS",
-        "CDLINNECK",
-        "CDLINVERTEDHAMMER",
-        "CDLKICKING",
-        "CDLKICKINGBYLENGTH",
-        "CDLLADDERBOTTOM",
-        "CDLLONGLEGGEDDOJI",
-        "CDLLONGLINE",
-        "CDLMARUBOZU",
-        "CDLMATCHINGLOW",
-        "CDLMATHOLD",
-        "CDLMORNINGDOJISTAR",
-        "CDLMORNINGSTAR",
-        "CDLONNECK",
-        "CDLPIERCING",
-        "CDLRICKSHAWMAN",
-        "CDLRISEFALL3METHODS",
-        "CDLSEPARATINGLINES",
-        "CDLSHOOTINGSTAR",
-        "CDLSHORTLINE",
-        "CDLSPINNINGTOP",
-        "CDLSTALLEDPATTERN",
-        "CDLSTICKSANDWICH",
-        "CDLTAKURI",
-        "CDLTASUKIGAP",
-        "CDLTHRUSTING",
-        "CDLTRISTAR",
-        "CDLUNIQUE3RIVER",
-        "CDLUPSIDEGAP2CROWS",
-        "CDLXSIDEGAP3METHODS"
-    ]
 
 class FeatureManager():
 
@@ -412,7 +147,7 @@ class FeatureManager():
         print(self.params)
 
     def build_features(self,lags:int,macro_lags:int,super_lags:int, 
-        features:list[str]=DEFAULT_FEATURES, macro_features:list[str]=DEFAULT_MACRO_FEATURES, super_features:list=DEFAULT_SUPER_FEATURES, scaler:str = "MaxAbs"):
+        features:list[str], macro_features:list[str], super_features:list, scaler:str = "MaxAbs"):
         '''
         Build the normalized features to feed to classifier
     
@@ -611,54 +346,63 @@ class FeatureManager():
         if (key:="sma_28_90") in features:
             data[key] = close.rolling(28).mean() - close.rolling(90).mean()
 
-        if (key:="boll") in features:
-            data[key] = (close - close.rolling(self.window).mean()) / close.rolling(self.window).std()
-        if (key:="boll7") in features:
-            data[key] = (close - close.rolling(7).mean()) / close.rolling(7).std()
-        if (key:="boll14") in features:
-            data[key] = (close - close.rolling(14).mean()) / close.rolling(14).std()
-        if (key:="boll21") in features:
-            data[key] = (close - close.rolling(21).mean()) / close.rolling(21).std()
+        if (key:="cci7") in features:
+            data[key] = ta.CCI(high,low,close,timeperiod = 7)       #type: ignore
+        
+        if (key:="cci14") in features:
+            data[key] = ta.CCI(high,low,close,timeperiod = 14)      #type: ignore
+
+        if (key:="cci30") in features:
+            data[key] = ta.CCI(high,low,close,timeperiod = 30)      #type: ignore
+        
+        up_bb, mid_bb, low_bb = ta.BBANDS(close, timeperiod=5, nbdevup=2, nbdevdn=2, matype=0) #type:ignore
+
+        if (key:="up_bb") in features:
+            data["up_bb"] = up_bb
+        
+        if (key:="low_bb") in features:
+            data["low_bb"] = low_bb
+            
         if (key:="min") in features:
             data[key] = close.rolling(self.window).min() / close - 1
         if (key:="min7") in features:
             data[key] = close.rolling(7).min() / close - 1
         if (key:="min14") in features:
             data[key] = close.rolling(14).min() / close - 1
-        if (key:="min21") in features:
-            data[key] = close.rolling(21).min() / close - 1
+        if (key:="min30") in features:
+            data[key] = close.rolling(30).min() / close - 1
         if (key:="max") in features:
             data[key] = close.rolling(self.window).max() / close - 1
         if (key:="max7") in features:
             data[key] = close.rolling(7).max() / close - 1
         if (key:="max14") in features:
             data[key] = close.rolling(14).max() / close - 1
-        if (key:="max21") in features:
-            data[key] = close.rolling(21).max() / close - 1
+        if (key:="max30") in features:
+            data[key] = close.rolling(30).max() / close - 1
         if (key:="mom") in features:
             data[key] = ta.MOM(close, timeperiod=10)                                                # type: ignore
         if (key:="mom7") in features:
             data[key] = ta.MOM(close, timeperiod=7)                                                 # type: ignore
         if (key:="mom14") in features:
             data[key] = ta.MOM(close, timeperiod=14)                                                # type: ignore
-        if (key:="mom21") in features:
-            data[key] = ta.MOM(close, timeperiod=21)                                                # type: ignore
+        if (key:="mom30") in features:
+            data[key] = ta.MOM(close, timeperiod=30)                                                # type: ignore
         if (key:="vol") in features:
             data[key] = data["returns"].rolling(self.window).std()
         if (key:="vol7") in features:
             data[key] = data["returns"].rolling(7).std()
         if (key:="vol14") in features:
             data[key] = data["returns"].rolling(14).std()
-        if (key:="vol21") in features:
-            data[key] = data["returns"].rolling(21).std()
+        if (key:="vol30") in features:
+            data[key] = data["returns"].rolling(30).std()
         if (key:="obv") in features:
             data[key] = ta.OBV(close,volume)                                                        # type: ignore
         if (key:="mfi7") in features:
             data[key] = ta.MFI(high, low, close, volume, timeperiod=7)                              # type: ignore
         if (key:="mfi14") in features:
             data[key] = ta.MFI(high, low, close, volume, timeperiod=14)                             # type: ignore
-        if (key:="mfi21") in features:
-            data[key] = ta.MFI(high, low, close, volume, timeperiod=21)                             # type: ignore
+        if (key:="mfi30") in features:
+            data[key] = ta.MFI(high, low, close, volume, timeperiod=30)                             # type: ignore
         if (key:="rsi7") in features:
             data[key] = ta.RSI(close, timeperiod=7)                                                 # type: ignore
         if (key:="rsi14") in features:
@@ -675,22 +419,22 @@ class FeatureManager():
             data[key] = ta.ADX(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="adx14") in features:
             data[key] = ta.ADX(high, low, close, timeperiod=14)                                     # type: ignore
-        if (key:="adx21") in features:
-            data[key] = ta.ADX(high, low, close, timeperiod=21)                                     # type: ignore
+        if (key:="adx30") in features:
+            data[key] = ta.ADX(high, low, close, timeperiod=30)                                     # type: ignore
         if (key:="roc") in features:
             data[key] = ta.ROC(close, timeperiod=10)                                                # type: ignore
         if (key:="roc7") in features:
             data[key] = ta.ROC(close, timeperiod=7)                                                 # type: ignore
         if (key:="roc14") in features:
             data[key] = ta.ROC(close, timeperiod=14)                                                # type: ignore
-        if (key:="roc21") in features:
-            data[key] = ta.ROC(close, timeperiod=21)                                                # type: ignore
+        if (key:="roc30") in features:
+            data[key] = ta.ROC(close, timeperiod=30)                                                # type: ignore
         if (key:="atr7") in features:
             data[key] = ta.ATR(high, low, close, timeperiod=7)                                      # type: ignore
         if (key:="atr14") in features:
             data[key] = ta.ATR(high, low, close, timeperiod=14)                                     # type: ignore
-        if (key:="atr21") in features:
-            data[key] = ta.ATR(high, low, close, timeperiod=21)                                     # type: ignore
+        if (key:="atr30") in features:
+            data[key] = ta.ATR(high, low, close, timeperiod=30)                                     # type: ignore
         if (key:="bop") in features:
             data[key] = ta.BOP(open, high, low, close)                                              # type: ignore
         if (key:="ad") in features:
@@ -705,14 +449,14 @@ class FeatureManager():
             data[key] = ta.WILLR(high, low, close, timeperiod=7)                                    # type: ignore
         if (key:="willr14") in features:
             data[key] = ta.WILLR(high, low, close, timeperiod=14)                                   # type: ignore
-        if (key:="willr21") in features:
-            data[key] = ta.WILLR(high, low, close, timeperiod=21)                                   # type: ignore
+        if (key:="willr30") in features:
+            data[key] = ta.WILLR(high, low, close, timeperiod=30)                                   # type: ignore
         if (key:="dx7") in features:
             data[key] = ta.DX(high, low, close, timeperiod=7)                                       # type: ignore
         if (key:="dx14") in features:
             data[key] = ta.DX(high, low, close, timeperiod=14)                                      # type: ignore
-        if (key:="dx21") in features:
-            data[key] = ta.DX(high, low, close, timeperiod=21)                                      # type: ignore
+        if (key:="dx30") in features:
+            data[key] = ta.DX(high, low, close, timeperiod=30)                                      # type: ignore
         if (key:="trix") in features:
             data[key] = ta.TRIX(close, timeperiod=30)                                               # type: ignore
         if (key:="ultosc") in features:
@@ -757,7 +501,7 @@ class FeatureManager():
 
         '''
 
-        trade_timeframe_in_ms = TIMEFRAMES_IN_MS[self.trade_timeframe]
+        trade_timeframe_in_ms = cf.TIMEFRAMES_IN_MS[self.trade_timeframe]
         
         if is_long:
             open_cond = row["long_decision_forward_{}".format(i-1)]==0
@@ -985,7 +729,7 @@ class FeatureManager():
             data = self.df[key]
             data.index = date
             data.plot(
-                ax=axes[i // ncol, i % ncol],
+                ax=axes[i // ncol, i % ncol],       
                 color=c,
                 title="{}".format(key),
                 rot=25,
