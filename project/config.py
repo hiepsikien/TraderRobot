@@ -8,16 +8,7 @@ RESULTS_DIR = "../logs/results/"
 TRADE_ENV_PARAMETER = {
     "buy_trading_fee" : 0.0002,
     "sell_trading_fee" : 0.0002,
-    "take_profit_rate" : 0.03,
-    "stop_loss_rate" : -0.03,
-    "reward_scaling": 1
-}
-
-REWARD = {
-    "not_take_profit_penalty" : 0.5,
-    "not_stop_loss_penalty" : 2,
-    "no_trade_penalty" : 0.0005,
-    "money_cost": 0.0002
+    "reward_scaling": 1,
 }
 
 CHECKPOINT_CALLBACK = {
@@ -206,20 +197,24 @@ TA_INDICATORS_FULL = {
     "low",
 }
 
-# # stockstats technical indicator column names
-# # check https://pypi.org/project/stockstats/ for different names
-# INDICATORS = [
-#     "macd",
-#     "boll_ub",
-#     "boll_lb",
-#     "rsi_30",
-#     "cci_30",
-#     "dx_30",
-#     "close_30_sma",
-#     "close_60_sma",
-# ]
+TIMEFRAMES_IN_MS = {
+    "1m":60*1000,
+    "5m":5*60*1000,
+    "15m":15*60*1000,
+    "1h":60*60*1000,
+    "4h":4*60*60*1000,
+    "1d":24*60*60*1000,
+    "1w": 7*24*60*60*1000,
+}
 
-TIMEFRAMES_IN_MS = {"15m":15*60*1000,"1h":60*60*1000,"4h":4*60*60*1000,"1d":24*60*60*1000}
+REWARD = {
+    "take_profit_rate" : 0.1,
+    "stop_loss_rate" : -0.1,
+    "risk_free_annual_return": 0,
+    "no_trade_penalty" : 0.0005,
+    "amplified_rate": 1.1,
+    "discount_rate": 0.9
+}
 
 # Model Parameters
 A2C_PARAMS = {

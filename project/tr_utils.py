@@ -1,8 +1,16 @@
 from random import randint
+from time import time
 import pandas as pd
 from scipy.optimize import fsolve
-from math import exp
+from math import exp    
+from config import TIMEFRAMES_IN_MS
+import numpy as np
 
+def get_name_with_kwargs(name:str,kwargs:dict):
+    name = ""
+    for key in kwargs.keys():
+        name += f"{key}_{kwargs[key]}"
+    return name
 
 def under_sampling_rebalance(data:pd.DataFrame,target_col:str):
     '''
