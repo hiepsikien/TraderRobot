@@ -17,12 +17,16 @@ class CryptoTradingEnv(gym.Env):
     The reward is the asset value change percentage 
     
     state[0]: current position, 2 if SHORT, 0 if NEUTRAL, 1 if LONG
-    state[1]: latest price
-    state[2]: entered price if current position is SHORT or LONG, 0 if NEUTRAL
+    state[1]: price change
+    state[2]: assumed position profit
     state[3]: unallocated reward
     state[4]: reached take profit or not
     state[5]: reached stop loss or not
-    state[6:]: indicators
+    state[6]: positions duration
+    state[7]: enter price
+    state[8]: percentage of position up day
+    state[9]: percentage of position down day
+    state[10:]: indicators
     """
     def __init__(
         self,
@@ -33,7 +37,7 @@ class CryptoTradingEnv(gym.Env):
         indicators: list[str],              # indicator to be used in observation
         buy_trading_fee: float,             # buy fee as percentage
         sell_trading_fee: float,            # sell fee as percentage
-        day:int=0,                          # timeframe passed from start
+        day:int=1,                          # start from 1 to calculate price_change of initial state
         initial:bool = True,                # is that intial state or not
 
     ):
@@ -51,9 +55,7 @@ class CryptoTradingEnv(gym.Env):
         self.terminal = False
         self.initial = initial
         
-        #initialize state
-        self.state = self._initiate_state()
-
+       
         #initialize reward
         self.previous_position = 0
         self.reward = 0
@@ -65,10 +67,18 @@ class CryptoTradingEnv(gym.Env):
         self.unallocated_reward_memory = []
         self.cost_memory = []
         self.state_memory = []
+        self.asset_value_change_memory = []
         self._seed()
+
+        #initialize state
+        self.state = self._initiate_state()
+
 
     def get_reward_memory(self):
         return self.reward_memory
+    
+    def get_asset_value_change_memory(self):
+        return self.asset_value_change_memory
     
     def get_unallocated_reward_memory(self):
         return self.unallocated_reward_memory
@@ -119,7 +129,7 @@ class CryptoTradingEnv(gym.Env):
         if self.terminal:
             self.trade_profit = self.assumed_trade_profit
             self.reward = self.unallocated_reward
-            self.state = [0,0,0,0,0,0] + [0 for i in range (0,len(self.indicators))]
+            self.state = [0 for i in range(10)] + [0 for i in range (0,len(self.indicators))]
             self.action_memory.append(int(action))
             self.reward_memory.append(self.reward)
             self.unallocated_reward_memory.append(self.unallocated_reward)
@@ -131,29 +141,31 @@ class CryptoTradingEnv(gym.Env):
 
         else:
             self.previous_position = int(self.state[0])
-            previous_price = self.state[1]
-            enter_price = self.state[2]
+            self.assumed_trade_profit = self.state[2]
             unallocated_reward = self.state[3]
             reached_take_profit = int(self.state[4])
             reached_stop_loss = int(self.state[5])
+            position_duration = int(self.state[6])
+            enter_price = int(self.state[7])
+            up_day_num = int(self.state[8])
+            down_day_num = int(self.state[9])
             action = int(action)
             data = self.df.iloc[self.day,:]         #type: ignore
             current_price = data["Close"]
-                
+            previous_price = self.df.iloc[self.day-1,:]["Close"]
             price_change = (current_price-previous_price)/previous_price
-            position_price_change = (current_price-enter_price)/enter_price \
-                if enter_price != 0 else 0
+            position_price_change = (current_price-enter_price)/enter_price if enter_price>0 else 0
             
             asset_value_change = 0
             self.assumed_trade_profit = 0
-            
-            if self.previous_position == 1:
-                asset_value_change = price_change
-                self.assumed_trade_profit = position_price_change        
-            elif self.previous_position == 2:
-                asset_value_change = -price_change
-                self.assumed_trade_profit = -position_price_change
-            
+            match self.previous_position:
+                case 1:
+                    asset_value_change = price_change
+                    self.assumed_trade_profit = position_price_change
+                case 2:
+                    asset_value_change = -price_change
+                    self.assumed_trade_profit = -position_price_change
+    
             #Get reward
             self.reward, trade_profit_before_cost, \
                 self.position, trade_cost, trade_num, \
@@ -172,18 +184,27 @@ class CryptoTradingEnv(gym.Env):
                                 reached_stop_loss=reached_stop_loss,
                                 unallocated_reward=unallocated_reward,
             )
-            
-            # print(f"trade profit: {trade_profit_before_cost}, assumed_trade_profit: {self.assumed_trade_profit}")
+            self.before_action_assumed_trade_profit = self.assumed_trade_profit
+            if (self.position == self.previous_position):
+                position_duration+=1
+                up_day_num += 1 if asset_value_change > 0 else 0
+                down_day_num += 1 if asset_value_change < 0 else 0
+            else:
+                position_duration=0
+                self.assumed_trade_profit = 0
+                enter_price = current_price
+                up_day_num = 0
+                down_day_num = 0
             
             self.trade_profit = trade_profit_before_cost - trade_cost
             self.trades += trade_num
-
-            # Update state    
-            enter_price = current_price \
-                if (self.position != self.previous_position) else enter_price 
             
-            self.state = [self.position, current_price, enter_price, \
-                self.unallocated_reward, reached_take_profit, reached_stop_loss] \
+            up_day_ratio = up_day_num/position_duration if position_duration > 0 else 0
+            down_day_ratio = down_day_num/position_duration if position_duration > 0 else 0
+                    
+            self.state = [self.position, price_change, self.assumed_trade_profit, \
+                self.unallocated_reward, reached_take_profit, reached_stop_loss, \
+                    position_duration, enter_price,up_day_ratio,down_day_ratio] \
                     + data[self.indicators].tolist()
 
             # Update memory
@@ -194,10 +215,11 @@ class CryptoTradingEnv(gym.Env):
             self.asset_value_change_memory.append(asset_value_change)
             self.cost_memory.append(trade_cost)
             self.state_memory.append(self.state)
-            self.day +=1
+            
+            self.day+=1
             
             return self.state, self.reward, self.terminal, {}
-
+        
     def get_accumulated_profit(self):
         """
         Get accumulated profit
@@ -209,7 +231,7 @@ class CryptoTradingEnv(gym.Env):
 
     def reset(self):
         ''' Reset the envirnoment'''
-        self.day = 0
+        self.day = 1
         self.state = self._initiate_state()
         self.trades = 0
         self.terminal = False
@@ -230,8 +252,17 @@ class CryptoTradingEnv(gym.Env):
             _type_: Return the initial state
         """
         
-        data = self.df.iloc[self.day,:]     #type: ignore
-        return [0,data["Close"],0,0,0,0] + data[self.indicators].tolist()
+        data = self.df.iloc[self.day-1,:]     #type: ignore
+        self.state = [0 for i in range(10)] + data[self.indicators].tolist()
+        # Update memory
+        self.action_memory.append(0)
+        self.reward_memory.append(0)
+        self.unallocated_reward_memory.append(0)
+        self.trade_profit_memory.append(0)
+        self.asset_value_change_memory.append(0)
+        self.cost_memory.append(0)
+        self.state_memory.append(self.state)    
+        return self.state
         
     def render(self, mode="human", close=False):
         """ Render the prediction sequences
@@ -244,14 +275,17 @@ class CryptoTradingEnv(gym.Env):
             _type_: _description_
         """
         position_state = {0:"NEUTRAL",1:"LONG",2:"SHORT"}
-        print("{}: Previous:{} | Action:{} | Reward:{} | Profit:{} | Assumed Profit:{} |{}".
-            format(
-                self.day, 
+        print("{}: Previous:{} | Action:{} | Reward:{} | ExpReward:{} | Profit:{} | B-ATP:{} | A-ATP:{} |{}"
+            .format(
+                self.day-1, 
                 position_state[self.previous_position], 
-                position_state[self.previous_position], 
-                round(self.reward,5), 
-                round(self.trade_profit,5), 
+                position_state[self.position], 
+                round(self.reward,5),
+                round(np.exp(self.reward)-1,5),
+                round(self.trade_profit,5),
+                round(self.before_action_assumed_trade_profit,5),
                 round(self.assumed_trade_profit,5), 
-                self.terminal))
+                self.terminal
+            ))
         
         return self.state

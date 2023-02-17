@@ -23,6 +23,13 @@ def get_money_cost(timeframe:str,risk_free_annual_return:float):
         
     return money_cost    
 
+def get_linear_descending(number:int,max:int):
+    return 0 if number>max else (max-number)/max
+
+def get_linear_ascending(duration:int,max:int):
+    return 1 if duration>max else duration/max
+
+
 def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float, 
                                          position:int, 
                                          action:int,
@@ -108,10 +115,10 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
                     else AMPLIFED_RATE * new_reward
             else:
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0 else 0
-
+            
         if position == 0 and action == 0:
             reward = np.log(1 - NO_TRADE_PENALTY)
-            
+        
         unallocated_reward -= reward
     
     trade_profit = assumed_trade_profit if new_position!=position else 0     
@@ -196,8 +203,9 @@ def get_reward_as_immediate(timestep:int,
                             timeframe:str, 
                             unallocated_reward:float,
                             asset_value_change:float,
-                            reached_take_profit:int, 
-                            reached_stop_loss:int):
+                            reached_take_profit:int,
+                            reached_stop_loss:int
+                            ):
     """
     Get reward and others 
 
@@ -231,7 +239,7 @@ def get_reward_as_immediate(timestep:int,
         unallocated_reward=unallocated_reward,
         asset_value_change=asset_value_change,
         reached_stop_loss=reached_stop_loss,
-        reached_take_profit=reached_take_profit
+        reached_take_profit=reached_take_profit,
     )
     
     trade_cost, trade_num = get_trade_cost(

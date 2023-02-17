@@ -10,6 +10,16 @@ TRADE_ENV_PARAMETER = {
     "sell_trading_fee" : 0.0002,
     "reward_scaling": 1,
 }
+REWARD = {
+    "max_duration": 10,
+    "take_profit_rate" : 0.1,
+    "stop_loss_rate" : -0.1,
+    "risk_free_annual_return": 0,
+    "no_trade_penalty" : 5e-4,
+    "amplified_rate": 1.1,
+    "discount_rate": 0.9,
+    "small_reward": 1e-4
+}
 
 CHECKPOINT_CALLBACK = {
     "frequency": 10_000,
@@ -207,14 +217,7 @@ TIMEFRAMES_IN_MS = {
     "1w": 7*24*60*60*1000,
 }
 
-REWARD = {
-    "take_profit_rate" : 0.1,
-    "stop_loss_rate" : -0.1,
-    "risk_free_annual_return": 0,
-    "no_trade_penalty" : 0.0005,
-    "amplified_rate": 1.1,
-    "discount_rate": 0.9
-}
+
 
 # Model Parameters
 A2C_PARAMS = {
@@ -222,6 +225,21 @@ A2C_PARAMS = {
     "ent_coef": 0.01, 
     "learning_rate": 0.0007
 }
+
+DQN_PARAMS = {
+    "learning_rate": 1e-4,
+    "buffer_size": 1_000_000,  
+    "learning_starts": 10_000,
+    "batch_size": 64,
+    "tau": 1.0,
+    "gamma": 0.99,
+    "train_freq": 4,
+    "target_update_interval": 10000,
+    "exploration_fraction": 0.1,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05,
+}
+
 PPO_PARAMS = {
     "n_steps": 2048,
     "ent_coef": 0.01,

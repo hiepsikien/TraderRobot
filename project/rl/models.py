@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from stable_baselines3 import A2C, PPO
+from stable_baselines3 import A2C, PPO, DQN
 from sb3_contrib import ARS, TRPO
 import matplotlib.pyplot as plt
 import config as cf
@@ -15,6 +15,7 @@ MODELS = {
     "ppo": PPO, 
     # "ars":ARS,
     # "trpo":TRPO,
+    "dqn": DQN
 }
 
 MODEL_KWARGS = {x: cf.__dict__[f"{x.upper()}_PARAMS"] for x in MODELS.keys()}
@@ -356,8 +357,7 @@ class DRLTradeAgent:
         result_df["cumsum_trade_profit"] = np.exp(result_df["log_trade_profit"].cumsum(axis=0))
         result_df["log_cost"] = np.log(1+result_df["cost"])
         result_df["cumsum_cost"] = np.exp(result_df["log_cost"].cumsum(axis=0)) -1
-        close = self.test_env.df["Close"].to_list()
-        result_df["price"] = close + close[-1:]
+        result_df["price"] = self.test_env.df["Close"]
         result_df["relative_price"] = result_df["price"]/result_df.iloc[0,:]["price"]
         result_df["cumsum_reward"] = np.exp(result_df["reward"].cumsum(axis=0)) - 1
         return result_df
