@@ -1,5 +1,6 @@
 # DRL models from Stable Baselines 3
 from __future__ import annotations
+from cv2 import transform
 
 import numpy as np
 import pandas as pd
@@ -307,31 +308,40 @@ class DRLTradeAgent:
         plt.xlabel("Timeframe")
         plt.legend()
         plt.show()
-        
-    def plot_multiple(self,log:bool=False,dpi=720):
-        ''' 
-        Plot trading results as multiple of initial
-        '''
+    
+    def plot_results(self,log:bool=False,dpi=720):  
         data = self.result_df.copy()        
         plt.figure(figsize=(12,6),dpi=dpi)
-        
         if (self.latest_model!=None):
-            timesteps = self.latest_model.num_timesteps
-            gamma = self.latest_model.gamma
-            plt.title(f"RobotTrader Performance: gamma={gamma}, timestep={timesteps}")
-        else:
-            plt.title(f"RobotTrader Performance")
+            params_str = \
+                f"model: {self.latest_model}\n"\
+                f"num_timestep: {self.latest_model.num_timesteps}\n"\
+                f"e_pochs: {self.latest_model.n_epochs}\n"\
+                f"gamma: {self.latest_model.gamma}\n"\
+                f"gae-lambda: {self.latest_model.gae_lambda}\n"\
+                f"n_steps: {self.latest_model.n_steps}\n"\
+                f"batch_size: {self.latest_model.batch_size}\n"\
+                f"seed: {self.latest_model.seed}\n"\
+                f"ent_coef: {self.latest_model.ent_coef}\n"\
+                f"learning_rate: {self.latest_model.learning_rate}\n"
             
-        plt.plot(data.index,data["cumsum_trade_profit"],linewidth = 1,color="tab:green",label="real_asset_value_after_cost")
-        plt.plot(data.index,data["cumsum_cost"]+1,linewidth = 1,color="tab:red",label="cumsum_trading_cost")
-        plt.plot(data.index,data["relative_price"],linewidth = 1,color="tab:cyan",label="relative_price")
-        plt.ylabel("Multiples")
-        if log:
-            plt.yscale("log")
-        plt.grid(True,which="both")
-        plt.xlabel("Timeframe")
-        plt.legend()
-        plt.show()
+            plt.text(0.05,0.95, params_str,
+                    fontsize=8,
+                    horizontalalignment="left",
+                    verticalalignment='top',
+                    transform = plt.gca().transAxes)
+            plt.title("Predict Result")
+            plt.plot(data.index,data["cumsum_trade_profit"],linewidth = 1,color="tab:green",label="real_asset_value_after_cost")
+            plt.plot(data.index,data["cumsum_cost"]+1,linewidth = 1,color="tab:red",label="cumsum_trading_cost")
+            plt.plot(data.index,data["relative_price"],linewidth = 1,color="tab:cyan",label="relative_price")
+            plt.ylabel("Multiple")
+            plt.xlabel("Timeframe")
+            plt.legend(loc="upper right")
+            if log:
+                plt.yscale("log")
+            plt.show()
+        else:
+            print("No available data")
 
     def describe_trades(self):
         stat_dict = {}
@@ -357,7 +367,7 @@ class DRLTradeAgent:
         result_df["cumsum_trade_profit"] = np.exp(result_df["log_trade_profit"].cumsum(axis=0))
         result_df["log_cost"] = np.log(1+result_df["cost"])
         result_df["cumsum_cost"] = np.exp(result_df["log_cost"].cumsum(axis=0)) -1
-        result_df["price"] = self.test_env.df["Close"]
+        result_df["price"] = self.test_env.df["Close"].values
         result_df["relative_price"] = result_df["price"]/result_df.iloc[0,:]["price"]
         result_df["cumsum_reward"] = np.exp(result_df["reward"].cumsum(axis=0)) - 1
         return result_df

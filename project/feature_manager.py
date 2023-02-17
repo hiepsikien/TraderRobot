@@ -1,4 +1,3 @@
-from pyexpat import features
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +12,7 @@ import config as cf
 
 class FeatureManager():
 
-    def __init__(self,target_col:str, window:int = 50) -> None:
+    def __init__(self,target_col:str="trade_signal",window:int = 50) -> None:
         '''
         Initialize the instance
 
@@ -29,47 +28,22 @@ class FeatureManager():
         self.cols = []
         self.target_col = target_col
         self.params = dict()
-
-    def import_trading_data(self,symbol: str, trade_timeframe: str):
-        '''Import trading data
-        '''
-        data_path = "../data/{}-{}.csv".format(symbol,trade_timeframe)
-        self.df = pd.read_csv(
-            data_path, 
-            parse_dates=["Open Time"],
-            index_col = "Open Time"
-        )
-        print("Imported trading data from {} with {} rows".format(data_path,len(self.df)))
-        self.trade_timeframe = trade_timeframe
-    
-    def import_macro_data(self,symbol: str, macro_timeframe: str):
-        '''
-        Import macro data, one level higher than trading data.
-        Use it to calculate technical analysis indicator
-        '''
-        macro_data_path = "../data/{}-{}.csv".format(symbol,macro_timeframe)
-        self.macro_df = pd.read_csv(
-            macro_data_path, 
-            parse_dates=["Open Time"], 
-            index_col = "Open Time"
-        )
-        print("Imported macro data from {} with {} rows".format(macro_data_path,len(self.macro_df)))
-        self.macro_timeframe = macro_timeframe
-
-    def import_super_data(self,symbol: str, super_timeframe: str):
-        '''
-        Import super macro data, one level higher than trading data.
-        Use it to calculate technical analysis indicator
-        '''
-        data_path = "../data/{}-{}.csv".format(symbol,super_timeframe)
-        self.super_df = pd.read_csv(
+        self.dfs = []
+        self.timeframes = []
+        self.cols_list = [[]]
+      
+    def import_data(self,symbol:str,timeframes:list[str]):
+        for tf in timeframes:
+            data_path = "../data/{}-{}.csv".format(symbol,tf)
+            df = pd.read_csv(
             data_path, 
             parse_dates=["Open Time"], 
             index_col = "Open Time"
-        )
-        print("Imported super macro data from {} with {} rows".format(data_path,len(self.super_df)))
-        self.super_timeframe = super_timeframe
-
+            )
+            self.dfs.append(df)
+            print(f"Imported observe data {tf} from {data_path} with {len(df)} rows")
+        self.timeframes = timeframes
+           
     def import_granular_data(self,symbol: str, granular_timeframe: str):
         '''Import most detail data, used to check stoploss and take profit hit
         '''
@@ -82,7 +56,13 @@ class FeatureManager():
         print("Imported granular data from {} with {} rows".format(granular_data_path,len(self.granular_df)))
         self.granular_timeframe = granular_timeframe
 
-    def calculate_external_features(self,features:list[str]):
+    def add_external_features(self,features:list[str],data:pd.DataFrame):
+        """ Import external features, only for trading timeframe
+
+        Args:
+            features (list[str]): list of external features
+        """
+        cols = []
         print("Calculating external features ...")
         if (key:="hashrate") in features:
             hashrate_path = "../data/bitcoin_hashrate.csv"
@@ -90,7 +70,8 @@ class FeatureManager():
                 filename=hashrate_path,
                 index_col = "Date",
                 import_label="hashrate",
-                new_label=key
+                new_label=key,
+                data = data,
             )
         
         if (key:="fed_rate") in features:
@@ -99,15 +80,18 @@ class FeatureManager():
                 filename=fed_rate_path,
                 index_col = "timestamp", 
                 import_label="value",
-                new_label=key
-        )
+                new_label=key,
+                data = data
+            )
+            
         if (key:="google_trend") in features:
             bitcoin_google_trend_path = "../data/bitcoin_google_trend.csv"
             self.import_new_feature( 
                 filename=bitcoin_google_trend_path,
                 index_col = "timestamp", 
                 import_label="Bitcoin",
-                new_label=key
+                new_label=key,
+                data = data,
             )
 
         if (key:="gold") in features:
@@ -116,7 +100,8 @@ class FeatureManager():
                 filename=gold_path,
                 index_col = "timestamp",
                 import_label="Close/Last",
-                new_label=key
+                new_label=key,
+                data=data,
             )
         
         if (key:="nasdaq") in features:
@@ -125,7 +110,8 @@ class FeatureManager():
                 filename=nasdaq_path,
                 index_col = "timestamp",
                 import_label="Close/Last",
-                new_label=key
+                new_label=key,
+                data=data,
             )
 
         if (key:="sp500") in features:
@@ -134,20 +120,20 @@ class FeatureManager():
                 filename=sp500_path,
                 index_col = "timestamp",
                 import_label="Close",
-                new_label=key
+                new_label=key,
+                data=data,
             )
 
-    def import_new_feature(self,filename:str, index_col: str, import_label: str, new_label: str):
+    def import_new_feature(self,filename:str,data:pd.DataFrame,index_col: str, import_label: str, new_label: str):
         df = pd.read_csv(filename, index_col=index_col).sort_index(ascending = True)
-        self.df[new_label] = df[import_label]
-        self.df[new_label].fillna(method="ffill", inplace = True)
+        data[new_label] = df[import_label]
+        data[new_label].fillna(method="ffill", inplace = True)
         
     def print_parameters(self):
         print("Features manager parameters:")
         print(self.params)
 
-    def build_features(self,lags:int,macro_lags:int,super_lags:int, 
-        features:list[str], macro_features:list[str], super_features:list, scaler:str = "MaxAbs"):
+    def build_features(self,lags:list[int],features:list[list[str]],scaler:str = "MaxAbs"):
         '''
         Build the normalized features to feed to classifier
     
@@ -159,80 +145,82 @@ class FeatureManager():
         self.params["scaler"] = scaler
             
         # Import external features
-        self.calculate_external_features(features=features)
+        self.add_external_features(features=features[0],data=self.dfs[0])
+    
+        # print("checkpoint 1")
+        
+        # Calculating TA features
+        for i in range(len(self.timeframes)):
+            self.dfs[i] = self.calculate_technical_analysis_features(
+                data=self.dfs[i],
+                features=features[i])
+        
+        # print("checkpoint 2") 
+            
+        # Calculate candle stick features 
+        for i in range(len(self.timeframes)):
+            self.dfs[i]= self.calculate_candle_sticks(
+                features=features[i],
+                data=self.dfs[i])
 
-        # Calculating TA features for trading timeframe
-        self.calculate_technical_analysis_features(features=features,level="trade")
-        self.calculate_technical_analysis_features(features=macro_features,level="macro")
-        self.calculate_technical_analysis_features(features=super_features,level="super")
-
-        # Calculate candle stick features for trading timeframe
-        self.calculate_candle_sticks(features=features,level="trade")
-        self.calculate_candle_sticks(features=macro_features,level="macro")
-        self.calculate_candle_sticks(features=super_features,level="super")
-
-        # Adding lags
-        self.add_features_with_lags(features=features,lags=lags,level="trade")
-        self.add_features_with_lags(features=macro_features,lags=macro_lags,level="macro")
-        self.add_features_with_lags(features=super_features,lags=super_lags,level="super")
- 
-        # macro features with trading features
-        self.merge_features_all_level()
-       
-        # Drop na before normalize
+        # print("checkpoint 3") 
+        
+        # Add lags for features
+        self.cols_list = []
+        for i in range(len(self.timeframes)):
+            self.dfs[i], cols = self.add_features_with_lags(
+                lags = lags[i],
+                level=i,
+                features=features[i],
+                data=self.dfs[i])
+            self.cols_list.append(cols)
+        
+        # print("checkpoint 4")
+    
+        # Merge all data
+        self.df = pd.concat([self.dfs[0]] + [self.dfs[i][self.cols_list[i]] \
+            for i in range(1,len(self.timeframes))],axis=1)
+        
+        # print(f"checkpoint 4.5: len = {len(self.df)}") 
+        
+        for i in range(1,len(self.cols_list)):
+            for col in self.cols_list[i]:
+                self.df[col].fillna(method="ffill",inplace=True)
+        
         self.df.dropna(inplace=True)
+        
+        # Merge all columns
+        for i in range(len(self.timeframes)):
+            self.cols += self.cols_list[i]
 
+        # print("checkpoint 6")
+         
         # Normalize
         self.normalize_features(scaler = scaler)
-
         print("\nTotal {} features added.".format(len(self.cols)))
 
-    def merge_features_all_level(self):
-        merged_pd = pd.concat([self.df,self.macro_df[self.macro_cols],self.super_df[self.super_cols]],axis=1)
-        
-        for col in self.macro_cols:
-            merged_pd[col].fillna(method="ffill",inplace=True)
+    def add_features_with_lags(self,features:list[str],level,lags:int,data:pd.DataFrame):
+        """Add features with lags to dataframe
 
-        for col in self.super_cols:
-            merged_pd[col].fillna(method="ffill",inplace=True)
+        Args:
+            features (list[str]): _description_
+            level (_type_): _description_
+            lags (int): _description_
+            data (pd.DataFrame): _description_
 
-        self.df = merged_pd
-        self.cols = self.cols + self.macro_cols + self.super_cols
-
-
-    def add_features_with_lags(self,features:list[str],lags:int,level:str):
-        
-        print("\nAdding features for {} timeframe with lags {}:".format(level,lags), end=" ")
-
-        match level:
-            case "super":
-                data = self.super_df.copy()
-            case "macro":
-                data = self.macro_df.copy()
-            case "trade":
-                data = self.df.copy()
-            case other:
-                raise ValueError("level must be one of: trading, macro, super")
-        
+        Returns:
+            _type_: _description_
+        """
         cols = []
+        data = data.copy()
         for f in features:
             print("{},".format(f), end=" ")
             for lag in range(1,lags + 1):
-                col = "{}_{}_lag_{}".format(f,level,lag)
+                col = "{}_level{}_lag_{}".format(f,level,lag)
                 data[col] = data[f].shift(lag)
                 cols.append(col)
         print("")
-
-        match level:
-            case "super":
-                self.super_df = data.copy()
-                self.super_cols = cols
-            case "macro":
-                self.macro_df = data.copy()
-                self.macro_cols = cols
-            case "trade":
-                self.df = data.copy()
-                self.cols = cols
+        return data.copy(), cols
  
     def normalize_features(self,scaler=None):
         ''' Normalize features
@@ -254,77 +242,37 @@ class FeatureManager():
                 raise ValueError("'scaler' must be one of 'Standard','MinMax','MaxAbs'")
             
         if used_scaler:
-            print("\nNormalizing features with {}:".format(scaler), end=" ")
+            print(f"\nNormalizing features with {scaler}:", end=" ")
             for col in self.cols:
                 print("{},".format(col),end=" ")
                 used_scaler.fit(self.df[col].to_frame())
                 self.df[col] = used_scaler.transform(self.df[col].to_frame())
 
-    def calculate_candle_sticks(self,features:list[str], level:str):
-        ''' 
-        Calculate the candle stick patterns indicators
-
-        Params:
-        - features: list of features
-        - level: one of 'trade', 'macro', 'super'
-
-        Returns: None
-        '''
-        print("Calculating candlestick of {} timeframe".format(level))
-
-        data = None
-        match level:
-            case "super":
-                data = self.super_df.copy()
-            case "macro":
-                data = self.macro_df.copy()
-            case "trade":
-                data = self.df.copy()
-            case other:
-                raise ValueError("level must be one of: trading, macro, super")
-
+    def calculate_candle_sticks(self,features:list[str],data:pd.DataFrame):
+        
+        data = data.copy()
         open = data["Open"]
         high = data["High"]
         close = data["Close"]
         low = data["Low"]
 
         all_indicators = [method for method in dir(abstract) if method.startswith('CDL')]
-        
         for indicator in all_indicators:
             if indicator in features:
                 data[str(indicator)] = getattr(abstract, indicator)(open,high,low,close)
+        return data.copy()
 
-        match level:
-            case "super":
-                self.super_df = data
-            case "macro":
-                self.macro_df = data
-            case "trade":
-                self.df = data
+    def calculate_technical_analysis_features(self,data:pd.DataFrame,features: list[str]):
+        """ Calcuate technical analysis features
 
-    def calculate_technical_analysis_features(self,features: list[str],level:str):
-        ''' 
-        Calculate the technical analysis not including candle stick
-        
-        Params:
-        - features: list of features
-        - level: one of 'trade', 'macro', 'super'
+        Args:
+            data (pd.DataFrame): input data
+            features (list[str]): list of technical indicators
 
-        Returns: None
-        '''
-        print("Calculating TA indicators of {} timeframe".format(level))
-
-        data = None
-        match level:
-            case "super":
-                data = self.super_df.copy()
-            case "macro":
-                data = self.macro_df.copy()
-            case "trade":
-                data = self.df.copy()
-            case other:
-                raise ValueError("Argument 'level' must be one of: 'trade', 'macro', 'super'")
-
+        Returns:
+            pd.DataFrame: input data + technical indicators
+        """
+            
         open = data["Open"]
         close = data["Close"]
         high = data["High"]
@@ -333,7 +281,7 @@ class FeatureManager():
 
         data["returns"] = np.log(close/close.shift())
         data["dir"] = np.where(data["returns"] > 0,1,0)
-         
+        
         if (key:="sma_3_10") in features:
             data[key] = close.rolling(3).mean() - close.rolling(7).mean()
         
@@ -466,13 +414,8 @@ class FeatureManager():
         if (key:="low") in features:
             data[key] = low/close -1
         
-        match level:
-            case "super":
-                self.super_df = data
-            case "macro":
-                self.macro_df = data
-            case "trade":
-                self.df = data
+        return data.copy()
+    
     '''
     def get_macro_open_time(self,current_time:int):
         maybe_in = None
@@ -501,7 +444,7 @@ class FeatureManager():
 
         '''
 
-        trade_timeframe_in_ms = cf.TIMEFRAMES_IN_MS[self.trade_timeframe]
+        trade_timeframe_in_ms = cf.TIMEFRAMES_IN_MS[self.timeframes[0]]
         
         if is_long:
             open_cond = row["long_decision_forward_{}".format(i-1)]==0
@@ -577,7 +520,7 @@ class FeatureManager():
         - short_decision_forward_{i}: similar as long_ but for short position
         '''
 
-        self.params["trade_timeframe"] = self.trade_timeframe
+        self.params["trade_timeframe"] = self.timeframes[0]
         self.params["take_profit_rate"] = take_profit_rate
         self.params["stop_loss_rate"] = stop_loss_rate
         self.params["max_duration"] = max_duration

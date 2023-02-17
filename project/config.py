@@ -99,52 +99,11 @@ BITCOIN_EXTERNAL_INDICATORS = [
     "google_trend",     
 ]
 
-TRADING_TA_INDICATORS = [ 
-    "sma_3_10",
-    "sma_7_30",
-    "sma_14_50", 
-    "cci7",
-    "cci14",
-    "cci30",     
-    "dx7",     
-    "dx14",
-    "dx30",
-    "up_bb",
-    "low_bb"
-]
-
-MACRO_TA_INDICATORS = [
-    "sma_3_10",
-    "sma_7_30",
-    "sma_14_50",          
-    "rsi7",      
-    "rsi14",
-    "rsi30",
-    "cci7",
-    "cci14",
-    "cci30",  
-    "dx7",     
-    "dx14",
-    "dx30",
-    "up_bb",
-    "low_bb"
-]
-
-SUPER_TA_INDICATORS = [
-    "sma_3_10",
-    "sma_7_30",
-    "sma_14_50",        
-    "rsi7",      
-    "rsi14",
-    "rsi30",
-    "cci7",
-    "cci14",
-    "cci30",  
-    "dx7",     
-    "dx14",
-    "dx30",
-    "up_bb",
-    "low_bb"
+DEFAULT_INDICATORS = [
+    ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"] + BITCOIN_EXTERNAL_INDICATORS,
+    ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"],
+    ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"],
+    ["sma_3_10","rsi7","rsi14","cci7","cci14","dx7","dx14"]
 ]
 
 TA_INDICATORS_FULL = {
