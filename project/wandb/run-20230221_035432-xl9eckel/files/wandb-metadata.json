@@ -1,0 +1,84 @@
+{
+    "os": "Linux-5.15.0-56-generic-x86_64-with-glibc2.35",
+    "python": "3.10.8",
+    "heartbeatAt": "2023-02-20T20:54:41.285394",
+    "startedAt": "2023-02-20T20:54:32.923034",
+    "docker": null,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "git": {
+        "remote": "https://github.com/hiepsikien/TraderRobot.git",
+        "commit": "7af36f2cdd75af7fa6a2e90ff93b549ac80564d5"
+    },
+    "email": "anh.nguyendinh.cs@gmail.com",
+    "root": "/home/andy/CryptoTradingPlatform/TraderRobot",
+    "host": "andy-GA-970A-D3",
+    "username": "andy",
+    "executable": "/home/andy/anaconda3new/envs/tensor/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2204.748375,
+        "min": 1400.0,
+        "max": 3100.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1400.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1400.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1900.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1400.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1708.75,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1400.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1900.0,
+            "min": 1400.0,
+            "max": 3100.0
+        },
+        {
+            "current": 2155.67,
+            "min": 1400.0,
+            "max": 3100.0
+        }
+    ],
+    "disk": {
+        "total": 127.27713775634766,
+        "used": 116.108154296875
+    },
+    "gpu": "NVIDIA GeForce GTX 1060 3GB",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1060 3GB",
+            "memory_total": 3221225472
+        }
+    ],
+    "memory": {
+        "total": 31.33502960205078
+    }
+}

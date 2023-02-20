@@ -6,10 +6,11 @@ from math import exp
 from config import TIMEFRAMES_IN_MS
 import numpy as np
 
-def get_name_with_kwargs(name:str,kwargs:dict):
+def get_name_with_kwargs(name:str,kwargs:dict,excludes:list[str]):
     name_str:str=name
     for key in kwargs.keys():
-        name_str += f"_{key}_{kwargs[key]}"
+        if key not in excludes:
+            name_str += f"_{key}_{kwargs[key]}"
     return name_str
 
 def under_sampling_rebalance(data:pd.DataFrame,target_col:str):

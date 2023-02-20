@@ -1,0 +1,50 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.13.10
+    framework: keras
+    is_jupyter_run: true
+    is_kaggle_kernel: false
+    python_version: 3.10.8
+    start_time: 1676919363.75123
+    t:
+      1:
+      - 2
+      - 3
+      - 55
+      2:
+      - 2
+      - 3
+      - 55
+      3:
+      - 2
+      - 13
+      - 16
+      - 23
+      4: 3.10.8
+      5: 0.13.10
+      8:
+      - 1
+      - 5
+batch_size:
+  desc: null
+  value: 32
+epochs:
+  desc: null
+  value: 1
+hidden_layers:
+  desc: null
+  value:
+  - 64
+  - 64
+learning_rate:
+  desc: null
+  value: 0.005
+replay_batch_num:
+  desc: null
+  value: 2
+variant:
+  desc: null
+  value: vanila

@@ -12,13 +12,12 @@ TRADE_ENV_PARAMETER = {
 }
 REWARD = {
     "max_duration": 10,
-    "take_profit_rate" : 0.1,
-    "stop_loss_rate" : -0.1,
+    "take_profit_rate" : 0.2,
+    "stop_loss_rate" : -0.2,
     "risk_free_annual_return": 0,
     "no_trade_penalty" : 5e-4,
     "amplified_rate": 1.1,
     "discount_rate": 0.9,
-    "small_reward": 1e-4
 }
 
 CHECKPOINT_CALLBACK = {
@@ -99,9 +98,15 @@ BITCOIN_EXTERNAL_INDICATORS = [
     "google_trend",     
 ]
 
-DEFAULT_INDICATORS = [
+FOR_4H_INDICATORS = [
     ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"] + BITCOIN_EXTERNAL_INDICATORS,
     ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"],
+    ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"],
+    ["sma_3_10","rsi7","rsi14","cci7","cci14","dx7","dx14"]
+]
+
+FOR_1D_INDICATORS = [
+    ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"] + BITCOIN_EXTERNAL_INDICATORS,
     ["sma_3_10","sma_7_30","rsi7","rsi14","rsi30","cci7","cci14","cci30","dx7","dx14","dx30"],
     ["sma_3_10","rsi7","rsi14","cci7","cci14","dx7","dx14"]
 ]

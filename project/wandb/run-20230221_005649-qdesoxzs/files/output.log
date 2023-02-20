@@ -1,0 +1,6 @@
+2023-02-21 00:57:09.102884: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 107 MB memory:  -> device: 0, name: NVIDIA GeForce GTX 1060 3GB, pci bus id: 0000:01:00.0, compute capability: 6.1
+2023-02-21 00:57:09.133217: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 107.38M (112590848 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-21 00:57:09.133549: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 96.64M (101331968 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-21 00:57:09.492422: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:219] failed to create cublas handle: cublas error
+2023-02-21 00:57:09.492476: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:221] Failure to initialize cublas may be due to OOM (cublas needs some free memory when you initialize it, and your deep-learning framework may have preallocated more than its fair share), or may be because this binary was not built with support for the GPU in your machine.
+2023-02-21 00:57:09.492504: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at matmul_op_impl.h:622 : INTERNAL: Attempting to perform BLAS operation using StreamExecutor without BLAS support

@@ -9,6 +9,10 @@
 		},
 		{
 			"path": "../TrainGround"
+		},
+		{
+			"name": "DeepRL-TensorFlow2",
+			"path": "DeepRL-TensorFlow2"
 		}
 	],
 	"settings": {}

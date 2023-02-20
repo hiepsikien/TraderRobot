@@ -275,13 +275,13 @@ class CryptoTradingEnv(gym.Env):
             _type_: _description_
         """
         position_state = {0:"NEUTRAL",1:"LONG",2:"SHORT"}
-        print("{}: Previous:{} | Action:{} | Reward:{} | ExpReward:{} | Profit:{} | B-ATP:{} | A-ATP:{} |{}"
+        print("{}: Previous:{} | Action:{} | Rwd:{} | UnlocatedRwd:{} | Profit:{} | B-ATP:{} | A-ATP:{} | {}"
             .format(
                 self.day-1, 
                 position_state[self.previous_position], 
                 position_state[self.position], 
                 round(self.reward,5),
-                round(np.exp(self.reward)-1,5),
+                round(self.unallocated_reward,5),
                 round(self.trade_profit,5),
                 round(self.before_action_assumed_trade_profit,5),
                 round(self.assumed_trade_profit,5), 

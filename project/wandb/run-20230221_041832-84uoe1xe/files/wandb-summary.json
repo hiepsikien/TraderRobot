@@ -1,0 +1,1 @@
+{"Episode": 299, "_timestamp": 1676928887.4135425, "_runtime": 969.4310646057129, "_step": 20227, "Reward": 1.0, "Epsilon": 0.05, "LearningRate": 0.001, "TotalReward": 14.0, "Mean TotalReward": 20.81, "Std TotalReward": 11.246061532821168, "Buffer Size": 6243}

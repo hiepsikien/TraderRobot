@@ -1,0 +1,1 @@
+{"Episode": 19, "_timestamp": 1676920136.4266257, "_runtime": 74.45035672187805, "_step": 1273, "Reward": 1.0, "Epsilon": 0.05, "LearningRate": 0.005, "TotalReward": 11.0, "Mean TotalReward": "None.ndarray.mean", "Std TotalReward": "None.ndarray.std", "Buffer Size": 391}

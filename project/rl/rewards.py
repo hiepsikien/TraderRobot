@@ -67,7 +67,7 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
     """
     
     DISCOUNT_RATE = cf.REWARD["discount_rate"]
-    AMPLIFED_RATE = cf.REWARD["amplified_rate"]
+    AMPLIFIED_RATE = cf.REWARD["amplified_rate"]
     TAKE_PROFIT_RATE = cf.REWARD["take_profit_rate"]
     STOP_LOSS_RATE = cf.REWARD["stop_loss_rate"]
     NO_TRADE_PENALTY = cf.REWARD["no_trade_penalty"]
@@ -78,7 +78,7 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
     reward = 0
     
     if new_position!=position:
-        # If close position, give all unallocated reward, reset the 3 variables to 0
+        # If close position, give all unallocated reward, reset variables to 0
         reached_take_profit = 0
         reached_stop_loss = 0
         reward = unallocated_reward
@@ -94,7 +94,7 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
                 reward = DISCOUNT_RATE * unallocated_reward
             else:
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0 \
-                    else AMPLIFED_RATE * new_reward
+                    else AMPLIFIED_RATE * new_reward
                 
         elif assumed_trade_profit < STOP_LOSS_RATE:
             # For case loss is over stop loss threshold
@@ -102,17 +102,17 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
             # Else, give it a discounted reward if added_reward positive, or amplified if negative
             if (reached_stop_loss == 0):
                 reached_stop_loss = 1
-                reward = AMPLIFED_RATE * unallocated_reward
+                reward = AMPLIFIED_RATE * unallocated_reward
             else:
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0  \
-                    else AMPLIFED_RATE * new_reward
+                    else AMPLIFIED_RATE * new_reward
         else:
             # For case either current position in between stop loss and take profit
             # If it already reached either stop loss or take profit before, give discounted positive of added reward if positive or amplified if negative
             # Else, give it discounted of extra added reward if added reward is positive or zero if negative
             if (reached_stop_loss) or (reached_take_profit):
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0 \
-                    else AMPLIFED_RATE * new_reward
+                    else AMPLIFIED_RATE * new_reward
             else:
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0 else 0
             

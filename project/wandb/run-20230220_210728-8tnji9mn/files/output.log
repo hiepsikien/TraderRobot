@@ -1,0 +1,7 @@
+2023-02-20 21:07:58.915540: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 49 MB memory:  -> device: 0, name: NVIDIA GeForce GTX 1060 3GB, pci bus id: 0000:01:00.0, compute capability: 6.1
+2023-02-20 21:07:58.938497: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 49.56M (51970048 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-20 21:07:58.938896: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 44.61M (46773248 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-20 21:07:58.939292: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 40.15M (42096128 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-20 21:07:58.939670: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 36.13M (37886720 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-20 21:07:58.940032: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 32.52M (34098176 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2023-02-20 21:07:58.940381: I tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:735] failed to allocate 29.27M (30688512 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory

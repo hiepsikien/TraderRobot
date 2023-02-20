@@ -1,0 +1,1 @@
+{"Episode": 299, "_timestamp": 1676927620.5202353, "_runtime": 973.5234332084656, "_step": 21097, "Reward": 1.0, "Epsilon": 0.05, "LearningRate": 0.001, "TotalReward": 23.0, "Mean TotalReward": 21.776666666666667, "Std TotalReward": 11.165129744979332, "Buffer Size": 6533, "_wandb": {"runtime": 1236}}

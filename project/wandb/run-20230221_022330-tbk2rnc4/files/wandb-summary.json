@@ -1,0 +1,1 @@
+{"Episode": 253, "_timestamp": 1676921943.5266652, "_runtime": 927.6508193016052, "_step": 19670, "Reward": 1.0, "Epsilon": 0.05, "LearningRate": 0.005, "Buffer Size": 6135, "TotalReward": 11.0, "Mean TotalReward": 24.24901185770751, "Std TotalReward": 11.980107400681982}

@@ -41,7 +41,7 @@ class FeatureManager():
             index_col = "Open Time"
             )
             self.dfs.append(df)
-            print(f"Imported observe data {tf} from {data_path} with {len(df)} rows")
+            print(f"Imported data {tf} from {data_path} with {len(df)} rows")
         self.timeframes = timeframes
            
     def import_granular_data(self,symbol: str, granular_timeframe: str):
@@ -133,7 +133,7 @@ class FeatureManager():
         print("Features manager parameters:")
         print(self.params)
 
-    def build_features(self,lags:list[int],features:list[list[str]],scaler:str = "MaxAbs"):
+    def build_features(self,lags:list[int],features:list[list[str]],scaler:str = "MinMax"):
         '''
         Build the normalized features to feed to classifier
     
@@ -235,7 +235,7 @@ class FeatureManager():
             case "Standard":
                 used_scaler = StandardScaler(with_mean=True,with_std=True,copy=False)
             case "MinMax":
-                used_scaler = MinMaxScaler(copy = False)
+                used_scaler = MinMaxScaler(copy = False,feature_range=(-1,1))
             case "MaxAbs":
                 used_scaler = MaxAbsScaler(copy = False)
             case other:

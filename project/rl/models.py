@@ -192,7 +192,9 @@ class DRLTradeAgent:
         """
         
         self.test_env = environment
-        self.action_memory, self.reward_memory, self.unallocated_reward_memory, self.trade_profit_memory, self.cost_memory, self.trade_number = self.DRL_prediction(
+        self.action_memory, self.reward_memory, \
+            self.unallocated_reward_memory, self.trade_profit_memory, \
+                self.cost_memory, self.trade_number = self.DRL_prediction(
             model=model,
             test_env=environment,
             deterministic=deterministic,
@@ -314,15 +316,10 @@ class DRLTradeAgent:
         plt.figure(figsize=(12,6),dpi=dpi)
         if (self.latest_model!=None):
             params_str = \
-                f"model: {self.latest_model}\n"\
                 f"num_timestep: {self.latest_model.num_timesteps}\n"\
-                f"e_pochs: {self.latest_model.n_epochs}\n"\
                 f"gamma: {self.latest_model.gamma}\n"\
-                f"gae-lambda: {self.latest_model.gae_lambda}\n"\
-                f"n_steps: {self.latest_model.n_steps}\n"\
                 f"batch_size: {self.latest_model.batch_size}\n"\
                 f"seed: {self.latest_model.seed}\n"\
-                f"ent_coef: {self.latest_model.ent_coef}\n"\
                 f"learning_rate: {self.latest_model.learning_rate}\n"
             
             plt.text(0.05,0.95, params_str,
