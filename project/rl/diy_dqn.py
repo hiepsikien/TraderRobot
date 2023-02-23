@@ -11,7 +11,7 @@ from collections import deque
 import wandb
 tf.keras.backend.set_floatx("float64")
 
-class QNetModel:
+class QNet:
     """ Neural network for DQN
     """
     def __init__(self,
@@ -30,6 +30,7 @@ class QNetModel:
         Args:
             state_dim (int): state dimension
             action_dim (int): action dimension
+            variant (str): algorithm variant:'vanila','double','duel','duel-double'
             hidden_layers (list[int]): hidden layers 
             learning_rate (float): learning rate
             epsilon (float): epsilon
@@ -164,6 +165,7 @@ class DQNAgent:
         Args:
             env (gym.Env): gym environment
             gamma (float, optional): discount factor. Defaults to 0.95.
+            variant (str): algorithm variant:'vanila','double','duel','duel-double'
             learning_rate (float, optional): Learning rate to update neural network. Defaults to 0.005.
             epsilon (float, optional): greedy parameter, if random below epsilon, the agent will take a randome action. Defaults to 1.0.
             eps_decay (float, optional): decay of epsilon. Defaults to 0.99.
@@ -188,7 +190,7 @@ class DQNAgent:
         self.batch_size = batch_size
         wandb.init()
         
-        self.model = QNetModel(
+        self.model = QNet(
             variant= self.variant,
             state_dim = self.state_dim,
             action_dim = self.action_dim,
@@ -200,7 +202,7 @@ class DQNAgent:
             epochs=self.epochs
         )
         
-        self.target_model = QNetModel(
+        self.target_model = QNet(
             variant=self.variant,
             state_dim = self.state_dim,
             action_dim = self.action_dim,
