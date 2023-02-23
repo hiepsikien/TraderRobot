@@ -1,3 +1,4 @@
+from math import gamma
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
@@ -7,6 +8,7 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 import rl.rewards as rwd
+import wandb
 
 
 class CryptoTradingEnv(gym.Env):
@@ -68,12 +70,29 @@ class CryptoTradingEnv(gym.Env):
         self.cost_memory = []
         self.state_memory = []
         self.asset_value_change_memory = []
+        self.ep_reward_list = []
+        self.ep_profit_list = []
+        self.ep_discount_profit_list = [] 
         self._seed()
 
         #initialize state
         self.state = self._initiate_state()
 
-
+    def get_trades_info(self):
+        stat_dict = {}
+        df = pd.DataFrame({"action":self.action_memory})
+        for action in range(3):
+            g = df['action'].ne(df['action'].shift()).cumsum()
+            g = g[df['action'].eq(action)]
+            g = g.groupby(g).count().sort_values()
+            stat_dict[action] = g.describe()[["count","mean","std","min","25%","50%","75%","max"]]
+        long_short_ratio = stat_dict[1]["count"]/stat_dict[2]["count"] if stat_dict[2]["count"]>0 else 0  
+        long_avg_leng = stat_dict[1]["mean"]
+        short_avg_len = stat_dict[2]["mean"]
+        return long_short_ratio, long_avg_leng, short_avg_len
+    
+    
+    
     def get_reward_memory(self):
         return self.reward_memory
     
@@ -129,7 +148,8 @@ class CryptoTradingEnv(gym.Env):
         if self.terminal:
             self.trade_profit = self.assumed_trade_profit
             self.reward = self.unallocated_reward
-            self.state = [0 for i in range(10)] + [0 for i in range (0,len(self.indicators))]
+            self.unallocated_reward = 0
+            self.state = [0 for i in range(self.state_space)]
             self.action_memory.append(int(action))
             self.reward_memory.append(self.reward)
             self.unallocated_reward_memory.append(self.unallocated_reward)
@@ -155,6 +175,7 @@ class CryptoTradingEnv(gym.Env):
             previous_price = self.df.iloc[self.day-1,:]["Close"]
             price_change = (current_price-previous_price)/previous_price
             position_price_change = (current_price-enter_price)/enter_price if enter_price>0 else 0
+            market_trend = self.get_market_trend(data)
             
             asset_value_change = 0
             self.assumed_trade_profit = 0
@@ -183,6 +204,7 @@ class CryptoTradingEnv(gym.Env):
                                 reached_take_profit=reached_take_profit,
                                 reached_stop_loss=reached_stop_loss,
                                 unallocated_reward=unallocated_reward,
+                                market_trend=market_trend
             )
             self.before_action_assumed_trade_profit = self.assumed_trade_profit
             if (self.position == self.previous_position):
@@ -218,9 +240,63 @@ class CryptoTradingEnv(gym.Env):
             
             self.day+=1
             
-            return self.state, self.reward, self.terminal, {}
-        
-    def get_accumulated_profit(self):
+            return self.state, self.reward, self.terminal, {} 
+    
+    def get_market_trend(self,data):
+        return data['sma_3_10_level1_lag_1'] > 0
+    
+    def get_accumulated_cost(self):
+        """
+        Get accumulated profit
+
+        Returns:
+            float: accumulated profit
+        """
+        return np.exp(np.log(np.array(self.cost_memory)+1).sum())-1
+    
+    def get_discount_sum_profit(self,gamma:float=0.99):
+        """ Get cummulative profit with discount factor gamma
+
+        Args:
+            gamma (float, optional): _description_. Defaults to 0.99.
+
+        Returns:
+            _type_: _description_
+        """
+        return np.exp(np.dot(np.log(np.array(self.trade_profit_memory)+1),
+                      [gamma ** i for i in range(len(self.trade_profit_memory))]))-1
+    
+    def get_win_rate(self):
+        """Return win rate, long win rate, short win rate
+
+        Returns:
+            _type_: _description_
+        """
+        df = pd.DataFrame({"action":self.action_memory,"profit":self.trade_profit_memory})
+        df["position"] = df["action"].shift(-1)
+        open_position_df = df.loc[(df["position"]!=df["position"].shift()) & (df["position"]!=0) ]
+        long_df = open_position_df.loc[df["position"]==1]
+        short_df = open_position_df.loc[df["position"]==2]
+        n_win_long = len(long_df[df["profit"]>0])
+        n_win_short  = len(short_df[df["profit"]>0])
+        n_position = len(long_df)+len(short_df)
+        long_win_rate = n_win_long/len(long_df) if n_win_long > 0  else 0
+        short_win_rate = n_win_short/len(short_df) if n_win_short > 0  else 0            
+        win_rate = (n_win_long+n_win_short)/n_position if n_position > 0 else 0
+        return long_win_rate, short_win_rate, win_rate
+    
+    def get_total_reward(self,gamma:float=0.99):
+        """Get cummulative reward with discount factor gamma
+
+        Args:
+            gamma (float, optional): _description_. Defaults to 0.99.
+
+        Returns:
+            _type_: _description_
+        """
+        return np.dot(self.reward_memory,[gamma ** i for i in range(len(self.reward_memory))])
+    
+    def get_sum_profit(self):
         """
         Get accumulated profit
 
@@ -231,6 +307,42 @@ class CryptoTradingEnv(gym.Env):
 
     def reset(self):
         ''' Reset the envirnoment'''
+        
+        # Loging
+        long_short_ratio, long_avg_len, short_avg_len = self.get_trades_info()
+        gamma = wandb.config["gamma"] if "gamma" in wandb.config.keys() else 1
+        ep_profit = self.get_sum_profit()
+        ep_discount_profit = self.get_discount_sum_profit(gamma)
+        ep_reward = self.get_total_reward(gamma)
+        self.ep_profit_list.append(ep_profit)
+        self.ep_reward_list.append(ep_reward)
+        self.ep_discount_profit_list.append(ep_discount_profit)
+        long_win_rate, short_win_rate, win_rate = self.get_win_rate()
+        
+        df = pd.DataFrame({
+            'profit':self.ep_profit_list,
+            'discount_profit':self.ep_discount_profit_list,
+            'reward':self.ep_reward_list
+        })
+        
+        wandb.log({
+            'trade_profit': ep_profit,
+            'discount_trade_profit': ep_discount_profit,
+            'total_cost' : self.get_accumulated_cost(),
+            'n_trades': self.trades,
+            'ep_reward': ep_reward,
+            'win_rate': win_rate,
+            'long_win_rate': long_win_rate,
+            'short_win_rate': short_win_rate,
+            'long_short_ratio': long_short_ratio,
+            'avg_long_duration': long_avg_len,
+            'avg_short_duration': short_avg_len,
+            'discount_profit_mean_10': df["discount_profit"].tail(10).mean(),
+            'profit_mean_10': df["profit"].tail(10).mean(),
+            'reward_mean_10': df["reward"].tail(10).mean()
+            })
+        
+        #Reset
         self.day = 1
         self.state = self._initiate_state()
         self.trades = 0
@@ -275,7 +387,7 @@ class CryptoTradingEnv(gym.Env):
             _type_: _description_
         """
         position_state = {0:"NEUTRAL",1:"LONG",2:"SHORT"}
-        print("{}: Previous:{} | Action:{} | Rwd:{} | UnlocatedRwd:{} | Profit:{} | B-ATP:{} | A-ATP:{} | {}"
+        print("{}: Previous:{} | Action:{} | Rwd:{} | UnRwd:{} | Profit:{} | B-ATP:{} | A-ATP:{} | {}"
             .format(
                 self.day-1, 
                 position_state[self.previous_position], 

@@ -14,7 +14,7 @@ REWARD = {
     "max_duration": 10,
     "take_profit_rate" : 0.2,
     "stop_loss_rate" : -0.2,
-    "risk_free_annual_return": 0,
+    "risk_free_annual_return": 0.0,
     "no_trade_penalty" : 5e-4,
     "amplified_rate": 1.1,
     "discount_rate": 0.9,
@@ -202,6 +202,15 @@ DQN_PARAMS = {
     "exploration_fraction": 0.1,
     "exploration_initial_eps": 1.0,
     "exploration_final_eps": 0.05,
+}
+
+C_PPO_PARAMS = {
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "n_steps": 1024,
+    "ent_coef": 0.03,
+    "learning_rate": 0.0002,
+    "batch_size": 64
 }
 
 PPO_PARAMS = {

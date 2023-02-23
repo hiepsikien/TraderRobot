@@ -1,3 +1,4 @@
+from argparse import Action
 import numpy as np
 import config as cf
 
@@ -30,6 +31,52 @@ def get_linear_ascending(duration:int,max:int):
     return 1 if duration>max else duration/max
 
 
+def calculate_reward_no_stop_loss(assumed_trade_profit:float, 
+                                         position:int, 
+                                         action:int,
+                                         unallocated_reward: float, 
+                                         asset_value_change:float,
+                                         reached_take_profit:int,
+                                         reached_stop_loss:int,
+                                         market_trend:int):
+    
+    NO_TRADE_PENALTY = cf.REWARD["no_trade_penalty"]
+        
+    bonus = 0
+    reward = 0
+    trade_profit = 0
+    if position == 0:
+        if action == 0:
+            reward = np.log(1 - NO_TRADE_PENALTY)
+        else:
+            reward = 0
+    else:
+        if action != position:
+            reward = np.log(1+assumed_trade_profit)
+            trade_profit = assumed_trade_profit
+            
+            # Encorage open short position
+            if position == 2:
+                if trade_profit > 0.1:
+                    bonus = 0.1
+                elif trade_profit > 0.05:
+                    bonus = 0.05
+                elif trade_profit > 0.01:
+                    bonus = 0.01
+            
+        if action == position:
+            reward = np.log(1+asset_value_change)
+    
+    reward += bonus
+    
+    new_position = action
+    unallocated_reward = 0
+    reached_take_profit = 0
+    reached_stop_loss = 0
+              
+    return reward, trade_profit, new_position, unallocated_reward, \
+        reached_take_profit, reached_stop_loss
+    
 def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float, 
                                          position:int, 
                                          action:int,
@@ -73,9 +120,11 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
     NO_TRADE_PENALTY = cf.REWARD["no_trade_penalty"]
     
     new_position = action
-    new_reward = np.log(1+asset_value_change)
+    new_reward = asset_value_change
     unallocated_reward+=new_reward
     reward = 0
+    
+    bonus_reward = 0
     
     if new_position!=position:
         # If close position, give all unallocated reward, reset variables to 0
@@ -91,7 +140,8 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
             
             if (reached_take_profit == 0):
                 reached_take_profit = 1
-                reward = DISCOUNT_RATE * unallocated_reward
+                bonus_reward = 0.03
+                reward = DISCOUNT_RATE * unallocated_reward + bonus_reward
             else:
                 reward = DISCOUNT_RATE * new_reward if new_reward > 0 \
                     else AMPLIFIED_RATE * new_reward
@@ -119,8 +169,8 @@ def calculate_reward_with_stop_loss_beta(assumed_trade_profit:float,
         if position == 0 and action == 0:
             reward = np.log(1 - NO_TRADE_PENALTY)
         
-        unallocated_reward -= reward
-    
+        unallocated_reward -= reward 
+        
     trade_profit = assumed_trade_profit if new_position!=position else 0     
     
     return reward, trade_profit, new_position, unallocated_reward, \
@@ -204,7 +254,8 @@ def get_reward_as_immediate(timestep:int,
                             unallocated_reward:float,
                             asset_value_change:float,
                             reached_take_profit:int,
-                            reached_stop_loss:int
+                            reached_stop_loss:int,
+                            market_trend:int,
                             ):
     """
     Get reward and others 
@@ -232,7 +283,7 @@ def get_reward_as_immediate(timestep:int,
     
     reward, trade_profit, \
         new_position, unallocated_reward, \
-            reached_take_profit, reached_stop_loss = calculate_reward_with_stop_loss_beta(
+            reached_take_profit, reached_stop_loss = calculate_reward_no_stop_loss(
         action = action,
         position = position,
         assumed_trade_profit = assumed_trade_profit,
@@ -240,6 +291,7 @@ def get_reward_as_immediate(timestep:int,
         asset_value_change=asset_value_change,
         reached_stop_loss=reached_stop_loss,
         reached_take_profit=reached_take_profit,
+        market_trend = market_trend,
     )
     
     trade_cost, trade_num = get_trade_cost(
@@ -254,7 +306,7 @@ def get_reward_as_immediate(timestep:int,
         risk_free_annual_return = cf.REWARD["risk_free_annual_return"]
     )
     
-    reward += np.log(1-trade_cost) + timestep * np.log(1-money_cost)
+    reward -= trade_cost + timestep * money_cost
     
     return reward, trade_profit, new_position, trade_cost, trade_num, unallocated_reward,\
         reached_take_profit, reached_stop_loss

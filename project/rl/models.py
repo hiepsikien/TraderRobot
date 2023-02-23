@@ -5,19 +5,24 @@ from cv2 import transform
 import numpy as np
 import pandas as pd
 from stable_baselines3 import A2C, PPO, DQN
+from rl.custom_ppo import CustomPPO
 from sb3_contrib import ARS, TRPO
 import matplotlib.pyplot as plt
+import wandb
 import config as cf
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 
 #Available models
 MODELS = {
     "a2c": A2C, 
-    "ppo": PPO, 
+    "ppo": PPO,
+    "c_ppo": CustomPPO, 
     # "ars":ARS,
     # "trpo":TRPO,
     "dqn": DQN
 }
+
+ 
 
 MODEL_KWARGS = {x: cf.__dict__[f"{x.upper()}_PARAMS"] for x in MODELS.keys()}
 
@@ -251,6 +256,7 @@ class DRLTradeAgent:
         try:
             # load agent
             model = MODELS[model_name].load(path)
+            model.set_env(self.env)
             print(f"Successfully load model from {path}")
         except BaseException:
             raise ValueError("Fail to load model!")
@@ -273,6 +279,7 @@ class DRLTradeAgent:
         try:
             # load agent
             model = MODELS[model_name].load(path)
+            model.set_env(self.env)
             print(f"Successfully load model from {path}")
         except BaseException:
             raise ValueError(f"Fail to load model from {path}")
@@ -340,16 +347,24 @@ class DRLTradeAgent:
         else:
             print("No available data")
 
-    def describe_trades(self):
+    def describe_trades(self,render:bool=True):
         stat_dict = {}
-        df = self.result_df
+        df = pd.DataFrame({
+            "action":self.action_memory,
+        })
         for action in range(3):
             g = df['action'].ne(df['action'].shift()).cumsum()
             g = g[df['action'].eq(action)]
             g = g.groupby(g).count().sort_values()
             stat_dict[action] = g.describe()[["count","mean","std","min","25%","50%","75%","max"]]
-        print("Trade count and duration statistics:")
-        print(pd.DataFrame(stat_dict))       
+        trades_df = pd.DataFrame(stat_dict)
+        
+        if render:
+            print(trades_df) 
+        long_short_ratio = stat_dict[1]["count"]/stat_dict[2]["count"] if stat_dict[2]["count"]>0 else 0  
+        return trades_df, long_short_ratio, stat_dict[1]["mean"], stat_dict[2]["mean"]
+     
+    
 
     def make_result_data(self):
         result_df = pd.DataFrame({

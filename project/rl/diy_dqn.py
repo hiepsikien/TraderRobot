@@ -1,5 +1,3 @@
-from math import gamma
-from operator import mod
 import tensorflow as tf
 import gym
 import numpy as np
