@@ -1,6 +1,12 @@
 # directory
 from __future__ import annotations
 
+AGGREGATED_DATA_PATH = "/media/andy/UbuntuDisk/CryptoData/Aggregated/"
+HISTORICAL_DATA_PATH = "/media/andy/UbuntuDisk/CryptoData/Historical/"
+SPOT_MONTHLY_KLINES_DATA_PATH = "/media/andy/UbuntuDisk/CryptoData/spot/monthly/klines/"
+FUTURE_MONTHLY_KLINES_DATA_PATH = "/media/andy/UbuntuDisk/CryptoData/futures/monthly/klines/"
+BINANCE_SPOT_MOTHLY_KLINES_URL = "https://data.binance.vision/data/spot/monthly/klines/"
+BINANCE_FUTURE_MOTHLY_KLINES_URL = "https://data.binance.vision/data/futures/um/monthly/klines/"
 TRAINED_MODEL_DIR = "../saved_models/"
 TENSORBOARD_LOGDIR = "../logs/tensorboard_log/"
 RESULTS_DIR = "../logs/results/"

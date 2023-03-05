@@ -94,7 +94,7 @@ def macd_backtest(data:pd.DataFrame,fast:int, slow:int, n_last:int,close_col:str
                         mean_p,std_p,mean_s,std_s,
                         recall_p,recall_n))
     
-    columns = ["slow","fast","tp","fp","tn","fn","duration",
+    columns = ["slow","fast","tp","fp","tn","fn","t",
                "mean_p","std_p","mean_n","std_n","recall_p","recall_n"]   
      
     if return_df:
@@ -190,7 +190,7 @@ def rsi_backtest(data:pd.DataFrame,n_last:int, period:int,close_col:str="Close",
         
         results.append((period,tp,fp,tn,fn,duration,mean_p,std_p,mean_s,std_s,recall_p,recall_n))
     
-    columns = ["period","tp","fp","tn","fn","duration","mean_p","std_p","mean_n","std_n","recall_p","recall_n"]   
+    columns = ["period","tp","fp","tn","fn","t","mean_p","std_p","mean_n","std_n","recall_p","recall_n"]   
     
     if return_df:
         return to_dataframe(results,columns)
@@ -242,6 +242,4 @@ def backtest_rsi_combination(df:pd.DataFrame, n_last:int,close_col:str="Close", 
         results += result   #type: ignore
         
     return to_dataframe(results,columns)    #type: ignore
-
-def stochastic_osicillator_backtest():
     
