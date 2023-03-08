@@ -75,7 +75,7 @@ def first_time_go_above_price(start_time:int,end_time:int,target_price:float,gra
     Return time in unix utc milisecond.
     '''
     lookup_data = granular_data.iloc[(granular_data.index>=start_time) & 
-        (granular_data.index<end_time)].copy()
+        (granular_data.index<end_time)]
 
     first_index = lookup_data.loc[lookup_data["High"]>=target_price].index.min()
     return first_index
@@ -86,7 +86,7 @@ def first_time_go_below_price(start_time:int,end_time:int,target_price:float,gra
     Return time in unix utc milisecond.
     '''
     lookup_data = granular_data.iloc[(granular_data.index>=start_time) & 
-        (granular_data.index<end_time)].copy()
+        (granular_data.index<end_time)]
 
     first_index = lookup_data.loc[lookup_data["Low"]<target_price].index.min()
     return first_index
