@@ -10,8 +10,14 @@ def download_spot_monthly(symbol:str,year:int,month:int,interval:str):
     save_dir = f"{cf.SPOT_MONTHLY_KLINES_DATA_PATH}{symbol}/{interval}"
     filename = f"{save_dir}/{symbol}-{interval}-{year}-{month:02}.zip"
     if os.path.exists(filename):
-        print(f"Already existed {filename}")
-        return save_dir
+        #Check if empty file
+        filesize = os.path.getsize(filename)
+        if (filesize == 0):
+            print(f"Remove empty file {filename}")
+            os.remove(filename)
+        else:
+            print(f"Already existed {filename}")
+            return save_dir
     
     url = f"{cf.BINANCE_SPOT_MOTHLY_KLINES_URL}{symbol}/{interval}/{symbol}-{interval}-{year}-{month:02}.zip"
     
@@ -29,8 +35,15 @@ def download_futures_monthly(symbol:str,year:int,month:int,interval:str):
     save_dir = f"{cf.FUTURE_MONTHLY_KLINES_DATA_PATH}{symbol}/{interval}"
     filename = f"{save_dir}/{symbol}-{interval}-{year}-{month:02}.zip"
     if os.path.exists(filename):
-        # print(f"Already existed {filename}")
-        return save_dir
+        #Check if empty file
+        filesize = os.path.getsize(filename)
+        if (filesize == 0):
+            print(f"Remove empty file {filename}")
+            os.remove(filename)
+        else:
+            print(f"Already existed {filename}")
+            return save_dir
+        
     url = f"{cf.BINANCE_FUTURE_MOTHLY_KLINES_URL}{symbol}/{interval}/{symbol}-{interval}-{year}-{month:02}.zip"
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -109,6 +122,8 @@ def import_data_from_multiple_csv(dir):
     return data
 
 def write_data_to_hdf(save_dir:str,data:pd.DataFrame,symbol:str,interval:str):
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     data.to_hdf(f"{save_dir}/{symbol}-{interval}.h5",key="data")
     
 def download_spot_and_save_to_hdf(symbol:str,interval:str,start_year:int,start_month:int,end_year:int,end_month:int):
@@ -119,7 +134,7 @@ def download_spot_and_save_to_hdf(symbol:str,interval:str,start_year:int,start_m
     print("...merging...")
     data = import_data_from_multiple_csv(dir)
     print("...saving...")
-    save_dir = f"{cf.AGGREGATED_DATA_PATH}spot/"
+    save_dir = f"{cf.AGGREGATED_DATA_PATH}spot/{interval}"
     write_data_to_hdf(data=data,symbol=symbol,interval=interval,save_dir=save_dir)
     print("Completed")   
     
@@ -136,6 +151,6 @@ def download_futures_and_save_to_hdf(symbol:str,interval:str,start_year:int,star
     print("...merging...")
     data = import_data_from_multiple_csv(dir)
     print("...saving...")
-    save_dir = f"{cf.AGGREGATED_DATA_PATH}futures/"
+    save_dir = f"{cf.AGGREGATED_DATA_PATH}futures/{interval}"
     write_data_to_hdf(data=data,symbol=symbol,interval=interval,save_dir=save_dir)
     print("Completed")   
