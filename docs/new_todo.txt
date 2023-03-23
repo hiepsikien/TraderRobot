@@ -1,0 +1,16 @@
+WORK
+
+1. Rewrite trade robot arbitrage script to do backtest in a way more similar to real trading.
+2. Try more sophisticated coin selection method.
+3. Read about the paper of arbitrage trading shared on reddit to find any thing can be applied.
+4. Thinking about exit signals
+5. Monitoring and optimize running strategy
+
+LIFE
+1. Help family to rebuild it wellness
+- stock goods, fix things
+- eating, outing
+
+2. Return to healthy lifestyle
+- Doing exercises everyday
+- Rise early, sleep early
